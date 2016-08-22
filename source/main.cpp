@@ -33,8 +33,10 @@ int main (int argc, char **argv)
 	// SOLUTION: reassign time_point before using it, if necessary.
 	std::chrono::system_clock::time_point t_track_obstacle = std::chrono::system_clock::now();
 	std::chrono::system_clock::time_point t_track_sheep = std::chrono::system_clock::now();
-	std::chrono::duration<int,std::milli> dt_obstacle(500);
-	std::chrono::duration<int,std::milli> dt_sheep(10);
+	unsigned int dt_uint_obstacle = 300;
+	unsigned int dt_uint_sheep = 10; 
+	std::chrono::duration<int,std::milli> dt_obstacle(dt_uint_obstacle);
+	std::chrono::duration<int,std::milli> dt_sheep(dt_uint_sheep);
 	t_track_obstacle += dt_obstacle;
 
 	/*
@@ -79,48 +81,35 @@ int main (int argc, char **argv)
 	}
 	refresh();
 
-	std::this_thread::sleep_until(t_track_obstacle);
-	t_track_obstacle += dt_obstacle;
-
-	for (int i=0; i<40; ++i) {
-		for (auto it = bushes.begin(); it != bushes.end(); it++) {
-			game.Animation(*it);
-		}
-		t_track_obstacle += dt_obstacle;
-		std::this_thread::sleep_until(t_track_obstacle);
-		refresh();
-	}
-
-	std::this_thread::sleep_until(t_track_obstacle);
 	t_track_sheep = std::chrono::system_clock::now();
 	char ch;
 
-	for (int i=0; i<1000; ++i) {
-		ch = getch();
-		if ( ch == 'l' ) game.Animation(sheep,0);
-		else if ( ch == 'r' ) game.Animation(sheep,1);
+	for (int i=0; i<100 ; ++i) {
+		for (auto it = bushes.begin(); it != bushes.end(); it++) {
+			game.Animation(*it);
+		}
+		for (int i=0; i<dt_uint_obstacle; i+=dt_uint_sheep) {
+			ch = getch();
+			if ( ch == 'l' ) game.Animation(sheep,0);
+			else if ( ch == 'r' ) game.Animation(sheep,1);
+
+			for (auto it = bushes.begin(); it != bushes.end(); it++) {
+				//game.Animation(sheep,1);
+				if ( ((*(*it)).m_hitbox).Overlap((*sheep).m_hitbox) or
+						((*(*it)).m_hitbox).Overlap((*sheep).m_hitbox) ) {
+
+					endwin(); // end terminal world [ncurses]
+					std::cout << "You lost!" << std::endl;
+					return 1;
+				}
+			}
+			refresh();
+			t_track_sheep += dt_sheep;
+			std::this_thread::sleep_until(t_track_sheep);
+		}
 
 		refresh();
-		t_track_sheep += dt_sheep;
-		std::this_thread::sleep_until(t_track_sheep);
 	}
-
-	for (auto it = bushes.begin(); it != bushes.end(); it++) {
-		//game.Animation(sheep,1);
-		if ( ((*(*it)).m_hitbox).Overlap((*sheep).m_hitbox) or
-				((*(*it)).m_hitbox).Overlap((*sheep).m_hitbox) ) {
-			mvprintw(0,0,"SS");
-			break;
-		}
-		else {
-			mvprintw(0,0,"NS");
-		}
-		refresh();
-	}
-
-	t_track_obstacle = std::chrono::system_clock::now();
-	t_track_obstacle += dt_obstacle;
-	std::this_thread::sleep_until(t_track_obstacle);
 
 	endwin(); // end terminal world [ncurses]
 
