@@ -5,6 +5,7 @@
  */
 
 #include <cmath>
+#include <iostream>
 #include "hitbox.h"
 
 bool HitBox :: Overlap_RectRect(HitBoxRect& a, HitBoxRect& b)
@@ -28,10 +29,14 @@ bool HitBox :: Overlap_RectRect(HitBoxRect& a, HitBoxRect& b)
 
 	//we have to substract 1 from height and width, so (x_ref+width) 
 	// is inside the hitbox
-	unsigned int a_w = (a.get_rec()).width - 1 ;
-	unsigned int a_h = (a.get_rec()).height - 1 ;
-	unsigned int b_w = (b.get_rec()).width - 1 ;
-	unsigned int b_h = (b.get_rec()).height - 1 ;
+	//we have to cast width and height in 'int' for better math
+	int a_w = (int)(a.get_rec()).width - 1 ;
+	int a_h = (int)(a.get_rec()).height - 1 ;
+	int b_w = (int)(b.get_rec()).width - 1 ;
+	int b_h = (int)(b.get_rec()).height - 1 ;
+	if ( a_w < 0 or b_w < 0 or a_h < 0 or b_h < 0 ) {
+		std::cerr << "HitBox::OverlapRectRect() ERROR: width or height < 0" << std::endl;
+	}
 
 	//if the position it's the same they're always overlaped
 	if ( a.get_v() == b.get_v() ) return true;

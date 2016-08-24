@@ -45,8 +45,8 @@ void SpaceSheep :: move(bool dir)
 {
 	position tmp_ref;
 	tmp_ref.y = get_ref().y;
-	if ( dir ) tmp_ref.x = get_ref().x + 1 ;
-	else tmp_ref.x = get_ref().x - 1 ;
+	if ( dir ) tmp_ref.x = get_ref().x + 2 ;
+	else tmp_ref.x = get_ref().x - 2 ;
 	set_ref(tmp_ref);
 	m_hitbox.set_ref(tmp_ref);
 }

@@ -20,7 +20,7 @@ int main (int argc, char **argv)
 	game.GameTable();
 	refresh();
 
-	SpaceSheep* sheep = new SpaceSheep(40,26,2);
+	SpaceSheep* sheep = new SpaceSheep(40,28-2,2);
 	game.Artist(sheep);
 	refresh();
 
@@ -33,7 +33,7 @@ int main (int argc, char **argv)
 	// SOLUTION: reassign time_point before using it, if necessary.
 	std::chrono::system_clock::time_point t_track_obstacle = std::chrono::system_clock::now();
 	std::chrono::system_clock::time_point t_track_sheep = std::chrono::system_clock::now();
-	unsigned int dt_uint_obstacle = 300;
+	unsigned int dt_uint_obstacle = 100;
 	unsigned int dt_uint_sheep = 10; 
 	std::chrono::duration<int,std::milli> dt_obstacle(dt_uint_obstacle);
 	std::chrono::duration<int,std::milli> dt_sheep(dt_uint_sheep);
@@ -42,76 +42,80 @@ int main (int argc, char **argv)
 	/*
 	 * ANIMATION AND HITBOX
 	*/
-	std::vector <RectObstacle*> bushes;
+    std::vector <RectObstacle*> bushes;
 	unsigned int w = 0, h = 0;
 	int x = 0, y = 0;
 	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
 	std::default_random_engine generator(seed);
 	std::uniform_int_distribution<int> distribution(0,100);
-	bool ctrl = false;
-	for ( unsigned int i=0; i<5; ++i) {
-		RectObstacle* tmp_bush = new RectObstacle(x,y,w,h);
-		while (ctrl == false) {
-			w = (distribution(generator) % 25) + 5 ;
-			x = distribution(generator);
-			if ( (x + w) < 100 ) ctrl = true;
+	bool ctrl = false; //to check obstacle spawn
+	bool dead = false;
+	unsigned int production = 18;
+	unsigned int count = 0;
+	char ch;
+	while (!dead) {
+		mvprintw(count%10,count/10,"*");
+		refresh();
+		if ( !(count%production) ) {
+			for ( unsigned int i=0; i<1; ++i) {
+				RectObstacle* tmp_bush = new RectObstacle(x,y,w,h);
+				while (!ctrl) {
+					w = (distribution(generator) % 25) + 10 ;
+					x = distribution(generator);
+					if ( (x + w) < 100 ) ctrl = true;
 
-			h = (distribution(generator) % 5) + 3 ;
-			y = -h ;
-			RectObstacle* t_b = new RectObstacle(x,y,w,h);
-			delete tmp_bush;
-			tmp_bush = t_b;
+					h = (distribution(generator) % 5) + 3 ;
+					y = -h ;
+					RectObstacle* t_b = new RectObstacle(x,y,w,h);
+					delete tmp_bush;
+					tmp_bush = t_b;
 
-			if ( ctrl ) {
-				for (auto it = bushes.begin(); it != bushes.end(); it++) {
-					if ( ((*(*it)).m_hitbox).Overlap((*tmp_bush).m_hitbox) ) {
-						ctrl = false;
-						break;
+					if ( ctrl ) {
+						for (auto it = bushes.begin(); it != bushes.end(); it++) {
+							if ( ((*(*it)).m_hitbox).Overlap((*tmp_bush).m_hitbox) ) {
+								ctrl = false;
+								break;
+							}
+						}
 					}
 				}
+				ctrl = false;
+				bushes.push_back(tmp_bush);
 			}
 		}
-		ctrl = false;
+		++count;
 
-		bushes.push_back(tmp_bush);
-	}
+		for (auto it = bushes.begin(); it != bushes.end(); it++) {
+			game.Artist(*it);
+		}
+		refresh();
 
-	for (auto it = bushes.begin(); it != bushes.end(); it++) {
-		game.Artist(*it);
-	}
-	refresh();
-
-	t_track_sheep = std::chrono::system_clock::now();
-	char ch;
-
-	for (int i=0; i<100 ; ++i) {
 		for (auto it = bushes.begin(); it != bushes.end(); it++) {
 			game.Animation(*it);
 		}
+		refresh();
+
 		for (int i=0; i<dt_uint_obstacle; i+=dt_uint_sheep) {
 			ch = getch();
-			if ( ch == 'l' ) game.Animation(sheep,0);
-			else if ( ch == 'r' ) game.Animation(sheep,1);
+			if ( ch == 'j' ) game.Animation(sheep,0);
+			else if ( ch == 'l' ) game.Animation(sheep,1);
 
 			for (auto it = bushes.begin(); it != bushes.end(); it++) {
 				//game.Animation(sheep,1);
 				if ( ((*(*it)).m_hitbox).Overlap((*sheep).m_hitbox) or
 						((*(*it)).m_hitbox).Overlap((*sheep).m_hitbox) ) {
 
-					endwin(); // end terminal world [ncurses]
-					std::cout << "You lost!" << std::endl;
-					return 1;
+					dead = true;
+					break;
 				}
 			}
 			refresh();
 			t_track_sheep += dt_sheep;
 			std::this_thread::sleep_until(t_track_sheep);
 		}
-
 		refresh();
 	}
 
 	endwin(); // end terminal world [ncurses]
-
 	return 0;
 }
