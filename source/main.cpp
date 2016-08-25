@@ -10,7 +10,7 @@ int main (int argc, char **argv)
 {
 	/*
 	 * INTRODUCTION
-	*/
+	 */
 	initscr(); // start the terminal world [ncurses]
 	curs_set(0); // hide cursor position [ncurses]
 	timeout(0); // getch() does not wait for input [ncurses]
@@ -20,29 +20,27 @@ int main (int argc, char **argv)
 	game.GameTable();
 	refresh();
 
-	SpaceSheep* sheep = new SpaceSheep(40,28-2,2);
+	SpaceSheep* sheep = new SpaceSheep(120,28-2,2);
 	game.Artist(sheep);
 	refresh();
 
 	/*
 	 * TIME STUFF
-	*/
+	 */
 	// WARNING: clocks goes on during execution, if you use sleep_until(20:00)
 	//  for obstacle and sleep(19:00) for sheep, the second will be ignored,
 	//  time has passed!
 	// SOLUTION: reassign time_point before using it, if necessary.
-	std::chrono::system_clock::time_point t_track_obstacle = std::chrono::system_clock::now();
 	std::chrono::system_clock::time_point t_track_sheep = std::chrono::system_clock::now();
-	unsigned int dt_uint_obstacle = 100;
+	unsigned int dt_uint_obstacle = 200;
 	unsigned int dt_uint_sheep = 10; 
 	std::chrono::duration<int,std::milli> dt_obstacle(dt_uint_obstacle);
 	std::chrono::duration<int,std::milli> dt_sheep(dt_uint_sheep);
-	t_track_obstacle += dt_obstacle;
 
 	/*
 	 * ANIMATION AND HITBOX
-	*/
-    std::vector <RectObstacle*> bushes;
+	 */
+	std::vector <RectObstacle*> bushes;
 	unsigned int w = 0, h = 0;
 	int x = 0, y = 0;
 	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
@@ -50,21 +48,30 @@ int main (int argc, char **argv)
 	std::uniform_int_distribution<int> distribution(0,100);
 	bool ctrl = false; //to check obstacle spawn
 	bool dead = false;
-	unsigned int production = 18;
+	unsigned int production = 15;
 	unsigned int count = 0;
 	char ch;
 	while (!dead) {
-		mvprintw(count%10,count/10,"*");
-		refresh();
 		if ( !(count%production) ) {
-			for ( unsigned int i=0; i<1; ++i) {
+			for ( unsigned int i=0; i<2; ++i) {
 				RectObstacle* tmp_bush = new RectObstacle(x,y,w,h);
 				while (!ctrl) {
-					w = (distribution(generator) % 25) + 10 ;
+					w = (distribution(generator) % 25) + 15 ;
 					x = distribution(generator);
 					if ( (x + w) < 100 ) ctrl = true;
+					if ( i > 0 ) {
+						if ( ctrl ) {
+							if ( ((x > ((*(bushes.back())).get_ref()).x) and 
+										(x - (((*(bushes.back())).get_ref()).x +
+											 (int)((*(bushes.back())).get_rec()).width)) < 
+										 ((int)(*sheep).get_fatness()*2+9)) ) ctrl = false;
+							if ( ((x < ((*(bushes.back())).get_ref()).x) and 
+										(((*(bushes.back())).get_ref()).x - (x + (int)w)) <	
+										 ((int)(*sheep).get_fatness()*2+9)) ) ctrl = false;
+						}
+					}
 
-					h = (distribution(generator) % 5) + 3 ;
+					h = (distribution(generator) % 4) + 3 ;
 					y = -h ;
 					RectObstacle* t_b = new RectObstacle(x,y,w,h);
 					delete tmp_bush;
@@ -81,6 +88,13 @@ int main (int argc, char **argv)
 				}
 				ctrl = false;
 				bushes.push_back(tmp_bush);
+
+				for (auto it = bushes.begin(); it != bushes.end(); it++) {
+					if ( ((*(*it)).get_ref()).y > (int)game.get_yDim() ) {
+						delete *it;
+						bushes.erase(it);
+					}
+				}
 			}
 		}
 		++count;

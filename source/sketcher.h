@@ -32,6 +32,9 @@ class Sketcher
 		void Animation(RectObstacle* bush); //animate bush movement
 		void Animation(SpaceSheep* sheep, bool dir); //animate sheep movement
 
+		unsigned int get_yDim() { return M_yDim; }
+		unsigned int get_xDim() { return M_xDim; }
+
 	private:
 		unsigned int M_xDim, M_yDim, M_xOffset, M_yOffset;	
 };

@@ -100,9 +100,9 @@ bool HitBox :: Overlap_RectCircle(HitBoxRect& r, HitBoxCircle& c)
 
 	//we have to substract 1 from height and width, so (x_ref+width) 
 	// is inside the hitbox
-	unsigned int r_w = (r.get_rec()).width - 1 ;
-	unsigned int r_h = (r.get_rec()).height - 1 ;
-	unsigned int c_r = c.get_radius();
+	int r_w = (int)(r.get_rec()).width - 1 ;
+	int r_h = (int)(r.get_rec()).height - 1 ;
+	int c_r = (int)c.get_radius();
 
 	if ( r_x >= c_x ) {
 		if ( r_y >= c_y ) {
@@ -166,8 +166,8 @@ bool HitBox :: Overlap_CircleCircle(HitBoxCircle& a, HitBoxCircle& b)
 
 	//we have to substract 1 from height and width, so (x_ref+width) 
 	// is inside the hitbox
-	unsigned int a_r = a.get_radius();
-	unsigned int b_r = b.get_radius();
+	int a_r = (int)a.get_radius();
+	int b_r = (int)b.get_radius();
 
 	if ( std::abs(a_x-b_x) + std::abs(a_y-b_y) <= (a_r+b_r) ) return true;
 	else return false;
