@@ -32,7 +32,7 @@ int main (int argc, char **argv)
 	//  time has passed!
 	// SOLUTION: reassign time_point before using it, if necessary.
 	std::chrono::system_clock::time_point t_track_sheep = std::chrono::system_clock::now();
-	unsigned int dt_uint_obstacle = 200;
+	unsigned int dt_uint_obstacle = 150;
 	unsigned int dt_uint_sheep = 10; 
 	std::chrono::duration<int,std::milli> dt_obstacle(dt_uint_obstacle);
 	std::chrono::duration<int,std::milli> dt_sheep(dt_uint_sheep);
@@ -48,7 +48,7 @@ int main (int argc, char **argv)
 	std::uniform_int_distribution<int> distribution(0,100);
 	bool ctrl = false; //to check obstacle spawn
 	bool dead = false;
-	unsigned int production = 15;
+	unsigned int production = 14;
 	unsigned int count = 0;
 	char ch;
 	while (!dead) {
@@ -56,18 +56,23 @@ int main (int argc, char **argv)
 			for ( unsigned int i=0; i<2; ++i) {
 				RectObstacle* tmp_bush = new RectObstacle(x,y,w,h);
 				while (!ctrl) {
-					w = (distribution(generator) % 25) + 15 ;
+					w = (distribution(generator) % 22) + 20;
 					x = distribution(generator);
 					if ( (x + w) < 100 ) ctrl = true;
 					if ( i > 0 ) {
 						if ( ctrl ) {
-							if ( ((x > ((*(bushes.back())).get_ref()).x) and 
+							if ( ((x >= (((*(bushes.back())).get_ref()).x + (int)((*(bushes.back())).get_rec()).width)) and 
 										(x - (((*(bushes.back())).get_ref()).x +
-											 (int)((*(bushes.back())).get_rec()).width)) < 
-										 ((int)(*sheep).get_fatness()*2+9)) ) ctrl = false;
-							if ( ((x < ((*(bushes.back())).get_ref()).x) and 
-										(((*(bushes.back())).get_ref()).x - (x + (int)w)) <	
-										 ((int)(*sheep).get_fatness()*2+9)) ) ctrl = false;
+											  (int)((*(bushes.back())).get_rec()).width)) <
+										((int)(*sheep).get_fatness()*2+7)) ) ctrl = false;
+							if ( (((x+(int)w) <= ((*(bushes.back())).get_ref()).x) and 
+										(((*(bushes.back())).get_ref()).x - (x + (int)w)) <
+										((int)(*sheep).get_fatness()*2+5)) ) ctrl = false;
+						}
+						if ( ctrl ) {
+							if ( (int)((*(bushes.back())).get_rec()).width+(int)w < 50 ) {
+								ctrl = false;
+							}
 						}
 					}
 
