@@ -19,12 +19,12 @@ class Sketcher
 {
 	public:
 		Sketcher(unsigned int xDim, unsigned int yDim);
-		~Sketcher(){};
+		~Sketcher(){}
 
 		void GameTable(); //print game table limits
 
-		void Artist(RectObstacle* bush); //print bushes
-		void Artist(SpaceSheep* sheep); //print sheep
+		void Pencil(RectObstacle* bush); //print bushes
+		void Pencil(SpaceSheep* sheep); //print sheep
 
 		void Rubber(RectObstacle* bush); //erase bushes
 		void Rubber(SpaceSheep* sheep); //erase sheep

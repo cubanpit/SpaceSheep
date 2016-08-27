@@ -42,7 +42,7 @@ void Sketcher :: GameTable ()
 	mvprintw(M_yOffset-1+M_yDim, M_xOffset-1+M_xDim, "/");
 }
 
-void Sketcher :: Artist(RectObstacle* bush) 
+void Sketcher :: Pencil(RectObstacle* bush) 
 {
 	// (width-1) and (height-1) because we have a side from x to x+5 we
 	//  have a width of 6
@@ -79,7 +79,7 @@ void Sketcher :: Artist(RectObstacle* bush)
 	}
 }
 
-void Sketcher :: Artist(SpaceSheep* sheep)
+void Sketcher :: Pencil(SpaceSheep* sheep)
 {
 	mvprintw(M_yOffset+(sheep->get_ref()).y-sheep->get_fatness(),
 			M_xOffset+(sheep->get_ref()).x, "O");
@@ -140,12 +140,12 @@ void Sketcher :: Animation(RectObstacle* bush)
 {
 	Rubber(bush);
 	bush->move();
-	Artist(bush);
+	Pencil(bush);
 }
 
 void Sketcher :: Animation(SpaceSheep* sheep, bool dir)
 {
 	Rubber(sheep);
 	sheep->move(dir);
-	Artist(sheep);
+	Pencil(sheep);
 }

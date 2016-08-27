@@ -19,7 +19,7 @@ class Obstacle
 	public:
 		Obstacle(position ref){ m_ref = ref; }
 		Obstacle(int x, int y){ m_ref.x = x; m_ref.y = y; }
-		~Obstacle(){ }
+		~Obstacle(){}
 
 		position get_ref(){ return m_ref; }
 		void set_ref(position& new_ref){ m_ref = new_ref; }

@@ -20,7 +20,7 @@ VPATH=./source/
 OBJPATH=./obj/
 
 TARGET := game
-OBJ:= obstacle.o hitbox.o sketcher.o
+OBJ:= obstacle.o hitbox.o sketcher.o engine.o
 
 DEBUG := -g
 
