@@ -53,39 +53,48 @@ void Engine::run()
 	bool ctrl = false; //to check obstacle spawn
 	bool dead = false;
 
+	/*
+	 * In the next 'while(!ctrl)' cycle we check different parameters to
+	 *  have a good game environment.
+	 * RectObstacle:
+	 * - size limits for x,y,h,w at creation time
+	 * - limits on (x+w) to have every obstacle inside Game Table
+	 * - minimum horizontal distance between obstacle, to be sure
+	 *    the SpaceSheep can pass (m_dist)
+	 * - minimum tot with of obstacle on same row, so it's always
+	 *    engaging (tot_w)
+	 * - check obstacle overlapping
+	 *   
+	 * WARNING:
+	 * It's not so simple to respect all this rules.
+	 * Minimum width (m_w) and maximum width (M_w) values modify the
+	 *  solution to the problem.
+	 *
+	 * GameLimit           center              GameLimit
+	 * |                   |                   |
+	 * |                |obst |free|  obst     |
+	 * |                ,-----,----,-----------|
+	 * |                m_w   |    X           |
+	 *                        m_dist
+	 *
+	 * In this situation X must be m_w<=X<=M_w and w_min+X=tot_w
+	 * Idem with M_w instead of m_w in the scheme.
+	 *
+	 * This simple 'if' statement check that conditions can't cause a loop in
+	 *  obstacle creation.
+	 */
+	if (   !((((int)m_artist.get_xDim()/2) - ((int)w_m/2) - ((int)(*sheep).get_fatness()*2+1+(int)w_d)) > w_m 
+		 and (((int)m_artist.get_xDim()/2) - ((int)w_m/2) - ((int)(*sheep).get_fatness()*2+1+(int)w_d)) < ((int)w_m+(int)w_r-1)
+		 and (((int)m_artist.get_xDim()/2) - (((int)w_m+int(w_r)-1)/2) - ((int)(*sheep).get_fatness()*2+1+(int)w_d)) > w_m 
+		 and (((int)m_artist.get_xDim()/2) - (((int)w_m+int(w_r)-1)/2) - ((int)(*sheep).get_fatness()*2+1+(int)w_d)) < ((int)w_m+(int)w_r-1)) ) {
+		std::cerr << "Engine::run() ERROR: minimum and range of obstacle's width can cause an infinite loop, change their value." << std::endl;
+		dead = true;
+	}
+
 	while (!dead) {
 		if ( !(count%production) ) {
 			for ( unsigned int i=0; i<2; ++i) {
 				RectObstacle* tmp_bush = new RectObstacle(x,y,w,h);
-				/*
-				 * In the next 'while' cycle we check different parameters to
-				 *  have a good game environment.
-				 * RectObstacle:
-				 * - size limits for x,y,h,w at creation time
-				 * - limits on (x+w) to have every obstacle inside Game Table
-				 * - minimum horizontal distance between obstacle, to be sure
-				 *    the SpaceSheep can pass (m_dist)
-				 * - minimum tot with of obstacle on same row, so it's always
-				 *    engaging (tot_w)
-				 * - check obstacle overlapping
-				 *   
-				 * WARNING:
-				 * It's not so simple to respect all this rules.
-				 * Minimum width (m_w) and maximum width (M_w) values modify the
-				 *  solution to the problem.
-				 *
-				 * GameLimit           center              GameLimit
-				 * |                   |                   |
-				 * |                |obst |free|  obst     |
-				 * |                ,-----,----,-----------|
-				 * |                m_w   |    X           |
-				 *                        m_dist
-				 *
-				 * In this situation X must be m_w<=X<=M_w and w_min+X=tot_w
-				 * Idem with M_w instead of m_w in the scheme.
-				 * At the moment, you have to set manually the right values, 
-				 *  otherwise game run in a loop.
-				 */
 				while (!ctrl) {
 					w = (distribution(generator) % w_r) + w_m; //(dist%range)+min
 					x = distribution(generator);
@@ -95,10 +104,10 @@ void Engine::run()
 							if ( ((x >= (((*(bushes.back())).get_ref()).x + (int)((*(bushes.back())).get_rec()).width)) and 
 										(x - (((*(bushes.back())).get_ref()).x +
 											  (int)((*(bushes.back())).get_rec()).width)) <
-										((int)(*sheep).get_fatness()*2+1+w_d)) ) ctrl = false;
+										((int)(*sheep).get_fatness()*2+1+(int)w_d)) ) ctrl = false;
 							if ( (((x+(int)w) <= ((*(bushes.back())).get_ref()).x) and 
 										(((*(bushes.back())).get_ref()).x - (x + (int)w)) <
-										((int)(*sheep).get_fatness()*2+1+w_d)) ) ctrl = false;
+										((int)(*sheep).get_fatness()*2+1+(int)w_d)) ) ctrl = false;
 						}
 						if ( ctrl ) {
 							if ( (int)((*(bushes.back())).get_rec()).width+(int)w < w_tot ) {
