@@ -3,9 +3,6 @@
  *
  * This class should draw every object in the game table.
  * It handle also the erase and the animation of object.
- *
- * TODO:
- * - clean GameTable and outside automatically;
 */
 
 #ifndef _SKE_H_
@@ -13,6 +10,9 @@
 
 #include <ncurses.h>
 #include <iostream>
+#include <string> //std::string, std::to_string
+#include <chrono> // std::chrono::system_clock
+#include <thread> // std::this_thread::sleep_until
 #include "obstacle.h"
 
 class Sketcher 
@@ -21,7 +21,9 @@ class Sketcher
 		Sketcher(unsigned int xDim, unsigned int yDim);
 		~Sketcher(){}
 
+		void Welcome(); //print welcome screen
 		void GameTable(); //print game table limits
+		void Score(unsigned int score); //print actual score on Game screen
 
 		void Pencil(RectObstacle* bush); //print bushes
 		void Pencil(SpaceSheep* sheep); //print sheep

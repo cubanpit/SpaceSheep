@@ -8,8 +8,6 @@
 #define _ENGINE_H_
 
 #include <random> // std::default_random_engine , std::uniform_int_distribution
-#include <chrono> // std::chrono::system_clock
-#include <thread> // std::this_thread::sleep_until
 #include <vector> //std::vector
 #include "sketcher.h"
 
@@ -18,7 +16,9 @@ class Engine
 	public:
 		Engine(unsigned int xDim = 100, unsigned int yDim = 30);
 		~Engine(){}
-		 void run();
+
+		void run();
+	
 	private:
 		Sketcher m_artist;
 

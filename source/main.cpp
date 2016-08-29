@@ -15,7 +15,6 @@ int main (int argc, char **argv)
 {
 	initscr(); // start the terminal world [ncurses]
 	curs_set(0); // hide cursor position [ncurses]
-	timeout(0); // getch() does not wait for input [ncurses]
 	noecho(); // to hide input obtained with getch() [ncurses]
 
 	Engine game(100,30);

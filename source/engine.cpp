@@ -7,10 +7,14 @@
 #include "engine.h"
 
 Engine::Engine(unsigned int xDim, unsigned int yDim):m_artist(xDim,yDim)
-{ }
+{
+	m_artist.Welcome();
+}
 
 void Engine::run()
 {
+	timeout(0); // getch() does not wait for input [ncurses]
+
 	m_artist.GameTable();
 	SpaceSheep* sheep = new SpaceSheep(50,28-2,2);
 	m_artist.Pencil(sheep);
@@ -26,7 +30,7 @@ void Engine::run()
 	//  time has passed!
 	// SOLUTION: reassign time_point before using it, if necessary.
 	std::chrono::system_clock::time_point t_track_sheep = std::chrono::system_clock::now();
-	unsigned int dt_uint_obstacle = 150;
+	unsigned int dt_uint_obstacle = 350;
 	unsigned int dt_uint_sheep = 10; 
 	std::chrono::duration<int,std::milli> dt_sheep(dt_uint_sheep);
 
@@ -153,7 +157,7 @@ void Engine::run()
 			m_artist.Animation(*it);
 		}
 
-		for (int i=0; i<dt_uint_obstacle; i+=dt_uint_sheep) {
+		for (int i=0; i<dt_uint_obstacle and !dead; i+=dt_uint_sheep) {
 			ch = getch();
 			if ( ch == left_mov and  (((*sheep).get_ref()).x - 
 							(int)(*sheep).get_fatness()) > 1 ) {
@@ -171,6 +175,9 @@ void Engine::run()
 					break;
 				}
 			}
+			//print score, different weight for different difficulty level
+			m_artist.Score(count*(200/(production+(w_d*10)+
+											(dt_uint_obstacle/10))));
 			refresh();
 			t_track_sheep += dt_sheep;
 			std::this_thread::sleep_until(t_track_sheep);

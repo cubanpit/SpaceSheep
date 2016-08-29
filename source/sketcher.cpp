@@ -23,6 +23,50 @@ Sketcher :: Sketcher (unsigned int xDim, unsigned int yDim)
 	}
 }
 
+void Sketcher :: Welcome ()
+{
+	timeout(0); // getch() waits endlessly for input [ncurses]
+
+	GameTable();
+
+	mvprintw(M_yOffset+5,M_xOffset+(M_xDim/2)-28,"   _____                      _____ __                  ");
+	mvprintw(M_yOffset+6,M_xOffset+(M_xDim/2)-28,"  / ___/____  ____ _________ / ___// /_  ___  ___  ____ ");
+	mvprintw(M_yOffset+7,M_xOffset+(M_xDim/2)-28,"  \\__ \\/ __ \\/ __ `/ ___/ _ \\\\__ \\/ __ \\/ _ \\/ _ \\/ __ \\");
+	mvprintw(M_yOffset+8,M_xOffset+(M_xDim/2)-28," ___/ / /_/ / /_/ / /__/  __/__/ / / / /  __/  __/ /_/ /");
+	mvprintw(M_yOffset+9,M_xOffset+(M_xDim/2)-28,"/____/ .___/\\__,_/\\___/\\___/____/_/ /_/\\___/\\___/ .___/ ");
+	mvprintw(M_yOffset+10,M_xOffset+(M_xDim/2)-28,"    /_/                                        /_/      ");	
+	
+	mvprintw(M_yOffset+15,M_xOffset+(M_xDim/2)-28,"Welcome in the Sheeps Galaxy!");
+	mvprintw(M_yOffset+17,M_xOffset+(M_xDim/2)-28,"Help SpaceSheep to avoid space bushes using 'j' and 'l' key.");
+	mvprintw(M_yOffset+18,M_xOffset+(M_xDim/2)-28,"Press 'p' during the game to take a break.");
+	mvprintw(M_yOffset+20,M_xOffset+(M_xDim/2)-28,"Press 'p' to begin!");
+
+	std::chrono::system_clock::time_point t_tmp_sheep = std::chrono::system_clock::now(); 
+	std::chrono::duration<int,std::milli> dt_tmp_sheep(300);
+
+	SpaceSheep *tmp = new SpaceSheep((M_xDim/2)-16,28-2,2);
+	Pencil(tmp);
+	bool ctrl = false;
+	char tmp_ch;
+	unsigned int tmp_count = 0;
+	while (!ctrl) {	
+		refresh();
+		t_tmp_sheep += dt_tmp_sheep;
+		std::this_thread::sleep_until(t_tmp_sheep);
+		if ( tmp_count%32 < 16 ) {
+			Animation(tmp,1);
+		}
+		else if ( tmp_count%32 >= 16 ) {
+			Animation(tmp,0);
+		}
+		++tmp_count;
+		tmp_ch = getch();
+		if ( tmp_ch == 'p' ) ctrl = true;
+	}
+	delete tmp;
+	erase();
+}
+
 void Sketcher :: GameTable ()
 {
 	// (Offset-1) beacuse we have put a +1 in the offset, see previous comment
@@ -42,7 +86,22 @@ void Sketcher :: GameTable ()
 	mvprintw(M_yOffset-1+M_yDim, M_xOffset-1+M_xDim, "/");
 }
 
-void Sketcher :: Pencil(RectObstacle* bush) 
+void Sketcher :: Score (unsigned int score)
+{
+	std::string s_ch[6];
+	s_ch[0] = std::to_string(score % 10);
+	s_ch[1] = std::to_string((int)((score % 100) / 10));
+	s_ch[2] = std::to_string((int)((score % 1000) / 100));
+	s_ch[3] = std::to_string((int)((score % 10000) / 1000));
+	s_ch[4] = std::to_string((int)((score % 100000) / 10000));
+	s_ch[5] = std::to_string((int)((score % 1000000) / 100000));
+	for (int i=0; i<6; ++i) {
+		const char * c = s_ch[i].c_str();
+		mvprintw(M_yOffset-2, M_xOffset+M_xDim-2-i, c);
+	}
+}
+
+void Sketcher :: Pencil (RectObstacle* bush) 
 {
 	// (width-1) and (height-1) because we have a side from x to x+5 we
 	//  have a width of 6
@@ -79,7 +138,7 @@ void Sketcher :: Pencil(RectObstacle* bush)
 	}
 }
 
-void Sketcher :: Pencil(SpaceSheep* sheep)
+void Sketcher :: Pencil (SpaceSheep* sheep)
 {
 	mvprintw(M_yOffset+(sheep->get_ref()).y-sheep->get_fatness(),
 			M_xOffset+(sheep->get_ref()).x, "O");
@@ -99,7 +158,7 @@ void Sketcher :: Pencil(SpaceSheep* sheep)
 	}
 }
 
-void Sketcher :: Rubber(RectObstacle* bush)
+void Sketcher :: Rubber (RectObstacle* bush)
 {	
 	for (unsigned int i=0; i < (bush->get_rec()).height; ++i) {
 		if ( (bush->get_ref()).y+i != -1 and (bush->get_ref()).y+i != (M_yDim-1) ) {
@@ -120,7 +179,7 @@ void Sketcher :: Rubber(RectObstacle* bush)
 	}
 }
 
-void Sketcher :: Rubber(SpaceSheep* sheep)
+void Sketcher :: Rubber (SpaceSheep* sheep)
 {
 	for (unsigned int i=0; i < (sheep->get_fatness()+1); ++i) {
 		for (unsigned int j=0; j < (2*i)+1; ++j) {
@@ -136,14 +195,14 @@ void Sketcher :: Rubber(SpaceSheep* sheep)
 	}
 }
 
-void Sketcher :: Animation(RectObstacle* bush)
+void Sketcher :: Animation (RectObstacle* bush)
 {
 	Rubber(bush);
 	bush->move();
 	Pencil(bush);
 }
 
-void Sketcher :: Animation(SpaceSheep* sheep, bool dir)
+void Sketcher :: Animation (SpaceSheep* sheep, bool dir)
 {
 	Rubber(sheep);
 	sheep->move(dir);
