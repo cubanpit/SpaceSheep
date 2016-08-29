@@ -8,18 +8,20 @@
 
 Engine::Engine(unsigned int xDim, unsigned int yDim):m_artist(xDim,yDim)
 {
-	m_artist.Welcome();
+	m_artist.WelcomeScreen();
 }
 
 void Engine::run()
 {
 	timeout(0); // getch() does not wait for input [ncurses]
+	erase();
 
 	m_artist.GameTable();
 	SpaceSheep* sheep = new SpaceSheep(50,28-2,2);
 	m_artist.Pencil(sheep);
 	char ch; //needed for sheep movement
 	char left_mov = 'j', right_mov = 'l';
+	char pause = 'p';
 	refresh();
 
 	/*
@@ -30,7 +32,7 @@ void Engine::run()
 	//  time has passed!
 	// SOLUTION: reassign time_point before using it, if necessary.
 	std::chrono::system_clock::time_point t_track_sheep = std::chrono::system_clock::now();
-	unsigned int dt_uint_obstacle = 350;
+	unsigned int dt_uint_obstacle = 150;
 	unsigned int dt_uint_sheep = 10; 
 	std::chrono::duration<int,std::milli> dt_sheep(dt_uint_sheep);
 
@@ -45,6 +47,7 @@ void Engine::run()
 	std::uniform_int_distribution<int> distribution(0,m_artist.get_xDim());
 
 	unsigned int production = 14; //set vertical frequency of obstacle
+	unsigned int score = 0;
 	unsigned int count = 0; //counts refreshes
 	unsigned int w_d = 4; //margin between bushes distance and sheep width
 	unsigned int w_tot = 50; //minimal total width of bushes on the same row
@@ -148,6 +151,7 @@ void Engine::run()
 			}
 		}
 		++count;
+		score = count*(200/(production+(w_d*10)+(dt_uint_obstacle/10)));
 
 		for (auto it = bushes.begin(); it != bushes.end(); it++) {
 			m_artist.Pencil(*it);
@@ -161,11 +165,22 @@ void Engine::run()
 			ch = getch();
 			if ( ch == left_mov and  (((*sheep).get_ref()).x - 
 							(int)(*sheep).get_fatness()) > 1 ) {
-					m_artist.Animation(sheep,0);
+				m_artist.Animation(sheep,0);
 			}
 			else if ( ch == right_mov and (((*sheep).get_ref()).x + 
 					  (int)(*sheep).get_fatness()) < ((int)m_artist.get_xDim() - 2) ) {
-					m_artist.Animation(sheep,1);
+				m_artist.Animation(sheep,1);
+			}
+			else if ( ch == pause ) {
+				dead = m_artist.PauseScreen();
+				if ( !dead ) {
+					t_track_sheep = std::chrono::system_clock::now();
+					m_artist.GameTable();
+					for (auto it = bushes.begin(); it != bushes.end(); it++) {
+						m_artist.Pencil(*it);
+					}
+					m_artist.Pencil(sheep);
+				}
 			}
 
 			for (auto it = bushes.begin(); it != bushes.end(); it++) {
@@ -176,13 +191,13 @@ void Engine::run()
 				}
 			}
 			//print score, different weight for different difficulty level
-			m_artist.Score(count*(200/(production+(w_d*10)+
-											(dt_uint_obstacle/10))));
+			m_artist.Score(score);
 			refresh();
 			t_track_sheep += dt_sheep;
 			std::this_thread::sleep_until(t_track_sheep);
 		}
 		refresh();
 	}
+	m_artist.ExitScreen(score);
 }
 

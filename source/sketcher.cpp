@@ -23,9 +23,29 @@ Sketcher :: Sketcher (unsigned int xDim, unsigned int yDim)
 	}
 }
 
-void Sketcher :: Welcome ()
+void Sketcher :: GameTable ()
 {
-	timeout(0); // getch() waits endlessly for input [ncurses]
+	// (Offset-1) beacuse we have put a +1 in the offset, see previous comment
+	for (unsigned int i=1; i<(M_yDim); ++i) {
+		mvprintw(M_yOffset-1+i, M_xOffset-1, "|");
+		mvprintw(M_yOffset-1+i, M_xOffset-1+M_xDim, "|");
+	}
+
+	for (unsigned int i=1; i<(M_xDim); ++i) {
+		mvprintw(M_yOffset-1, M_xOffset-1+i, "-");
+		mvprintw(M_yOffset-1+M_yDim, M_xOffset-1+i, "-");
+	}
+
+	mvprintw(M_yOffset-1, M_xOffset-1, "/");
+	mvprintw(M_yOffset-1+M_yDim, M_xOffset-1, "\\");
+	mvprintw(M_yOffset-1, M_xOffset-1+M_xDim, "\\");
+	mvprintw(M_yOffset-1+M_yDim, M_xOffset-1+M_xDim, "/");
+}
+
+void Sketcher :: WelcomeScreen ()
+{
+	timeout(0); // getch() waits no time for input [ncurses]
+	erase();
 
 	GameTable();
 
@@ -67,23 +87,50 @@ void Sketcher :: Welcome ()
 	erase();
 }
 
-void Sketcher :: GameTable ()
+void Sketcher :: ExitScreen (unsigned int score)
 {
-	// (Offset-1) beacuse we have put a +1 in the offset, see previous comment
-	for (unsigned int i=1; i<(M_yDim); ++i) {
-		mvprintw(M_yOffset-1+i, M_xOffset-1, "|");
-		mvprintw(M_yOffset-1+i, M_xOffset-1+M_xDim, "|");
-	}
+	timeout(-1); // getch() waits endlessly for input [ncurses]
+	erase();
+	GameTable();
 
-	for (unsigned int i=1; i<(M_xDim); ++i) {
-		mvprintw(M_yOffset-1, M_xOffset-1+i, "-");
-		mvprintw(M_yOffset-1+M_yDim, M_xOffset-1+i, "-");
-	}
+	mvprintw(M_yOffset+10,M_xOffset+(M_xDim/2)-18,"__   __            _              _  "); 
+	mvprintw(M_yOffset+11,M_xOffset+(M_xDim/2)-18,"\\ \\ / /__  _   _  | |    ___  ___| |_ ");
+	mvprintw(M_yOffset+12,M_xOffset+(M_xDim/2)-18," \\ V / _ \\| | | | | |   / _ \\/ __| __|");
+	mvprintw(M_yOffset+13,M_xOffset+(M_xDim/2)-18,"  | | (_) | |_| | | |__| (_) \\__ \\ |_ ");
+	mvprintw(M_yOffset+14,M_xOffset+(M_xDim/2)-18,"  |_|\\___/ \\__,_| |_____\\___/|___/\\__|");
 
-	mvprintw(M_yOffset-1, M_xOffset-1, "/");
-	mvprintw(M_yOffset-1+M_yDim, M_xOffset-1, "\\");
-	mvprintw(M_yOffset-1, M_xOffset-1+M_xDim, "\\");
-	mvprintw(M_yOffset-1+M_yDim, M_xOffset-1+M_xDim, "/");
+	std::string msg = "Your score is ";
+	std::string str_score = std::to_string(score);
+	msg += str_score;
+	const char * c = msg.c_str();
+	mvprintw(M_yOffset+18,M_xOffset+(M_xDim/2)-18,c);
+	mvprintw(M_yOffset+20,M_xOffset+(M_xDim/2)-18,"Press 'q' to exit the game.");
+
+	refresh();
+	char tmp_ch = '0';
+	while ( !(tmp_ch == 'q') ) {
+		tmp_ch = getch();
+	}
+	erase();
+	timeout(0);
+}
+
+bool Sketcher :: PauseScreen ()
+{
+	timeout(-1); // getch() waits endlessly for input [ncurses]
+	erase();
+	GameTable();
+	mvprintw(M_yOffset+15,M_xOffset+(M_xDim/2)-28,"The game is paused. Meantime SpaceSheep is getting gas.");
+	mvprintw(M_yOffset+17,M_xOffset+(M_xDim/2)-28,"Press 'p' to continue, 'q' to exit the game.");
+	refresh();
+	char tmp_ch = '0';
+	while ( !(tmp_ch == 'p' or tmp_ch == 'q') ) {
+		tmp_ch = getch();
+	}
+	erase();
+	timeout(0);
+	if ( tmp_ch == 'p' ) return 0;
+	else if ( tmp_ch == 'q' ) return 1;
 }
 
 void Sketcher :: Score (unsigned int score)
@@ -105,7 +152,7 @@ void Sketcher :: Pencil (RectObstacle* bush)
 {
 	// (width-1) and (height-1) because we have a side from x to x+5 we
 	//  have a width of 6
-	
+
 	if ( abs((bush->get_ref()).y) < (M_yDim-1) ) {
 		unsigned int i_stop_top = 1;
 		unsigned int i_stop_bottom = ((bush->get_rec()).height-1);
