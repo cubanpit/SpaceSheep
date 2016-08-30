@@ -24,7 +24,7 @@ class Sketcher
 		void GameTable(); //print game table limits
 		void WelcomeScreen(); //print welcome screen
 		bool PauseScreen(); //print pause screen
-		void ExitScreen(unsigned int score); //print exit screen
+		bool ExitScreen(unsigned int score); //print exit screen
 		void Score(unsigned int score); //print actual score on Game screen
 
 		void Pencil(RectObstacle* bush); //print bushes

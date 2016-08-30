@@ -17,12 +17,12 @@ void Engine::run()
 	erase();
 
 	m_artist.GameTable();
-	SpaceSheep* sheep = new SpaceSheep(50,28-2,2);
+	unsigned int fatness = 2;
+	SpaceSheep* sheep = new SpaceSheep(50,28-fatness,fatness);
 	m_artist.Pencil(sheep);
 	char ch; //needed for sheep movement
 	char left_mov = 'j', right_mov = 'l';
 	char pause = 'p';
-	refresh();
 
 	/*
 	 * TIME STUFF
@@ -59,7 +59,7 @@ void Engine::run()
 	int x = 0, y = 0;
 	bool ctrl = false; //to check obstacle spawn
 	bool dead = false;
-
+	bool new_game = true;
 	/*
 	 * In the next 'while(!ctrl)' cycle we check different parameters to
 	 *  have a good game environment.
@@ -198,6 +198,7 @@ void Engine::run()
 		}
 		refresh();
 	}
-	m_artist.ExitScreen(score);
+	new_game = m_artist.ExitScreen(score);
+	if ( new_game ) run();
 }
 

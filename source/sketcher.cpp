@@ -87,7 +87,7 @@ void Sketcher :: WelcomeScreen ()
 	erase();
 }
 
-void Sketcher :: ExitScreen (unsigned int score)
+bool Sketcher :: ExitScreen (unsigned int score)
 {
 	timeout(-1); // getch() waits endlessly for input [ncurses]
 	erase();
@@ -104,15 +104,17 @@ void Sketcher :: ExitScreen (unsigned int score)
 	msg += str_score;
 	const char * c = msg.c_str();
 	mvprintw(M_yOffset+18,M_xOffset+(M_xDim/2)-18,c);
-	mvprintw(M_yOffset+20,M_xOffset+(M_xDim/2)-18,"Press 'q' to exit the game.");
+	mvprintw(M_yOffset+20,M_xOffset+(M_xDim/2)-18,"Press 'n' to start a new game, 'q' to exit.");
 
 	refresh();
 	char tmp_ch = '0';
-	while ( !(tmp_ch == 'q') ) {
+	while ( !(tmp_ch == 'q') and !(tmp_ch == 'n') ) {
 		tmp_ch = getch();
 	}
 	erase();
 	timeout(0);
+	if ( tmp_ch == 'q' ) return false;
+	else if ( tmp_ch == 'n' ) return true;
 }
 
 bool Sketcher :: PauseScreen ()
