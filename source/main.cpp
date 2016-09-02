@@ -9,7 +9,6 @@
  */
 
 #include "engine.h"
-#include <iostream>
 
 int main (int argc, char **argv)
 {
@@ -17,9 +16,19 @@ int main (int argc, char **argv)
 	curs_set(0); // hide cursor position [ncurses]
 	noecho(); // to hide input obtained with getch() [ncurses]
 
+	try {
 	Engine game(100,30);
 	game.run();
-
 	endwin(); // end terminal world [ncurses]
+	}
+	catch ( const char* msg ) {
+		std::cerr << msg << std::endl;
+	}
+	catch (std::bad_alloc& ba)
+	{
+		std::cerr << "main() bad_alloc caught: " << ba.what() << std::endl;
+		exit (EXIT_FAILURE);
+	}
+
 	return 0;
 }

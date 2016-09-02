@@ -9,7 +9,6 @@
 #define _SKE_H_
 
 #include <ncurses.h>
-#include <iostream>
 #include <string> //std::string, std::to_string
 #include <chrono> // std::chrono::system_clock
 #include <thread> // std::this_thread::sleep_until

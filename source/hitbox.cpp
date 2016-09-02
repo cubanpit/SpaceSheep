@@ -4,8 +4,6 @@
  * Implementation of hitbox.h classes.
  */
 
-#include <cmath>
-#include <iostream>
 #include "hitbox.h"
 
 bool HitBox :: Overlap_RectRect(HitBoxRect& a, HitBoxRect& b)
@@ -35,7 +33,7 @@ bool HitBox :: Overlap_RectRect(HitBoxRect& a, HitBoxRect& b)
 	int b_w = (int)(b.get_rec()).width - 1 ;
 	int b_h = (int)(b.get_rec()).height - 1 ;
 	if ( a_w < 0 or b_w < 0 or a_h < 0 or b_h < 0 ) {
-		std::cerr << "HitBox::OverlapRectRect() ERROR: width or height < 0" << std::endl;
+		throw "HitBox::OverlapRectRect() ERROR: width or height < 0";
 	}
 
 	//if the position it's the same they're always overlaped
@@ -104,6 +102,10 @@ bool HitBox :: Overlap_RectCircle(HitBoxRect& r, HitBoxCircle& c)
 	int r_h = (int)(r.get_rec()).height - 1 ;
 	int c_r = (int)c.get_radius();
 
+	if ( r_w < 0 or r_h < 0 or c_r < 0 ) {
+		throw "HitBox::OverlapRectCircle() ERROR: width, height or radius < 0";
+	}
+
 	if ( r_x >= c_x ) {
 		if ( r_y >= c_y ) {
 			if ( ((r_y-c_y)+(r_x-c_x)) <= c_r ) return true;
@@ -169,12 +171,19 @@ bool HitBox :: Overlap_CircleCircle(HitBoxCircle& a, HitBoxCircle& b)
 	int a_r = (int)a.get_radius();
 	int b_r = (int)b.get_radius();
 
+	if ( a_r < 0 or b_r < 0 ) {
+		throw "HitBox::Overlap_CircleCircle() ERROR: radius < 0";
+	}
+
 	if ( std::abs(a_x-b_x) + std::abs(a_y-b_y) <= (a_r+b_r) ) return true;
 	else return false;
 }
 
 HitBoxRect :: HitBoxRect (int x, int y, unsigned int width, unsigned int height)
 {
+	if ( width == 0 or height == 0 ) {
+		throw "HitBoxRect::HitBoxRect() ERROR: width or height = 0";
+	}
 	m_v.x = x;
 	m_v.y = y;
 	m_rec.width = width;
@@ -183,12 +192,18 @@ HitBoxRect :: HitBoxRect (int x, int y, unsigned int width, unsigned int height)
 
 HitBoxRect :: HitBoxRect (position v, rectangle rec)
 {
+	if ( rec.width == 0 or rec.height == 0 ) {
+		throw "HitBoxRect::HitBoxRect() ERROR: width or height = 0";
+	}
 	m_v = v;
 	m_rec = rec;
 }
 
 HitBoxCircle :: HitBoxCircle(int x, int y, unsigned int radius)
 {
+	if ( radius == 0 ) {
+		throw "HitBoxCircle::HitBoxCircle() ERROR: radius = 0";
+	}
 	m_radius = radius;
 	m_ref.x = x;
 	m_ref.y = y;
@@ -196,6 +211,9 @@ HitBoxCircle :: HitBoxCircle(int x, int y, unsigned int radius)
 
 HitBoxCircle :: HitBoxCircle (position ref, unsigned int radius)
 {
+	if ( radius == 0 ) {
+		throw "HitBoxCircle::HitBoxCircle() ERROR: radius = 0";
+	}
 	m_radius = radius;
 	m_ref = ref;
 }

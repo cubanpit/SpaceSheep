@@ -18,8 +18,7 @@ Sketcher :: Sketcher (unsigned int xDim, unsigned int yDim)
 		M_yOffset = ((LINES - M_yDim) / 2) + 1 ;
 	}
 	else {
-		mvprintw(0,0,"ERROR: terminal window is too small! Press a key to exit.");
-		std::cerr << "The terminal window is too small! You need at least a 101x31 size." << std::endl;
+		throw "Sketcher::Sketcher() ERROR: terminal window is too small! You need at least a 101x31 size.";
 	}
 }
 

@@ -6,7 +6,10 @@
 
 #include "engine.h"
 
-Engine::Engine(unsigned int xDim, unsigned int yDim):m_artist(xDim,yDim)
+Engine::Engine(unsigned int xDim, unsigned int yDim, unsigned int n_fatness, 
+		unsigned int n_bushes_prod, unsigned int n_dt_uint_bushes):
+	m_artist(xDim,yDim), fatness(n_fatness), 
+	bushes_prod(n_bushes_prod), dt_uint_bushes(n_dt_uint_bushes)
 {
 	m_artist.WelcomeScreen();
 	sheep = new SpaceSheep(m_artist.get_xDim()/2,m_artist.get_yDim()-2-fatness,fatness);
@@ -34,15 +37,24 @@ void Engine::run()
 	bool dead = false;
 	bool new_game = true;
 	
-	dead = check_bushes_parameters();
+	if ( !check_bushes_parameters() ) {
+		throw "Engine::run() ERROR: bad parameters for bushes, the game risks a loop.";
+	}
 
 	while (!dead) {
-		if ( !(count%production) ) {
-			add_obstacle_bushes();	
+		if ( !(count%bushes_prod) ) {
+			try {
+				add_obstacle_bushes();	
+			}
+			catch (std::bad_alloc& ba)
+			{
+				std::cerr << "Engine::add_obstacle_bushes() bad_alloc caught: " << ba.what() << std::endl;
+				exit (EXIT_FAILURE);
+			}
 		}
 		++count;
 		//compute score, different weight for different difficulty level
-		score = count*(200/(production+(w_d*10)+(dt_uint_obstacle/10)));
+		score = count*(200/(bushes_prod+(bushes_w_d*10)+(dt_uint_bushes/10)));
 
 		for (auto it = bushes.begin(); it != bushes.end(); it++) {
 			m_artist.Pencil(*it);
@@ -52,7 +64,14 @@ void Engine::run()
 			m_artist.Animation(*it);
 		}
 
-		for (int i=0; i<dt_uint_obstacle and !dead; i+=dt_uint_sheep) {
+		for (auto it = bushes.begin(); it != bushes.end(); it++) {
+			if ( ((*(*it)).m_hitbox).Overlap((*sheep).m_hitbox) ) {
+				dead = true;
+				break;
+			}
+		}
+
+		for (int i=0; i<dt_uint_bushes and !dead; i+=dt_uint_sheep) {
 			ch = getch();
 			if ( ch == left_mov and  (((*sheep).get_ref()).x - 
 						(int)(*sheep).get_fatness()) > 1 ) {
@@ -75,8 +94,7 @@ void Engine::run()
 			}
 
 			for (auto it = bushes.begin(); it != bushes.end(); it++) {
-				if ( ((*(*it)).m_hitbox).Overlap((*sheep).m_hitbox) or
-						((*(*it)).m_hitbox).Overlap((*sheep).m_hitbox) ) {
+				if ( ((*(*it)).m_hitbox).Overlap((*sheep).m_hitbox) ) {
 					dead = true;
 					break;
 				}
@@ -120,9 +138,6 @@ void Engine :: add_obstacle_bushes ()
 	 *
 	 * In this situation X must be m_w<=X<=M_w and w_min+X=tot_w
 	 * Idem with M_w instead of m_w in the scheme.
-	 *
-	 * This simple 'if' statement check that conditions can't cause a loop in
-	 *  obstacle creation.
 	 */
 
 	// Random stuff
@@ -130,14 +145,14 @@ void Engine :: add_obstacle_bushes ()
 	std::default_random_engine generator(seed);
 	std::uniform_int_distribution<int> distribution(0,m_artist.get_xDim());
 
-	unsigned int w = 0, h = 0;
+	unsigned int w = 1, h = 1;
 	int x = 0, y = 0;
 	bool ctrl = false; //to check obstacle spawn
 
 	for ( unsigned int i=0; i<2; ++i) {
 		RectObstacle* tmp_bush = new RectObstacle(x,y,w,h);
 		while (!ctrl) {
-			w = (distribution(generator) % w_r) + w_m; //(dist%range)+min
+			w = (distribution(generator) % bushes_w_r) + bushes_w_m; //(dist%range)+min
 			x = distribution(generator);
 			if ( (x + w) < (int)m_artist.get_xDim() ) ctrl = true;
 			if ( i > 0 ) {
@@ -145,19 +160,19 @@ void Engine :: add_obstacle_bushes ()
 					if ( ((x >= (((*(bushes.back())).get_ref()).x + (int)((*(bushes.back())).get_rec()).width)) and 
 								(x - (((*(bushes.back())).get_ref()).x +
 									  (int)((*(bushes.back())).get_rec()).width)) <
-								((int)(*sheep).get_fatness()*2+1+(int)w_d)) ) ctrl = false;
+								((int)(*sheep).get_fatness()*2+1+(int)bushes_w_d)) ) ctrl = false;
 					if ( (((x+(int)w) <= ((*(bushes.back())).get_ref()).x) and 
 								(((*(bushes.back())).get_ref()).x - (x + (int)w)) <
-								((int)(*sheep).get_fatness()*2+1+(int)w_d)) ) ctrl = false;
+								((int)(*sheep).get_fatness()*2+1+(int)bushes_w_d)) ) ctrl = false;
 				}
 				if ( ctrl ) {
-					if ( (int)((*(bushes.back())).get_rec()).width+(int)w < w_tot ) {
+					if ( (int)((*(bushes.back())).get_rec()).width+(int)w < bushes_w_tot ) {
 						ctrl = false;
 					}
 				}
 			}
 
-			h = (distribution(generator) % h_r) + h_m ;
+			h = (distribution(generator) % bushes_h_r) + bushes_h_m ;
 			y = -h ;
 			RectObstacle* t_b = new RectObstacle(x,y,w,h);
 			delete tmp_bush;
@@ -187,12 +202,35 @@ void Engine :: add_obstacle_bushes ()
 
 bool Engine :: check_bushes_parameters ()
 {
-	if (   !((((int)m_artist.get_xDim()/2) - ((int)w_m/2) - ((int)(*sheep).get_fatness()*2+1+(int)w_d)) > w_m 
-				and (((int)m_artist.get_xDim()/2) - ((int)w_m/2) - ((int)(*sheep).get_fatness()*2+1+(int)w_d)) < ((int)w_m+(int)w_r-1)
-				and (((int)m_artist.get_xDim()/2) - (((int)w_m+int(w_r)-1)/2) - ((int)(*sheep).get_fatness()*2+1+(int)w_d)) > w_m 
-				and (((int)m_artist.get_xDim()/2) - (((int)w_m+int(w_r)-1)/2) - ((int)(*sheep).get_fatness()*2+1+(int)w_d)) < ((int)w_m+(int)w_r-1)) ) {
-		std::cerr << "Engine::run() ERROR: minimum and range of obstacle's width can cause an infinite loop, change their value." << std::endl;
-		return true;
+	if (   !((((int)m_artist.get_xDim()/2) - ((int)bushes_w_m/2) - ((int)(*sheep).get_fatness()*2+1+(int)bushes_w_d)) > bushes_w_m 
+				and (((int)m_artist.get_xDim()/2) - ((int)bushes_w_m/2) - ((int)(*sheep).get_fatness()*2+1+(int)bushes_w_d)) < ((int)bushes_w_m+(int)bushes_w_r-1)
+				and (((int)m_artist.get_xDim()/2) - (((int)bushes_w_m+int(bushes_w_r)-1)/2) - ((int)(*sheep).get_fatness()*2+1+(int)bushes_w_d)) > bushes_w_m 
+				and (((int)m_artist.get_xDim()/2) - (((int)bushes_w_m+int(bushes_w_r)-1)/2) - ((int)(*sheep).get_fatness()*2+1+(int)bushes_w_d)) < ((int)bushes_w_m+(int)bushes_w_r-1)) ) {
+		return false;
 	}
-	else return false;
+	else return true;
+}
+
+void Engine :: set_bushes_properties (unsigned int n_bushes_w_d, 
+		unsigned int n_bushes_w_tot, unsigned int n_bushes_w_m, 
+		unsigned int n_bushes_w_r, unsigned int n_bushes_h_m, 
+		unsigned int n_bushes_h_r)
+{
+	bushes_w_d = n_bushes_w_d; 
+	bushes_w_tot = n_bushes_w_tot;
+	bushes_w_m = n_bushes_w_m;
+	bushes_w_r = n_bushes_w_r;
+	bushes_h_m = n_bushes_h_m; 
+	bushes_h_r = n_bushes_h_r;
+	if ( !check_bushes_parameters() ) {
+		throw "Engine::set_bushes_properties() ERROR: bad parameters for bushes, the game risks a loop.";
+	}
+}
+
+void Engine :: set_movement_properties (unsigned int n_dt_uint_sheep,
+		char n_left_mov, char n_right_mov)
+{
+	dt_uint_sheep = n_dt_uint_sheep; 
+	left_mov = n_left_mov;
+	right_mov = n_right_mov;
 }

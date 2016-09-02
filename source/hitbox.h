@@ -8,6 +8,8 @@
 #ifndef _HITBOX_H_
 #define _HITBOX_H_
 
+#include <cmath>
+
 struct position
 {
 	int x;
