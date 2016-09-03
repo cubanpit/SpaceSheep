@@ -17,9 +17,14 @@ int main (int argc, char **argv)
 	noecho(); // to hide input obtained with getch() [ncurses]
 
 	try {
-	Engine game(100,30);
-	game.run();
-	endwin(); // end terminal world [ncurses]
+		if ( !has_colors() ) {
+			throw "main() ERROR: this terminal doesn't support colors properly. "
+				"Take five bucks and go buy a better computer!";
+		}
+		start_color(); // enable colors in this window [ncurses]
+		Engine game(100,30);
+		game.run();
+		endwin(); // end terminal world [ncurses]
 	}
 	catch ( const char* msg ) {
 		std::cerr << msg << std::endl;

@@ -3,10 +3,6 @@
  *
  * Class that defines obstacles, every object has a HitBox member to handle
  *  collision between obstacles.
- *
- * TODO:
- * - m_hitbox public can be wrong choice?
- * - m_hitbox and m_ref pointer to enhance performance?
 */
 
 #ifndef _OBSTACLE_H_

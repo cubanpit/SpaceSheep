@@ -1,0 +1,16 @@
+TODO LIST:
+ 
+- Obstacle: m_hitbox public can be wrong choice?
+- Obstacle: m_hitbox and m_ref pointer to enhance performance?
+- HitBox: in alcune situazioni (all'interno di un grosso rettangolo) la pecora 
+           non è sovrapposta
+- Engine: alcune variabili possono essere messe static (seed, chrono, random)?
+- Engine: bushes, da sostituire vector con list, OutOfTheBox non funziona
+- Engine: separare funzione per il movimento della pecora (possibile senza 
+		   multi-threading?)
+- all: rivedere e ampliare i commenti (aggiornarli alla gestione delle eccezioni)
+- Sketcher: opzione 'q' per uscire dalla WelcomeScreen, opzione 'n' per iniziare
+             una nuova partita
+- Engine: check_parameters errore per diverse dimensioni di game table
+- Sketcher: errore dimensione, aggiungere stampa dimensione attuale
+- Sketcher: WelcomeScreen correggere altezza pecora

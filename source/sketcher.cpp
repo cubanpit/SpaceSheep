@@ -18,27 +18,34 @@ Sketcher :: Sketcher (unsigned int xDim, unsigned int yDim)
 		M_yOffset = ((LINES - M_yDim) / 2) + 1 ;
 	}
 	else {
-		throw "Sketcher::Sketcher() ERROR: terminal window is too small! You need at least a 101x31 size.";
+		throw "Sketcher::Sketcher() ERROR: terminal window is too small! Check the current game table size.";
 	}
+
+	// define some color we use in draw functions
+	init_pair(1,COLOR_BLUE,COLOR_BLUE);
+	init_pair(2,COLOR_GREEN,COLOR_BLACK);
+	init_pair(3,COLOR_MAGENTA,COLOR_BLACK);
+	init_pair(4,COLOR_GREEN,COLOR_BLACK);
+	init_pair(5,COLOR_RED,COLOR_BLACK);
 }
 
 void Sketcher :: GameTable ()
 {
+	attron(COLOR_PAIR(1));
 	// (Offset-1) beacuse we have put a +1 in the offset, see previous comment
 	for (unsigned int i=1; i<(M_yDim); ++i) {
 		mvprintw(M_yOffset-1+i, M_xOffset-1, "|");
 		mvprintw(M_yOffset-1+i, M_xOffset-1+M_xDim, "|");
 	}
-
 	for (unsigned int i=1; i<(M_xDim); ++i) {
 		mvprintw(M_yOffset-1, M_xOffset-1+i, "-");
 		mvprintw(M_yOffset-1+M_yDim, M_xOffset-1+i, "-");
 	}
-
 	mvprintw(M_yOffset-1, M_xOffset-1, "/");
 	mvprintw(M_yOffset-1+M_yDim, M_xOffset-1, "\\");
 	mvprintw(M_yOffset-1, M_xOffset-1+M_xDim, "\\");
 	mvprintw(M_yOffset-1+M_yDim, M_xOffset-1+M_xDim, "/");
+	attroff(COLOR_PAIR(1));
 }
 
 void Sketcher :: WelcomeScreen ()
@@ -47,14 +54,20 @@ void Sketcher :: WelcomeScreen ()
 	erase();
 
 	GameTable();
-
+	attron(COLOR_PAIR(4));
+	mvprintw(M_yOffset+4,M_xOffset+(M_xDim/2)-28,"________________________________________________________");
+	attroff(COLOR_PAIR(4));
+	attron(COLOR_PAIR(3));
 	mvprintw(M_yOffset+5,M_xOffset+(M_xDim/2)-28,"   _____                      _____ __                  ");
-	mvprintw(M_yOffset+6,M_xOffset+(M_xDim/2)-28,"  / ___/____  ____ _________ / ___// /_  ___  ___  ____ ");
+	mvprintw(M_yOffset+6,M_xOffset+(M_xDim/2)-28,"  / ___/____  ____  ________ / ___// /_  ___  ___  ____ ");
 	mvprintw(M_yOffset+7,M_xOffset+(M_xDim/2)-28,"  \\__ \\/ __ \\/ __ `/ ___/ _ \\\\__ \\/ __ \\/ _ \\/ _ \\/ __ \\");
 	mvprintw(M_yOffset+8,M_xOffset+(M_xDim/2)-28," ___/ / /_/ / /_/ / /__/  __/__/ / / / /  __/  __/ /_/ /");
 	mvprintw(M_yOffset+9,M_xOffset+(M_xDim/2)-28,"/____/ .___/\\__,_/\\___/\\___/____/_/ /_/\\___/\\___/ .___/ ");
 	mvprintw(M_yOffset+10,M_xOffset+(M_xDim/2)-28,"    /_/                                        /_/      ");	
-	
+	attroff(COLOR_PAIR(3));
+	attron(COLOR_PAIR(4));
+	mvprintw(M_yOffset+11,M_xOffset+(M_xDim/2)-28,"________________________________________________________");
+	attroff(COLOR_PAIR(4));
 	mvprintw(M_yOffset+15,M_xOffset+(M_xDim/2)-28,"Welcome in the Sheeps Galaxy!");
 	mvprintw(M_yOffset+17,M_xOffset+(M_xDim/2)-28,"Help SpaceSheep to avoid space bushes using 'j' and 'l' key.");
 	mvprintw(M_yOffset+18,M_xOffset+(M_xDim/2)-28,"Press 'p' during the game to take a break.");
@@ -92,18 +105,24 @@ bool Sketcher :: ExitScreen (unsigned int score)
 	erase();
 	GameTable();
 
-	mvprintw(M_yOffset+10,M_xOffset+(M_xDim/2)-18,"__   __            _              _  "); 
-	mvprintw(M_yOffset+11,M_xOffset+(M_xDim/2)-18,"\\ \\ / /__  _   _  | |    ___  ___| |_ ");
-	mvprintw(M_yOffset+12,M_xOffset+(M_xDim/2)-18," \\ V / _ \\| | | | | |   / _ \\/ __| __|");
-	mvprintw(M_yOffset+13,M_xOffset+(M_xDim/2)-18,"  | | (_) | |_| | | |__| (_) \\__ \\ |_ ");
-	mvprintw(M_yOffset+14,M_xOffset+(M_xDim/2)-18,"  |_|\\___/ \\__,_| |_____\\___/|___/\\__|");
+	attron(COLOR_PAIR(5));
+	mvprintw(M_yOffset+4,M_xOffset+(M_xDim/2)-19,"______________________________________"); 
+	attroff(COLOR_PAIR(5));
+	mvprintw(M_yOffset+5,M_xOffset+(M_xDim/2)-19,"__   __            _              _  "); 
+	mvprintw(M_yOffset+6,M_xOffset+(M_xDim/2)-19,"\\ \\ / /__  _   _  | |    ___  ___| |_ ");
+	mvprintw(M_yOffset+7,M_xOffset+(M_xDim/2)-19," \\ V / _ \\| | | | | |   / _ \\/ __| __|");
+	mvprintw(M_yOffset+8,M_xOffset+(M_xDim/2)-19,"  | | (_) | |_| | | |__| (_) \\__ \\ |_ ");
+	mvprintw(M_yOffset+9,M_xOffset+(M_xDim/2)-19,"  |_|\\___/ \\__,_| |_____\\___/|___/\\__|");
+	attron(COLOR_PAIR(5));
+	mvprintw(M_yOffset+10,M_xOffset+(M_xDim/2)-19,"______________________________________");
+	attroff(COLOR_PAIR(5));
 
 	std::string msg = "Your score is ";
 	std::string str_score = std::to_string(score);
 	msg += str_score;
 	const char * c = msg.c_str();
-	mvprintw(M_yOffset+18,M_xOffset+(M_xDim/2)-18,c);
-	mvprintw(M_yOffset+20,M_xOffset+(M_xDim/2)-18,"Press 'n' to start a new game, 'q' to exit.");
+	mvprintw(M_yOffset+14,M_xOffset+(M_xDim/2)-18,c);
+	mvprintw(M_yOffset+16,M_xOffset+(M_xDim/2)-18,"Press 'n' to start a new game, 'q' to exit.");
 
 	refresh();
 	char tmp_ch = '0';
@@ -154,6 +173,7 @@ void Sketcher :: Pencil (RectObstacle* bush)
 	// (width-1) and (height-1) because we have a side from x to x+5 we
 	//  have a width of 6
 
+	attron(COLOR_PAIR(2)); // enable bush color pair
 	if ( abs((bush->get_ref()).y) < (M_yDim-1) ) {
 		unsigned int i_stop_top = 1;
 		unsigned int i_stop_bottom = ((bush->get_rec()).height-1);
@@ -184,6 +204,7 @@ void Sketcher :: Pencil (RectObstacle* bush)
 			mvprintw(M_yOffset+(bush->get_ref()).y+((bush->get_rec()).height-1), M_xOffset+(bush->get_ref()).x+((bush->get_rec()).width-1), "*");
 		}
 	}
+	attroff(COLOR_PAIR(2)); // disable bush color pair
 }
 
 void Sketcher :: Pencil (SpaceSheep* sheep)
