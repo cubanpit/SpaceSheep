@@ -29,7 +29,7 @@ class Engine
 		void set_bushes_properties(	unsigned int n_bushes_w_d = 4,
 									unsigned int n_bushes_w_tot = 50,
 									unsigned int n_bushes_w_m = 20,
-									unsigned int n_bushes_w_r = 22,
+									unsigned int n_bushes_w_r = 20,
 									unsigned int n_bushes_h_m = 3,
 									unsigned int n_bushes_h_r = 4);
 		void set_movement_properties(	unsigned int n_dt_uint_sheep = 10,
@@ -48,7 +48,7 @@ class Engine
 		unsigned int bushes_w_d = 4; //margin between bushes distance and sheep width
 		unsigned int bushes_w_tot = 50; //minimal total width of bushes on the same row
 		unsigned int bushes_w_m = 20; //minimal width of bushes
-		unsigned int bushes_w_r = 22; //range of width, w_m+(w_r-1)=maximum width
+		unsigned int bushes_w_r = 20; //range of width, w_m+(w_r-1)=maximum width
 		unsigned int bushes_h_m = 3; //minimal height of bushes
 		unsigned int bushes_h_r = 4; //range of height	
 		

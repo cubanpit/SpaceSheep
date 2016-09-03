@@ -10,8 +10,9 @@ Sketcher :: Sketcher (unsigned int xDim, unsigned int yDim)
 {
 	M_xDim = xDim;
 	M_yDim = yDim;
-
-	if (COLS > M_xDim and LINES > M_yDim) {
+	M_GameW = xDim - 2;
+	M_GameH = yDim - 2;
+	if (COLS >= M_xDim and LINES >= M_yDim) {
 		// (Offset+1) because we want all body drawn without overlapping 
 		//  the game table
 		M_xOffset = ((COLS - M_xDim) / 2) + 1 ;
@@ -33,18 +34,18 @@ void Sketcher :: GameTable ()
 {
 	attron(COLOR_PAIR(1));
 	// (Offset-1) beacuse we have put a +1 in the offset, see previous comment
-	for (unsigned int i=1; i<(M_yDim); ++i) {
+	for (unsigned int i=1; i<(M_yDim-1); ++i) {
 		mvprintw(M_yOffset-1+i, M_xOffset-1, "|");
-		mvprintw(M_yOffset-1+i, M_xOffset-1+M_xDim, "|");
+		mvprintw(M_yOffset-1+i, M_xOffset-1+M_xDim-1, "|");
 	}
-	for (unsigned int i=1; i<(M_xDim); ++i) {
+	for (unsigned int i=1; i<(M_xDim-1); ++i) {
 		mvprintw(M_yOffset-1, M_xOffset-1+i, "-");
-		mvprintw(M_yOffset-1+M_yDim, M_xOffset-1+i, "-");
+		mvprintw(M_yOffset-1+M_yDim-1, M_xOffset-1+i, "-");
 	}
 	mvprintw(M_yOffset-1, M_xOffset-1, "/");
-	mvprintw(M_yOffset-1+M_yDim, M_xOffset-1, "\\");
-	mvprintw(M_yOffset-1, M_xOffset-1+M_xDim, "\\");
-	mvprintw(M_yOffset-1+M_yDim, M_xOffset-1+M_xDim, "/");
+	mvprintw(M_yOffset-1+M_yDim-1, M_xOffset-1, "\\");
+	mvprintw(M_yOffset-1, M_xOffset-1+M_xDim-1, "\\");
+	mvprintw(M_yOffset-1+M_yDim-1, M_xOffset-1+M_xDim-1, "/");
 	attroff(COLOR_PAIR(1));
 }
 
@@ -55,28 +56,28 @@ void Sketcher :: WelcomeScreen ()
 
 	GameTable();
 	attron(COLOR_PAIR(4));
-	mvprintw(M_yOffset+4,M_xOffset+(M_xDim/2)-28,"________________________________________________________");
+	mvprintw(M_yOffset+4,M_xOffset+(M_GameW/2)-28,"________________________________________________________");
 	attroff(COLOR_PAIR(4));
 	attron(COLOR_PAIR(3));
-	mvprintw(M_yOffset+5,M_xOffset+(M_xDim/2)-28,"   _____                      _____ __                  ");
-	mvprintw(M_yOffset+6,M_xOffset+(M_xDim/2)-28,"  / ___/____  ____  ________ / ___// /_  ___  ___  ____ ");
-	mvprintw(M_yOffset+7,M_xOffset+(M_xDim/2)-28,"  \\__ \\/ __ \\/ __ `/ ___/ _ \\\\__ \\/ __ \\/ _ \\/ _ \\/ __ \\");
-	mvprintw(M_yOffset+8,M_xOffset+(M_xDim/2)-28," ___/ / /_/ / /_/ / /__/  __/__/ / / / /  __/  __/ /_/ /");
-	mvprintw(M_yOffset+9,M_xOffset+(M_xDim/2)-28,"/____/ .___/\\__,_/\\___/\\___/____/_/ /_/\\___/\\___/ .___/ ");
-	mvprintw(M_yOffset+10,M_xOffset+(M_xDim/2)-28,"    /_/                                        /_/      ");	
+	mvprintw(M_yOffset+5,M_xOffset+(M_GameW/2)-28,"   _____                      _____ __                  ");
+	mvprintw(M_yOffset+6,M_xOffset+(M_GameW/2)-28,"  / ___/____  ____  ________ / ___// /_  ___  ___  ____ ");
+	mvprintw(M_yOffset+7,M_xOffset+(M_GameW/2)-28,"  \\__ \\/ __ \\/ __ `/ ___/ _ \\\\__ \\/ __ \\/ _ \\/ _ \\/ __ \\");
+	mvprintw(M_yOffset+8,M_xOffset+(M_GameW/2)-28," ___/ / /_/ / /_/ / /__/  __/__/ / / / /  __/  __/ /_/ /");
+	mvprintw(M_yOffset+9,M_xOffset+(M_GameW/2)-28,"/____/ .___/\\__,_/\\___/\\___/____/_/ /_/\\___/\\___/ .___/ ");
+	mvprintw(M_yOffset+10,M_xOffset+(M_GameW/2)-28,"    /_/                                        /_/      ");	
 	attroff(COLOR_PAIR(3));
 	attron(COLOR_PAIR(4));
-	mvprintw(M_yOffset+11,M_xOffset+(M_xDim/2)-28,"________________________________________________________");
+	mvprintw(M_yOffset+11,M_xOffset+(M_GameW/2)-28,"________________________________________________________");
 	attroff(COLOR_PAIR(4));
-	mvprintw(M_yOffset+15,M_xOffset+(M_xDim/2)-28,"Welcome in the Sheeps Galaxy!");
-	mvprintw(M_yOffset+17,M_xOffset+(M_xDim/2)-28,"Help SpaceSheep to avoid space bushes using 'j' and 'l' key.");
-	mvprintw(M_yOffset+18,M_xOffset+(M_xDim/2)-28,"Press 'p' during the game to take a break.");
-	mvprintw(M_yOffset+20,M_xOffset+(M_xDim/2)-28,"Press 'p' to begin!");
+	mvprintw(M_yOffset+15,M_xOffset+(M_GameW/2)-28,"Welcome in the Sheeps Galaxy!");
+	mvprintw(M_yOffset+17,M_xOffset+(M_GameW/2)-28,"Help SpaceSheep to avoid space bushes using 'j' and 'l' key.");
+	mvprintw(M_yOffset+18,M_xOffset+(M_GameW/2)-28,"Press 'p' during the game to take a break.");
+	mvprintw(M_yOffset+20,M_xOffset+(M_GameW/2)-28,"Press 'n' to begin!");
 
 	std::chrono::system_clock::time_point t_tmp_sheep = std::chrono::system_clock::now(); 
 	std::chrono::duration<int,std::milli> dt_tmp_sheep(300);
 
-	SpaceSheep *tmp = new SpaceSheep((M_xDim/2)-16,28-2,2);
+	SpaceSheep *tmp = new SpaceSheep((M_GameW/2)-16,M_GameH-3,2);
 	Pencil(tmp);
 	bool ctrl = false;
 	char tmp_ch;
@@ -93,7 +94,7 @@ void Sketcher :: WelcomeScreen ()
 		}
 		++tmp_count;
 		tmp_ch = getch();
-		if ( tmp_ch == 'p' ) ctrl = true;
+		if ( tmp_ch == 'n' ) ctrl = true;
 	}
 	delete tmp;
 	erase();
@@ -106,23 +107,23 @@ bool Sketcher :: ExitScreen (unsigned int score)
 	GameTable();
 
 	attron(COLOR_PAIR(5));
-	mvprintw(M_yOffset+4,M_xOffset+(M_xDim/2)-19,"______________________________________"); 
+	mvprintw(M_yOffset+4,M_xOffset+(M_GameW/2)-19,"______________________________________"); 
 	attroff(COLOR_PAIR(5));
-	mvprintw(M_yOffset+5,M_xOffset+(M_xDim/2)-19,"__   __            _              _  "); 
-	mvprintw(M_yOffset+6,M_xOffset+(M_xDim/2)-19,"\\ \\ / /__  _   _  | |    ___  ___| |_ ");
-	mvprintw(M_yOffset+7,M_xOffset+(M_xDim/2)-19," \\ V / _ \\| | | | | |   / _ \\/ __| __|");
-	mvprintw(M_yOffset+8,M_xOffset+(M_xDim/2)-19,"  | | (_) | |_| | | |__| (_) \\__ \\ |_ ");
-	mvprintw(M_yOffset+9,M_xOffset+(M_xDim/2)-19,"  |_|\\___/ \\__,_| |_____\\___/|___/\\__|");
+	mvprintw(M_yOffset+5,M_xOffset+(M_GameW/2)-19,"__   __            _              _  "); 
+	mvprintw(M_yOffset+6,M_xOffset+(M_GameW/2)-19,"\\ \\ / /__  _   _  | |    ___  ___| |_ ");
+	mvprintw(M_yOffset+7,M_xOffset+(M_GameW/2)-19," \\ V / _ \\| | | | | |   / _ \\/ __| __|");
+	mvprintw(M_yOffset+8,M_xOffset+(M_GameW/2)-19,"  | | (_) | |_| | | |__| (_) \\__ \\ |_ ");
+	mvprintw(M_yOffset+9,M_xOffset+(M_GameW/2)-19,"  |_|\\___/ \\__,_| |_____\\___/|___/\\__|");
 	attron(COLOR_PAIR(5));
-	mvprintw(M_yOffset+10,M_xOffset+(M_xDim/2)-19,"______________________________________");
+	mvprintw(M_yOffset+10,M_xOffset+(M_GameW/2)-19,"______________________________________");
 	attroff(COLOR_PAIR(5));
 
 	std::string msg = "Your score is ";
 	std::string str_score = std::to_string(score);
 	msg += str_score;
 	const char * c = msg.c_str();
-	mvprintw(M_yOffset+14,M_xOffset+(M_xDim/2)-18,c);
-	mvprintw(M_yOffset+16,M_xOffset+(M_xDim/2)-18,"Press 'n' to start a new game, 'q' to exit.");
+	mvprintw(M_yOffset+14,M_xOffset+(M_GameW/2)-19,c);
+	mvprintw(M_yOffset+16,M_xOffset+(M_GameW/2)-19,"Press 'n' to start a new game, 'q' to exit.");
 
 	refresh();
 	char tmp_ch = '0';
@@ -140,8 +141,8 @@ bool Sketcher :: PauseScreen ()
 	timeout(-1); // getch() waits endlessly for input [ncurses]
 	erase();
 	GameTable();
-	mvprintw(M_yOffset+15,M_xOffset+(M_xDim/2)-28,"The game is paused. Meantime SpaceSheep is getting gas.");
-	mvprintw(M_yOffset+17,M_xOffset+(M_xDim/2)-28,"Press 'p' to continue, 'q' to exit the game.");
+	mvprintw(M_yOffset+15,M_xOffset+(M_GameW/2)-28,"The game is paused. Meantime SpaceSheep is getting gas.");
+	mvprintw(M_yOffset+17,M_xOffset+(M_GameW/2)-28,"Press 'p' to continue, 'q' to exit the game.");
 	refresh();
 	char tmp_ch = '0';
 	while ( !(tmp_ch == 'p' or tmp_ch == 'q') ) {
@@ -164,7 +165,7 @@ void Sketcher :: Score (unsigned int score)
 	s_ch[5] = std::to_string((int)((score % 1000000) / 100000));
 	for (int i=0; i<6; ++i) {
 		const char * c = s_ch[i].c_str();
-		mvprintw(M_yOffset-2, M_xOffset+M_xDim-2-i, c);
+		mvprintw(M_yOffset-1, M_xOffset+M_xDim-4-i, c);
 	}
 }
 
@@ -174,12 +175,12 @@ void Sketcher :: Pencil (RectObstacle* bush)
 	//  have a width of 6
 
 	attron(COLOR_PAIR(2)); // enable bush color pair
-	if ( abs((bush->get_ref()).y) < (M_yDim-1) ) {
+	if ( abs((bush->get_ref()).y) < (M_yDim-2) ) {
 		unsigned int i_stop_top = 1;
 		unsigned int i_stop_bottom = ((bush->get_rec()).height-1);
-		if ( ((bush->get_ref()).y+(bush->get_rec()).height) >= M_yDim ) {
-			if ( ((int)M_yDim-(bush->get_ref()).y-2) < 0 ) i_stop_bottom = 0;
-			else i_stop_bottom = M_yDim - (bush->get_ref()).y - 2;
+		if ( ((bush->get_ref()).y+(bush->get_rec()).height) >= (M_yDim-1) ) {
+			if ( ((int)M_yDim-1-(bush->get_ref()).y-2) < 0 ) i_stop_bottom = 0;
+			else i_stop_bottom = M_yDim - 1 - (bush->get_ref()).y - 2;
 		}
 		if ( (bush->get_ref()).y < 0 ) {
 			i_stop_top = -(bush->get_ref()).y;
@@ -196,7 +197,7 @@ void Sketcher :: Pencil (RectObstacle* bush)
 			mvprintw(M_yOffset+(bush->get_ref()).y+i, M_xOffset+(bush->get_ref()).x+((bush->get_rec()).width-1), "|");
 		}
 
-		if ( (bush->get_ref()).y+(bush->get_rec()).height > 0 and (bush->get_ref()).y+(bush->get_rec()).height < (M_yDim-1) ) {
+		if ( (bush->get_ref()).y+(bush->get_rec()).height > 0 and (bush->get_ref()).y+(bush->get_rec()).height < (M_yDim-2) ) {
 			for (unsigned int i=1; i < ((bush->get_rec()).width-1); ++i) {
 				mvprintw(M_yOffset+(bush->get_ref()).y+((bush->get_rec()).height-1), M_xOffset+(bush->get_ref()).x+i, "-");
 			}
@@ -230,18 +231,18 @@ void Sketcher :: Pencil (SpaceSheep* sheep)
 void Sketcher :: Rubber (RectObstacle* bush)
 {	
 	for (unsigned int i=0; i < (bush->get_rec()).height; ++i) {
-		if ( (bush->get_ref()).y+i != -1 and (bush->get_ref()).y+i != (M_yDim-1) ) {
+		if ( (bush->get_ref()).y+i != -1 and (bush->get_ref()).y+i != (M_yDim-2) ) {
 			mvprintw(M_yOffset+(bush->get_ref()).y+i, M_xOffset+(bush->get_ref()).x, " ");
 			mvprintw(M_yOffset+(bush->get_ref()).y+i, M_xOffset+(bush->get_ref()).x+((bush->get_rec()).width-1), " ");
 		}
 	}
 
-	if ( (bush->get_ref()).y != -1 and (bush->get_ref()).y != (M_yDim-1) ) {
+	if ( (bush->get_ref()).y != -1 and (bush->get_ref()).y != (M_yDim-2) ) {
 		for (unsigned int i=0; i < (bush->get_rec()).width; ++i) {
 			mvprintw(M_yOffset+(bush->get_ref()).y, M_xOffset+(bush->get_ref()).x+i, " ");
 		}
 	}
-	if ( (bush->get_ref()).y+((bush->get_rec()).height-1) != -1 and (bush->get_ref()).y+((bush->get_rec()).height-1) != (M_yDim-1) ) {
+	if ( (bush->get_ref()).y+((bush->get_rec()).height-1) != -1 and (bush->get_ref()).y+((bush->get_rec()).height-1) != (M_yDim-2) ) {
 		for (unsigned int i=0; i < (bush->get_rec()).width; ++i) {
 			mvprintw(M_yOffset+(bush->get_ref()).y+((bush->get_rec()).height-1), M_xOffset+(bush->get_ref()).x+i, " ");
 		}

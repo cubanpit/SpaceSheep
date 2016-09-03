@@ -35,11 +35,13 @@ class Sketcher
 		void Animation(RectObstacle* bush); //animate bush movement
 		void Animation(SpaceSheep* sheep, bool dir); //animate sheep movement
 
-		unsigned int get_yDim() { return M_yDim; }
-		unsigned int get_xDim() { return M_xDim; }
+		unsigned int get_GameW() { return M_GameW; }
+		unsigned int get_GameH() { return M_GameH; }
 
 	private:
-		unsigned int M_xDim, M_yDim, M_xOffset, M_yOffset;	
+		unsigned int M_xDim, M_yDim; // size of the entire game table
+		unsigned int M_xOffset, M_yOffset;
+		unsigned int M_GameW, M_GameH; // size of internal playground
 };
 
 #endif // _SKE_H_

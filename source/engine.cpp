@@ -12,7 +12,7 @@ Engine::Engine(unsigned int xDim, unsigned int yDim, unsigned int n_fatness,
 	bushes_prod(n_bushes_prod), dt_uint_bushes(n_dt_uint_bushes)
 {
 	m_artist.WelcomeScreen();
-	sheep = new SpaceSheep(m_artist.get_xDim()/2,m_artist.get_yDim()-2-fatness,fatness);
+	sheep = new SpaceSheep(m_artist.get_GameW()/2,m_artist.get_GameH()-1-fatness,fatness);
 }
 
 void Engine::run()
@@ -78,7 +78,7 @@ void Engine::run()
 				m_artist.Animation(sheep,0);
 			}
 			else if ( ch == right_mov and (((*sheep).get_ref()).x + 
-						(int)(*sheep).get_fatness()) < ((int)m_artist.get_xDim() - 2) ) {
+						(int)(*sheep).get_fatness()) < ((int)m_artist.get_GameW() - 1) ) {
 				m_artist.Animation(sheep,1);
 			}
 			else if ( ch == pause ) {
@@ -143,7 +143,7 @@ void Engine :: add_obstacle_bushes ()
 	// Random stuff
 	unsigned int seed = std::chrono::system_clock::now().time_since_epoch().count();
 	std::default_random_engine generator(seed);
-	std::uniform_int_distribution<int> distribution(0,m_artist.get_xDim());
+	std::uniform_int_distribution<int> distribution(0,m_artist.get_GameW()-1);
 
 	unsigned int w = 1, h = 1;
 	int x = 0, y = 0;
@@ -154,7 +154,7 @@ void Engine :: add_obstacle_bushes ()
 		while (!ctrl) {
 			w = (distribution(generator) % bushes_w_r) + bushes_w_m; //(dist%range)+min
 			x = distribution(generator);
-			if ( (x + w) < (int)m_artist.get_xDim() ) ctrl = true;
+			if ( (x + w) <= (int)m_artist.get_GameW() ) ctrl = true;
 			if ( i > 0 ) {
 				if ( ctrl ) {
 					if ( ((x >= (((*(bushes.back())).get_ref()).x + (int)((*(bushes.back())).get_rec()).width)) and 
@@ -192,7 +192,7 @@ void Engine :: add_obstacle_bushes ()
 
 		// Old obstacles need to be erased from the vector
 		for (auto it = bushes.begin(); it != bushes.end(); it++) {
-			if ( ((*(*it)).get_ref()).y > (int)m_artist.get_yDim() ) {
+			if ( ((*(*it)).get_ref()).y > (int)m_artist.get_GameH() ) {
 				delete *it;
 				bushes.erase(it);
 			}
@@ -202,10 +202,8 @@ void Engine :: add_obstacle_bushes ()
 
 bool Engine :: check_bushes_parameters ()
 {
-	if (   !((((int)m_artist.get_xDim()/2) - ((int)bushes_w_m/2) - ((int)(*sheep).get_fatness()*2+1+(int)bushes_w_d)) > bushes_w_m 
-				and (((int)m_artist.get_xDim()/2) - ((int)bushes_w_m/2) - ((int)(*sheep).get_fatness()*2+1+(int)bushes_w_d)) < ((int)bushes_w_m+(int)bushes_w_r-1)
-				and (((int)m_artist.get_xDim()/2) - (((int)bushes_w_m+int(bushes_w_r)-1)/2) - ((int)(*sheep).get_fatness()*2+1+(int)bushes_w_d)) > bushes_w_m 
-				and (((int)m_artist.get_xDim()/2) - (((int)bushes_w_m+int(bushes_w_r)-1)/2) - ((int)(*sheep).get_fatness()*2+1+(int)bushes_w_d)) < ((int)bushes_w_m+(int)bushes_w_r-1)) ) {
+	if ( !( (((int)bushes_w_m/2) + ((int)m_artist.get_GameW()/2) - ((int)(*sheep).get_fatness()*2+1+(int)bushes_w_d)) >= (int)bushes_w_tot
+				and (((int)m_artist.get_GameW()/2) - (((int)bushes_w_m+(int)bushes_w_r)/2) - ((int)(*sheep).get_fatness()*2+1+(int)bushes_w_d)) >= bushes_w_m ) ) {
 		return false;
 	}
 	else return true;

@@ -22,7 +22,7 @@ int main (int argc, char **argv)
 				"Take five bucks and go buy a better computer!";
 		}
 		start_color(); // enable colors in this window [ncurses]
-		Engine game(100,30);
+		Engine game(170,45);
 		game.run();
 		endwin(); // end terminal world [ncurses]
 	}
