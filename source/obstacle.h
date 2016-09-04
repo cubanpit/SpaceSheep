@@ -1,9 +1,32 @@
 /* 
+ * SpaceSheep, ncurses game. Code is hosted on GitHub.
+ *
  * File: obstacle.h
  *
  * Class that defines obstacles, every object has a HitBox member to handle
  *  collision between obstacles.
-*/
+ *
+ * Authors: 
+ *	Martina Crippa 				<martina.crippa2@studenti.unimi.it>
+ *	Pietro Francesco Fontana 	<pietrofrancesco.fontana@studenti.unimi.it>
+ *
+ *******************************************************************************
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *******************************************************************************
+ */
 
 #ifndef _OBSTACLE_H_
 #define _OBSTACLE_H_
@@ -28,7 +51,7 @@ class RectObstacle : public Obstacle
 {
 	public:
 		HitBoxRect m_hitbox;
-	
+
 		RectObstacle(int x, int y, unsigned int width, unsigned int height);
 		RectObstacle(position v, rectangle rec);
 		~RectObstacle(){ }
