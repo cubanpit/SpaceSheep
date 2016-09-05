@@ -1,7 +1,7 @@
 TODO LIST:
  
 - Obstacle: m_hitbox public can be wrong choice?
-- Obstacle: m_hitbox and m_ref pointer to enhance performance?
+- Obstacle: m_hitbox and m_ref as pointers could enhance performance?
 - HitBox: in alcune situazioni (all'interno di un grosso rettangolo) la pecora 
            non è sovrapposta
 - Engine: alcune variabili possono essere messe static (seed, chrono, random)?
@@ -12,3 +12,6 @@ TODO LIST:
 - all: rivedere e ampliare i commenti (aggiornarli alla gestione delle eccezioni)
 - Sketcher: opzione 'q' per uscire dalla WelcomeScreen
 - Sketcher: errore dimensione, aggiungere stampa dimensione attuale
+- Engine: pecora dopo la schermata di uscita non resetta la sua posizione
+- Sketcher: nella schermata iniziale il tempo di attesa per la pressione dei
+             tasti è troppo alto
