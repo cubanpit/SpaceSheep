@@ -66,15 +66,18 @@ class HitBoxCircle;
 class HitBox
 {
 	public:
+		// These functions can't be const, because in their implementation they
+		//  have to call a function giving *this as argument.
 		virtual bool Overlap(HitBox&) = 0;
-		static bool Overlap(HitBox& a,HitBox& b) { return a.Overlap(b); }
+		bool Overlap(HitBox& a, HitBox& b) { return a.Overlap(b); }
 		virtual bool Overlap(HitBoxRect&) = 0;
 		virtual bool Overlap(HitBoxCircle&) = 0;
 
 	protected:
-		bool Overlap_RectRect(HitBoxRect& a, HitBoxRect& b);
-		bool Overlap_RectCircle(HitBoxRect& r, HitBoxCircle& c);
-		bool Overlap_CircleCircle(HitBoxCircle& a, HitBoxCircle& b);
+		// These functions should not modify their member
+		bool Overlap_RectRect(HitBoxRect& a, HitBoxRect& b) const;
+		bool Overlap_RectCircle(HitBoxRect& r, HitBoxCircle& c) const;
+		bool Overlap_CircleCircle(HitBoxCircle& a, HitBoxCircle& b) const;
 };
 
 class HitBoxRect : public HitBox
@@ -88,7 +91,7 @@ class HitBoxRect : public HitBox
 		void set_v(position& new_v){ m_v = new_v; }
 		rectangle get_rec(){ return m_rec; }
 
-		virtual bool Overlap(HitBox& b)     { return b.Overlap(*this); }
+		virtual bool Overlap(HitBox& b) { return b.Overlap(*this); }
 		virtual bool Overlap(HitBoxRect& b) { Overlap_RectRect(*this,b); }
 		virtual bool Overlap(HitBoxCircle& b) { Overlap_RectCircle(*this,b); }
 
@@ -108,7 +111,7 @@ class HitBoxCircle : public HitBox
 		void set_ref(position& new_ref){ m_ref = new_ref; }
 		unsigned int get_radius(){ return m_radius; }
 
-		virtual bool Overlap(HitBox& b)     { return b.Overlap(*this); }
+		virtual bool Overlap(HitBox& b) { return b.Overlap(*this); }
 		virtual bool Overlap(HitBoxRect& b) { Overlap_RectCircle(b,*this); }
 		virtual bool Overlap(HitBoxCircle& b) { Overlap_CircleCircle(*this,b); }
 

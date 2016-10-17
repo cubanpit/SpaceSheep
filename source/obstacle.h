@@ -50,18 +50,17 @@ class Obstacle
 class RectObstacle : public Obstacle
 {
 	public:
-		HitBoxRect m_hitbox;
-
 		RectObstacle(int x, int y, unsigned int width, unsigned int height);
 		RectObstacle(position v, rectangle rec);
 		~RectObstacle(){ }
 
-		HitBoxRect get_hitbox(){ return m_hitbox; }
+		HitBoxRect& get_hitbox(){ return m_hitbox; }
 		rectangle get_rec(){ return m_rec; }
 		void set_hitbox(HitBoxRect& tmp_hitbox) { m_hitbox = tmp_hitbox; }
 		void move();
 
 	private:
+		HitBoxRect m_hitbox;
 		rectangle m_rec;
 
 };
@@ -70,17 +69,16 @@ class RectObstacle : public Obstacle
 class SpaceSheep : public Obstacle
 {
 	public:
-		HitBoxCircle m_hitbox;
-
 		SpaceSheep(int x, int y, unsigned int fatness = 1);
 		SpaceSheep(position ref, unsigned int fatness = 1);
 
-		HitBoxCircle get_hitbox(){ return m_hitbox; }
+		HitBoxCircle& get_hitbox(){ return m_hitbox; }
 		void set_fatness(int fatness){ m_fatness = fatness; }
 		unsigned int get_fatness(){ return m_fatness; }
 		void move(bool dir);
 
 	private:
+		HitBoxCircle m_hitbox;
 		unsigned int m_fatness;
 
 };

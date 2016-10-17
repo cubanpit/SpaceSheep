@@ -88,7 +88,7 @@ void Engine::run()
 		}
 
 		for (auto it = bushes.begin(); it != bushes.end(); it++) {
-			if ( ((*(*it)).m_hitbox).Overlap((*sheep).m_hitbox) ) {
+			if ( ((*(*it)).get_hitbox()).Overlap((*sheep).get_hitbox()) ) {
 				dead = true;
 				break;
 			}
@@ -117,7 +117,7 @@ void Engine::run()
 			}
 
 			for (auto it = bushes.begin(); it != bushes.end(); it++) {
-				if ( ((*(*it)).m_hitbox).Overlap((*sheep).m_hitbox) ) {
+				if ( ((*(*it)).get_hitbox()).Overlap((*sheep).get_hitbox()) ) {
 					dead = true;
 					break;
 				}
@@ -203,7 +203,7 @@ void Engine :: add_obstacle_bushes ()
 
 			if ( ctrl ) {
 				for (auto it = bushes.begin(); it != bushes.end(); it++) {
-					if ( ((*(*it)).m_hitbox).Overlap((*tmp_bush).m_hitbox) ) {
+					if ( ((*(*it)).get_hitbox()).Overlap((*tmp_bush).get_hitbox()) ) {
 						ctrl = false;
 						break;
 					}

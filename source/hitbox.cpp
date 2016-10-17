@@ -29,7 +29,7 @@
 
 #include "hitbox.h"
 
-bool HitBox :: Overlap_RectRect(HitBoxRect& a, HitBoxRect& b)
+bool HitBox :: Overlap_RectRect(HitBoxRect& a, HitBoxRect& b) const
 {
 	/*
 	 *   This is a Rectangle:
@@ -87,7 +87,7 @@ bool HitBox :: Overlap_RectRect(HitBoxRect& a, HitBoxRect& b)
 	}
 }
 
-bool HitBox :: Overlap_RectCircle(HitBoxRect& r, HitBoxCircle& c)
+bool HitBox :: Overlap_RectCircle(HitBoxRect& r, HitBoxCircle& c) const
 {
 	/*
 	 *   This is a Rectangle:
@@ -168,7 +168,7 @@ bool HitBox :: Overlap_RectCircle(HitBoxRect& r, HitBoxCircle& c)
 	}
 }
 
-bool HitBox :: Overlap_CircleCircle(HitBoxCircle& a, HitBoxCircle& b)
+bool HitBox :: Overlap_CircleCircle(HitBoxCircle& a, HitBoxCircle& b) const
 {
 	/*
 	 * This is a Circle:
