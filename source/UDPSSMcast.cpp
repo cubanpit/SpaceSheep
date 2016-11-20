@@ -75,7 +75,7 @@ bool UDPSSMcastReceiver :: recv_msg()
 	}
 	else {
 		if( m_psfd->revents & POLLIN ) {
-			if( ::recv(m_sfd, m_msg, _UDPSSMcast_h_DEFAULT_MSG_LEN, 0) == 0) return true;
+			if( ::recv(m_sfd, m_msg, _UDPSSMcast_h_DEFAULT_MSG_LEN, 0) > 0) return true;
 			else return false;
 		}
 		else {
@@ -100,7 +100,7 @@ std::string compose_msg(SpaceSheep* sheep)
 	 * that x position, width and height are less than 255 and non negative.
 	 */
 	std::string msg{'s', (char) (sheep->get_ref()).x,
-					(char) sheep->get_fatness(), '0'};
+					(char) sheep->get_fatness(), '0', '0'};
 	return msg;
 }
 
@@ -111,7 +111,8 @@ std::string compose_msg(RectObstacle* rect)
 	 * that x position, width and height are less than 255 and non negative.
 	 */
 	std::string msg{'r', (char) (rect->get_ref()).x,
-					(char) (rect->get_rec()).height,
-					(char) (rect->get_rec()).width};
+					(char) (rect->get_ref()).y,
+					(char) (rect->get_rec()).width,
+					(char) (rect->get_rec()).height};
 	return msg;
 }

@@ -57,8 +57,9 @@ class Sketcher
 		void Rubber(SpaceSheep* sheep); //erase sheep
 
 		void Animation(RectObstacle* bush); //animate bush movement
-		void Animation(SpaceSheep* sheep, bool dir); //animate sheep movement
-
+		void Animation(SpaceSheep* sheep, char dir); //animate sheep movement
+		void Animation(SpaceSheep* sheep, unsigned int x); //animate sheep movement 
+		
 		unsigned int get_GameW() { return M_GameW; }
 		unsigned int get_GameH() { return M_GameH; }
 

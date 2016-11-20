@@ -31,17 +31,17 @@
 
 int main (int argc, char **argv)
 {
-	//initscr(); // start the terminal world [ncurses] tmp
-    //curs_set(0); // hide cursor position [ncurses] tmp
-	//noecho(); // to hide input obtained with getch() [ncurses] tmp
+	initscr(); // start the terminal world [ncurses] tmp
+    curs_set(0); // hide cursor position [ncurses] tmp
+	noecho(); // to hide input obtained with getch() [ncurses] tmp
 
 	try {
-	/*tmp	if ( !has_colors() ) {
+		if ( !has_colors() ) {
 			throw "main() ERROR: this terminal doesn't support colors properly. "
 				"Take five bucks and go buy a better computer!";
 		}
 		start_color(); // enable colors in this window [ncurses]
-	*/	Engine game(100,30);
+		Engine game(100,30);
         //tmp///////////////////
         int d = 0;
         std::cout << "scegli il tuo destino ( 0 per cattivo, 1 per buono!)" << std::endl;
@@ -50,7 +50,7 @@ int main (int argc, char **argv)
         if(d == 1)	game.run_good();
         else if(d == 0) game.run_evil();
         ///////////////////////////
-      //  endwin(); // end terminal world [ncurses] tmp
+        endwin(); // end terminal world [ncurses] tmp
 	}
 	catch ( const char* msg ) {
 		std::cerr << msg << std::endl;

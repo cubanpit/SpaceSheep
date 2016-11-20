@@ -9,10 +9,12 @@ TODO LIST:
 - Engine: separare funzione per il movimento della pecora (possibile senza 
 		   multi-threading?)
 - Engine: aggiungere controllo sull'altezza
+- Engine: controllare eliminazione elementi del vettore di cespugli
 - all: rivedere e ampliare i commenti (aggiornarli alla gestione delle eccezioni)
 - Sketcher: opzione 'q' per uscire dalla WelcomeScreen
 - Sketcher: errore dimensione, aggiungere stampa dimensione attuale
 - Engine: pecora dopo la schermata di uscita non resetta la sua posizione
 - Sketcher: nella schermata iniziale il tempo di attesa per la pressione dei
              tasti è troppo alto
-- Rete: aggiungere gestione eccezioni
+- Rete: aggiungere gestione eccezioni ( timeout? )
+- Rete: considerare se mettere poll a send()

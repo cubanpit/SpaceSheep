@@ -64,12 +64,21 @@ SpaceSheep :: SpaceSheep(int x, int y, unsigned int fatness):
 	m_fatness = fatness;
 }
 
-void SpaceSheep :: move(bool dir)
+void SpaceSheep :: move(char dir)
 {
 	position tmp_ref;
 	tmp_ref.y = get_ref().y;
-	if ( dir ) tmp_ref.x = get_ref().x + 2 ;
+	if ( dir == 'r' ) tmp_ref.x = get_ref().x + 2 ;
 	else tmp_ref.x = get_ref().x - 2 ;
+	set_ref(tmp_ref);
+	m_hitbox.set_ref(tmp_ref);
+}
+
+void SpaceSheep :: move(unsigned int x)
+{
+	position tmp_ref;
+	tmp_ref.y = get_ref().y;
+	tmp_ref.x = x;
 	set_ref(tmp_ref);
 	m_hitbox.set_ref(tmp_ref);
 }

@@ -110,10 +110,10 @@ void Sketcher :: WelcomeScreen ()
 		t_tmp_sheep += dt_tmp_sheep;
 		std::this_thread::sleep_until(t_tmp_sheep);
 		if ( tmp_count%32 < 16 ) {
-			Animation(tmp,1);
+			Animation(tmp,'r');
 		}
 		else if ( tmp_count%32 >= 16 ) {
-			Animation(tmp,0);
+			Animation(tmp,'l');
 		}
 		++tmp_count;
 		tmp_ch = getch();
@@ -295,9 +295,17 @@ void Sketcher :: Animation (RectObstacle* bush)
 	Pencil(bush);
 }
 
-void Sketcher :: Animation (SpaceSheep* sheep, bool dir)
+void Sketcher :: Animation (SpaceSheep* sheep, char dir)
 {
 	Rubber(sheep);
 	sheep->move(dir);
 	Pencil(sheep);
 }
+
+void Sketcher :: Animation (SpaceSheep* sheep, unsigned int x)
+{
+	Rubber(sheep);
+	sheep->move(x);
+	Pencil(sheep);
+}
+

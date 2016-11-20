@@ -63,9 +63,11 @@ class Engine
 										char n_left_mov = 'j',
 										char n_right_mov = 'l');
 
+
 	private:
-		Sketcher m_artist;
 		SpaceSheep* sheep;
+		Sketcher m_artist;
+		
 		std::vector<RectObstacle*> bushes;
 
 		unsigned int fatness; //set sheep fatness

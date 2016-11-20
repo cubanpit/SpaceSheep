@@ -34,7 +34,7 @@ Engine::Engine(unsigned int xDim, unsigned int yDim, unsigned int n_fatness,
 	m_artist(xDim,yDim), fatness(n_fatness),
 	bushes_prod(n_bushes_prod), dt_uint_bushes(n_dt_uint_bushes)
 {
-	//m_artist.WelcomeScreen();tmp
+	m_artist.WelcomeScreen();
 	sheep = new SpaceSheep(m_artist.get_GameW()/2,m_artist.get_GameH()-1-fatness,fatness);
 }
 
@@ -98,11 +98,11 @@ void Engine::run_local()
 			ch = getch();
 			if ( ch == left_mov and  (((*sheep).get_ref()).x -
 						(int)(*sheep).get_fatness()) > 1 ) {
-				m_artist.Animation(sheep,0);
+				m_artist.Animation(sheep,'l');
 			}
 			else if ( ch == right_mov and (((*sheep).get_ref()).x +
 						(int)(*sheep).get_fatness()) < ((int)m_artist.get_GameW() - 1) ) {
-				m_artist.Animation(sheep,1);
+				m_artist.Animation(sheep,'r');
 			}
 			else if ( ch == pause ) {
 				dead = m_artist.PauseScreen();
@@ -135,26 +135,164 @@ void Engine::run_local()
 
 void Engine::run_good()
 {
-    std::cerr << "I'm good" << std::endl;
+	timeout(0); // getch() does not wait for input [ncurses]
+	erase();
+	bushes.clear(); //clear vector, if it's not empty
+	
+	UDPSSMcastSender sender("",_UDPMcastSender_h_DEFAULT_TTL,"127.0.0.1", 3262); //open socket
+	sender.send_msg(compose_msg(sheep));
+	
+	m_artist.GameTable();
+	m_artist.Pencil(sheep);
+	char ch; //needed for sheep movement
+	
+	// TIME STUFF
+	// WARNING: clocks goes on during execution, if you use sleep_until(20:00)
+	//  for obstacle and sleep(19:00) for sheep, the second will be ignored,
+	//  time has passed!
+	// SOLUTION: reassign time_point before using it, if necessary.
+	std::chrono::system_clock::time_point t_track_sheep = std::chrono::system_clock::now();
+	std::chrono::duration<int,std::milli> dt_sheep(dt_uint_sheep);
 
-    UDPSSMcastSender sender("",_UDPMcastSender_h_DEFAULT_TTL,"127.0.0.1", 3262);
-	SpaceSheep *s = new SpaceSheep(10, 10, 3);
-	sender.send_msg(compose_msg(s));
+	unsigned int count = 0;
+	bool dead = false;
+	bool new_game = true;
+
+	if ( !check_bushes_parameters() ) {
+		throw "Engine::run_local() ERROR: bad parameters for bushes, the game risks a loop.";
+	}
+
+	while (!dead) {
+		if ( !(count%bushes_prod) ) {
+			try {
+				add_obstacle_bushes();
+			}
+			catch (std::bad_alloc& ba)
+			{
+				std::cerr << "Engine::add_obstacle_bushes() bad_alloc caught: " << ba.what() << std::endl;
+				exit (EXIT_FAILURE);
+			}
+		}
+		++count;
+		//compute score, different weight for different difficulty level
+		score = count*(200/(bushes_prod+(bushes_w_d*10)+(dt_uint_bushes/10)));
+		
+//		TMP
+// 		for (auto it = bushes.begin(); it != bushes.end(); it++) {
+// 			m_artist.Pencil(*it);
+// 		}
+
+		for (auto it = bushes.begin(); it != bushes.end(); it++) {
+			m_artist.Animation(*it);
+			sender.send_msg(compose_msg(*it));
+		}
+
+		for (auto it = bushes.begin(); it != bushes.end(); it++) {
+			if ( ((*(*it)).get_hitbox()).Overlap((*sheep).get_hitbox()) ) {
+				dead = true;
+				break;
+			}
+		}
+
+		for (int i=0; i<dt_uint_bushes and !dead; i+=dt_uint_sheep) {
+			ch = getch();
+			if ( ch == left_mov and  (((*sheep).get_ref()).x -
+						(int)(*sheep).get_fatness()) > 1 ) {
+				m_artist.Animation(sheep,'l');
+			}
+			else if ( ch == right_mov and (((*sheep).get_ref()).x +
+						(int)(*sheep).get_fatness()) < ((int)m_artist.get_GameW() - 1) ) {
+				m_artist.Animation(sheep,'r');
+			}
+			else if ( ch == pause ) {
+				dead = m_artist.PauseScreen();
+				if ( !dead ) {
+					t_track_sheep = std::chrono::system_clock::now();
+					m_artist.GameTable();
+					for (auto it = bushes.begin(); it != bushes.end(); it++) {
+						m_artist.Pencil(*it);
+					}
+					m_artist.Pencil(sheep);
+				}
+			}
+
+			for (auto it = bushes.begin(); it != bushes.end(); it++) {
+				if ( ((*(*it)).get_hitbox()).Overlap((*sheep).get_hitbox()) ) {
+					dead = true;
+					break;
+				}
+			}
+			m_artist.Score(score);
+			refresh();
+			sender.send_msg(compose_msg(sheep));
+			t_track_sheep += dt_sheep;
+			std::this_thread::sleep_until(t_track_sheep);
+		}
+		refresh();
+	}
+	
+	new_game = m_artist.ExitScreen(score);
+	if ( new_game ) run_local();
+
+
 }
 
 void Engine::run_evil()
 {
-    std::cout << "I'm evil" << std::endl;
-
+	m_artist.GameTable();
+	refresh();
 	UDPSSMcastReceiver recv("","127.0.0.1", 3262);
-    recv.recv_msg();
 
-	std::vector<char> message (recv.get_msg(), recv.get_msg()+4);
-	int x = message[1];
-	unsigned int f = message[2];
-	unsigned int null = message[3];
-
-	std::cout << message[0] <<" "<< x <<" "<< f <<" "<< message[3] << std::endl;
+	bool got_sheep = false;
+	std::vector<char> message;
+	bushes.clear(); //clear vector, if it's not empty
+	
+	while( !got_sheep ){
+		recv.recv_msg();
+		message.assign(recv.get_msg(), recv.get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
+		
+		if( message[0] == 's' ) {
+			position tmp_ref;
+			tmp_ref.x = message[1];
+			tmp_ref.y = m_artist.get_GameH()-1-message[2];
+			
+			sheep->set_ref(tmp_ref);
+			sheep->set_fatness(message[2]);
+			
+			m_artist.Pencil(sheep);
+			got_sheep = true;
+		}
+	}
+	
+	while( recv.recv_msg() ){
+		message.assign(recv.get_msg(), recv.get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
+		if( message[0] == 's' ){
+			if( !got_sheep ){
+				if( bushes.size() > 0 ){
+					for (auto it = bushes.begin(); it != bushes.end(); it++) {
+						m_artist.Pencil(*it);
+					}
+				}
+				got_sheep = true;
+			}
+			m_artist.Animation(sheep, (unsigned int) message[1]);
+			refresh();
+		}
+		else if( message[0] == 'r' ){
+			if( got_sheep ){
+				if( bushes.size() > 0 ){
+					for (auto it = bushes.begin(); it != bushes.end(); it++) {
+						m_artist.Rubber(*it);
+						delete *it;
+					}
+					bushes.clear();
+				}
+				got_sheep = false;
+			}
+			RectObstacle * tmp_bush = new RectObstacle(message[1], message[2], message[3], message[4]);
+			bushes.push_back(tmp_bush);
+		}
+	}
 }
 
 void Engine :: add_obstacle_bushes ()
@@ -237,7 +375,7 @@ void Engine :: add_obstacle_bushes ()
 		ctrl = false; //reset control bool
 		bushes.push_back(tmp_bush); //only good obstacle are stored
 
-		// Old obstacles need to be erased from the vector
+		// Old obstacles need to be erased from the vector TMP
 		for (auto it = bushes.begin(); it != bushes.end(); it++) {
 			if ( ((*(*it)).get_ref()).y > (int)m_artist.get_GameH() ) {
 				delete *it;

@@ -75,7 +75,8 @@ class SpaceSheep : public Obstacle
 		HitBoxCircle& get_hitbox(){ return m_hitbox; }
 		void set_fatness(int fatness){ m_fatness = fatness; }
 		unsigned int get_fatness(){ return m_fatness; }
-		void move(bool dir);
+		void move(char dir); // move right if dir is true, else move left.
+		void move(unsigned int x); // move to x.
 
 	private:
 		HitBoxCircle m_hitbox;
