@@ -3,11 +3,11 @@
  *
  * File: hitbox.h
  *
- * Header containing definition of position and rectangle struct, definition of 
+ * Header containing definition of position and rectangle struct, definition of
  *  HitBox class.
  * HitBox defines physic limits of objects and handle collision between them.
  *
- * Authors: 
+ * Authors:
  *	Martina Crippa 				<martina.crippa2@studenti.unimi.it>
  *	Pietro Francesco Fontana 	<pietrofrancesco.fontana@studenti.unimi.it>
  *

@@ -5,7 +5,7 @@
  *
  * Implementation of obstacle.h classes.
  *
- * Authors: 
+ * Authors:
  *	Martina Crippa 				<martina.crippa2@studenti.unimi.it>
  *	Pietro Francesco Fontana 	<pietrofrancesco.fontana@studenti.unimi.it>
  *

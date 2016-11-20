@@ -5,7 +5,7 @@
  *
  * Implementation of hitbox.h classes.
  *
- * Authors: 
+ * Authors:
  *	Martina Crippa 				<martina.crippa2@studenti.unimi.it>
  *	Pietro Francesco Fontana 	<pietrofrancesco.fontana@studenti.unimi.it>
  *
@@ -48,7 +48,7 @@ bool HitBox :: Overlap_RectRect(HitBoxRect& a, HitBoxRect& b) const
 	int b_x = (b.get_v()).x;
 	int b_y = (b.get_v()).y;
 
-	//we have to substract 1 from height and width, so (x_ref+width) 
+	//we have to substract 1 from height and width, so (x_ref+width)
 	// is inside the hitbox
 	//we have to cast width and height in 'int' for better math
 	int a_w = (int)(a.get_rec()).width - 1 ;
@@ -104,7 +104,7 @@ bool HitBox :: Overlap_RectCircle(HitBoxRect& r, HitBoxCircle& c) const
 	 *
 	 *		C    | radius = height
 	 *	   C#C   |
-	 *    C#O#C  | 
+	 *    C#O#C  |
 	 *     C#C   |
 	 *      C    |
 	 *    _____
@@ -119,7 +119,7 @@ bool HitBox :: Overlap_RectCircle(HitBoxRect& r, HitBoxCircle& c) const
 	int c_x = (c.get_ref()).x;
 	int c_y = (c.get_ref()).y;
 
-	//we have to substract 1 from height and width, so (x_ref+width) 
+	//we have to substract 1 from height and width, so (x_ref+width)
 	// is inside the hitbox
 	int r_w = (int)(r.get_rec()).width - 1 ;
 	int r_h = (int)(r.get_rec()).height - 1 ;
@@ -175,7 +175,7 @@ bool HitBox :: Overlap_CircleCircle(HitBoxCircle& a, HitBoxCircle& b) const
 	 *
 	 *		C    | radius = height
 	 *	   C#C   |
-	 *    C#R#C  | 
+	 *    C#R#C  |
 	 *     C#C   |
 	 *      C    |
 	 *    _____
@@ -189,7 +189,7 @@ bool HitBox :: Overlap_CircleCircle(HitBoxCircle& a, HitBoxCircle& b) const
 	int b_x = (b.get_ref()).x;
 	int b_y = (b.get_ref()).y;
 
-	//we have to substract 1 from height and width, so (x_ref+width) 
+	//we have to substract 1 from height and width, so (x_ref+width)
 	// is inside the hitbox
 	int a_r = (int)a.get_radius();
 	int b_r = (int)b.get_radius();

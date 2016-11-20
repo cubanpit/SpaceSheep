@@ -1,4 +1,4 @@
-/* 
+/*
  * SpaceSheep, ncurses game. Code is hosted on GitHub.
  *
  * File: obstacle.h
@@ -6,7 +6,7 @@
  * Class that defines obstacles, every object has a HitBox member to handle
  *  collision between obstacles.
  *
- * Authors: 
+ * Authors:
  *	Martina Crippa 				<martina.crippa2@studenti.unimi.it>
  *	Pietro Francesco Fontana 	<pietrofrancesco.fontana@studenti.unimi.it>
  *

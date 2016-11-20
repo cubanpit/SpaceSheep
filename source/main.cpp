@@ -2,10 +2,10 @@
  * SpaceSheep, ncurses game. Code is hosted on GitHub.
  *
  * File: main.cpp
- * 
+ *
  * A beautiful game with a SpaceSheep as main character.
  *
- * Authors: 
+ * Authors:
  *	Martina Crippa 				<martina.crippa2@studenti.unimi.it>
  *	Pietro Francesco Fontana 	<pietrofrancesco.fontana@studenti.unimi.it>
  *
@@ -31,19 +31,26 @@
 
 int main (int argc, char **argv)
 {
-	initscr(); // start the terminal world [ncurses]
-	curs_set(0); // hide cursor position [ncurses]
-	noecho(); // to hide input obtained with getch() [ncurses]
+	//initscr(); // start the terminal world [ncurses] tmp
+    //curs_set(0); // hide cursor position [ncurses] tmp
+	//noecho(); // to hide input obtained with getch() [ncurses] tmp
 
 	try {
-		if ( !has_colors() ) {
+	/*tmp	if ( !has_colors() ) {
 			throw "main() ERROR: this terminal doesn't support colors properly. "
 				"Take five bucks and go buy a better computer!";
 		}
 		start_color(); // enable colors in this window [ncurses]
-		Engine game(100,30);
-		game.run();
-		endwin(); // end terminal world [ncurses]
+	*/	Engine game(100,30);
+        //tmp///////////////////
+        int d = 0;
+        std::cout << "scegli il tuo destino ( 0 per cattivo, 1 per buono!)" << std::endl;
+        std::cin >> d;
+
+        if(d == 1)	game.run_good();
+        else if(d == 0) game.run_evil();
+        ///////////////////////////
+      //  endwin(); // end terminal world [ncurses] tmp
 	}
 	catch ( const char* msg ) {
 		std::cerr << msg << std::endl;

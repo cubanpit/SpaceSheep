@@ -5,7 +5,7 @@
  *
  * Implementation of sketcher.h classes.
  *
- * Authors: 
+ * Authors:
  *	Martina Crippa 				<martina.crippa2@studenti.unimi.it>
  *	Pietro Francesco Fontana 	<pietrofrancesco.fontana@studenti.unimi.it>
  *
@@ -36,13 +36,13 @@ Sketcher :: Sketcher (unsigned int xDim, unsigned int yDim)
 	M_GameW = xDim - 2;
 	M_GameH = yDim - 2;
 	if (COLS >= M_xDim and LINES >= M_yDim) {
-		// (Offset+1) because we want all body drawn without overlapping 
+		// (Offset+1) because we want all body drawn without overlapping
 		//  the game table
 		M_xOffset = ((COLS - M_xDim) / 2) + 1 ;
 		M_yOffset = ((LINES - M_yDim) / 2) + 1 ;
 	}
 	else {
-		throw "Sketcher::Sketcher() ERROR: terminal window is too small! Check the current game table size.";
+	//	throw "Sketcher::Sketcher() ERROR: terminal window is too small! Check the current game table size."; tmp
 	}
 
 	// define some color we use in draw functions
@@ -87,7 +87,7 @@ void Sketcher :: WelcomeScreen ()
 	mvprintw(M_yOffset+7,M_xOffset+(M_GameW/2)-28,"  \\__ \\/ __ \\/ __ `/ ___/ _ \\\\__ \\/ __ \\/ _ \\/ _ \\/ __ \\");
 	mvprintw(M_yOffset+8,M_xOffset+(M_GameW/2)-28," ___/ / /_/ / /_/ / /__/  __/__/ / / / /  __/  __/ /_/ /");
 	mvprintw(M_yOffset+9,M_xOffset+(M_GameW/2)-28,"/____/ .___/\\__,_/\\___/\\___/____/_/ /_/\\___/\\___/ .___/ ");
-	mvprintw(M_yOffset+10,M_xOffset+(M_GameW/2)-28,"    /_/                                        /_/      ");	
+	mvprintw(M_yOffset+10,M_xOffset+(M_GameW/2)-28,"    /_/                                        /_/      ");
 	attroff(COLOR_PAIR(3));
 	attron(COLOR_PAIR(4));
 	mvprintw(M_yOffset+11,M_xOffset+(M_GameW/2)-28,"________________________________________________________");
@@ -97,7 +97,7 @@ void Sketcher :: WelcomeScreen ()
 	mvprintw(M_yOffset+18,M_xOffset+(M_GameW/2)-28,"Press 'p' during the game to take a break.");
 	mvprintw(M_yOffset+20,M_xOffset+(M_GameW/2)-28,"Press 'n' to begin!");
 
-	std::chrono::system_clock::time_point t_tmp_sheep = std::chrono::system_clock::now(); 
+	std::chrono::system_clock::time_point t_tmp_sheep = std::chrono::system_clock::now();
 	std::chrono::duration<int,std::milli> dt_tmp_sheep(300);
 
 	SpaceSheep *tmp = new SpaceSheep((M_GameW/2)-16,M_GameH-3,2);
@@ -105,7 +105,7 @@ void Sketcher :: WelcomeScreen ()
 	bool ctrl = false;
 	char tmp_ch;
 	unsigned int tmp_count = 0;
-	while (!ctrl) {	
+	while (!ctrl) {
 		refresh();
 		t_tmp_sheep += dt_tmp_sheep;
 		std::this_thread::sleep_until(t_tmp_sheep);
@@ -130,9 +130,9 @@ bool Sketcher :: ExitScreen (unsigned int score)
 	GameTable();
 
 	attron(COLOR_PAIR(5));
-	mvprintw(M_yOffset+4,M_xOffset+(M_GameW/2)-19,"______________________________________"); 
+	mvprintw(M_yOffset+4,M_xOffset+(M_GameW/2)-19,"______________________________________");
 	attroff(COLOR_PAIR(5));
-	mvprintw(M_yOffset+5,M_xOffset+(M_GameW/2)-19,"__   __            _              _  "); 
+	mvprintw(M_yOffset+5,M_xOffset+(M_GameW/2)-19,"__   __            _              _  ");
 	mvprintw(M_yOffset+6,M_xOffset+(M_GameW/2)-19,"\\ \\ / /__  _   _  | |    ___  ___| |_ ");
 	mvprintw(M_yOffset+7,M_xOffset+(M_GameW/2)-19," \\ V / _ \\| | | | | |   / _ \\/ __| __|");
 	mvprintw(M_yOffset+8,M_xOffset+(M_GameW/2)-19,"  | | (_) | |_| | | |__| (_) \\__ \\ |_ ");
@@ -192,7 +192,7 @@ void Sketcher :: Score (unsigned int score)
 	}
 }
 
-void Sketcher :: Pencil (RectObstacle* bush) 
+void Sketcher :: Pencil (RectObstacle* bush)
 {
 	// (width-1) and (height-1) because we have a side from x to x+5 we
 	//  have a width of 6
@@ -252,7 +252,7 @@ void Sketcher :: Pencil (SpaceSheep* sheep)
 }
 
 void Sketcher :: Rubber (RectObstacle* bush)
-{	
+{
 	for (unsigned int i=0; i < (bush->get_rec()).height; ++i) {
 		if ( (bush->get_ref()).y+i != -1 and (bush->get_ref()).y+i != (M_yDim-2) ) {
 			mvprintw(M_yOffset+(bush->get_ref()).y+i, M_xOffset+(bush->get_ref()).x, " ");

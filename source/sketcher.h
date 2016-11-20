@@ -7,7 +7,7 @@
  * It handle also the erase and the animation of object, the welcome screen and
  *  the other screens of the game.
  *
- * Authors: 
+ * Authors:
  *	Martina Crippa 				<martina.crippa2@studenti.unimi.it>
  *	Pietro Francesco Fontana 	<pietrofrancesco.fontana@studenti.unimi.it>
  *
@@ -38,7 +38,7 @@
 #include <thread> // std::this_thread::sleep_until
 #include "obstacle.h"
 
-class Sketcher 
+class Sketcher
 {
 	public:
 		Sketcher(unsigned int xDim, unsigned int yDim);

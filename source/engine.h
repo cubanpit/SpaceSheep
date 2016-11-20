@@ -2,10 +2,10 @@
  * SpaceSheep, ncurses game. Code is hosted on GitHub.
  *
  * File: engine.h
- * 
+ *
  * This header declares classes needed to handle game run.
  *
- * Authors: 
+ * Authors:
  *	Martina Crippa 				<martina.crippa2@studenti.unimi.it>
  *	Pietro Francesco Fontana 	<pietrofrancesco.fontana@studenti.unimi.it>
  *
@@ -34,21 +34,25 @@
 #include <random> // std::default_random_engine , std::uniform_int_distribution
 #include <vector> //std::vector
 #include "sketcher.h"
+#include "UDPSSMcast.h"
 
 class Engine
 {
 	public:
-		Engine(unsigned int xDim = 100, 
+		Engine(unsigned int xDim = 100,
 			   unsigned int yDim = 30,
 		       unsigned int n_fatness = 2,
 	    	   unsigned int n_bushes_prod = 14,
-       		   unsigned int n_dt_uint_bushes = 150);
+			   unsigned int n_dt_uint_bushes = 150);
 		~Engine(){}
 
-		void run();
+		void run_local(); //play local mode
+		void run_good(); //play as good sheep versus the evil bull creator
+		void run_evil(); //play as evil bull creator versus the good sheep
+
 		void add_obstacle_bushes();
 		bool check_bushes_parameters();
-	
+
 		void set_bushes_properties(	unsigned int n_bushes_w_d = 4,
 									unsigned int n_bushes_w_tot = 50,
 									unsigned int n_bushes_w_m = 20,
@@ -73,9 +77,9 @@ class Engine
 		unsigned int bushes_w_m = 20; //minimal width of bushes
 		unsigned int bushes_w_r = 20; //range of width, w_m+(w_r-1)=maximum width
 		unsigned int bushes_h_m = 3; //minimal height of bushes
-		unsigned int bushes_h_r = 4; //range of height	
-		
-		unsigned int dt_uint_sheep = 10; 
+		unsigned int bushes_h_r = 4; //range of height
+
+		unsigned int dt_uint_sheep = 10; //maybe milliseconds (tmp)
 		unsigned int score = 0;
 		char left_mov = 'j', right_mov = 'l';
 		char pause = 'p';

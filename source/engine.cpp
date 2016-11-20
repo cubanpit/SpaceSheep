@@ -5,7 +5,7 @@
  *
  * Implementation of classes and functions declared in engine.h
  *
- * Authors: 
+ * Authors:
  *	Martina Crippa 				<martina.crippa2@studenti.unimi.it>
  *	Pietro Francesco Fontana 	<pietrofrancesco.fontana@studenti.unimi.it>
  *
@@ -29,20 +29,20 @@
 
 #include "engine.h"
 
-Engine::Engine(unsigned int xDim, unsigned int yDim, unsigned int n_fatness, 
+Engine::Engine(unsigned int xDim, unsigned int yDim, unsigned int n_fatness,
 		unsigned int n_bushes_prod, unsigned int n_dt_uint_bushes):
-	m_artist(xDim,yDim), fatness(n_fatness), 
+	m_artist(xDim,yDim), fatness(n_fatness),
 	bushes_prod(n_bushes_prod), dt_uint_bushes(n_dt_uint_bushes)
 {
-	m_artist.WelcomeScreen();
+	//m_artist.WelcomeScreen();tmp
 	sheep = new SpaceSheep(m_artist.get_GameW()/2,m_artist.get_GameH()-1-fatness,fatness);
 }
 
-void Engine::run()
+void Engine::run_local()
 {
 	timeout(0); // getch() does not wait for input [ncurses]
 	erase();
-	bushes.clear(); //clear vector, if it's not empty	
+	bushes.clear(); //clear vector, if it's not empty
 
 	m_artist.GameTable();
 	m_artist.Pencil(sheep);
@@ -59,15 +59,15 @@ void Engine::run()
 	unsigned int count = 0;
 	bool dead = false;
 	bool new_game = true;
-	
+
 	if ( !check_bushes_parameters() ) {
-		throw "Engine::run() ERROR: bad parameters for bushes, the game risks a loop.";
+		throw "Engine::run_local() ERROR: bad parameters for bushes, the game risks a loop.";
 	}
 
 	while (!dead) {
 		if ( !(count%bushes_prod) ) {
 			try {
-				add_obstacle_bushes();	
+				add_obstacle_bushes();
 			}
 			catch (std::bad_alloc& ba)
 			{
@@ -96,11 +96,11 @@ void Engine::run()
 
 		for (int i=0; i<dt_uint_bushes and !dead; i+=dt_uint_sheep) {
 			ch = getch();
-			if ( ch == left_mov and  (((*sheep).get_ref()).x - 
+			if ( ch == left_mov and  (((*sheep).get_ref()).x -
 						(int)(*sheep).get_fatness()) > 1 ) {
 				m_artist.Animation(sheep,0);
 			}
-			else if ( ch == right_mov and (((*sheep).get_ref()).x + 
+			else if ( ch == right_mov and (((*sheep).get_ref()).x +
 						(int)(*sheep).get_fatness()) < ((int)m_artist.get_GameW() - 1) ) {
 				m_artist.Animation(sheep,1);
 			}
@@ -130,7 +130,31 @@ void Engine::run()
 		refresh();
 	}
 	new_game = m_artist.ExitScreen(score);
-	if ( new_game ) run();
+	if ( new_game ) run_local();
+}
+
+void Engine::run_good()
+{
+    std::cerr << "I'm good" << std::endl;
+
+    UDPSSMcastSender sender("",_UDPMcastSender_h_DEFAULT_TTL,"127.0.0.1", 3262);
+	SpaceSheep *s = new SpaceSheep(10, 10, 3);
+	sender.send_msg(compose_msg(s));
+}
+
+void Engine::run_evil()
+{
+    std::cout << "I'm evil" << std::endl;
+
+	UDPSSMcastReceiver recv("","127.0.0.1", 3262);
+    recv.recv_msg();
+
+	std::vector<char> message (recv.get_msg(), recv.get_msg()+4);
+	int x = message[1];
+	unsigned int f = message[2];
+	unsigned int null = message[3];
+
+	std::cout << message[0] <<" "<< x <<" "<< f <<" "<< message[3] << std::endl;
 }
 
 void Engine :: add_obstacle_bushes ()
@@ -146,7 +170,7 @@ void Engine :: add_obstacle_bushes ()
 	 * - minimum tot with of obstacle on same row, so it's always
 	 *    engaging (tot_w)
 	 * - check obstacle overlapping
-	 *   
+	 *
 	 * WARNING:
 	 * It's not so simple to respect all these rules.
 	 * Minimum width (m_w) and maximum width (M_w) values modify the
@@ -180,11 +204,11 @@ void Engine :: add_obstacle_bushes ()
 			if ( (x + w) <= (int)m_artist.get_GameW() ) ctrl = true;
 			if ( i > 0 ) {
 				if ( ctrl ) {
-					if ( ((x >= (((*(bushes.back())).get_ref()).x + (int)((*(bushes.back())).get_rec()).width)) and 
+					if ( ((x >= (((*(bushes.back())).get_ref()).x + (int)((*(bushes.back())).get_rec()).width)) and
 								(x - (((*(bushes.back())).get_ref()).x +
 									  (int)((*(bushes.back())).get_rec()).width)) <
 								((int)(*sheep).get_fatness()*2+1+(int)bushes_w_d)) ) ctrl = false;
-					if ( (((x+(int)w) <= ((*(bushes.back())).get_ref()).x) and 
+					if ( (((x+(int)w) <= ((*(bushes.back())).get_ref()).x) and
 								(((*(bushes.back())).get_ref()).x - (x + (int)w)) <
 								((int)(*sheep).get_fatness()*2+1+(int)bushes_w_d)) ) ctrl = false;
 				}
@@ -232,16 +256,16 @@ bool Engine :: check_bushes_parameters ()
 	else return true;
 }
 
-void Engine :: set_bushes_properties (unsigned int n_bushes_w_d, 
-		unsigned int n_bushes_w_tot, unsigned int n_bushes_w_m, 
-		unsigned int n_bushes_w_r, unsigned int n_bushes_h_m, 
+void Engine :: set_bushes_properties (unsigned int n_bushes_w_d,
+		unsigned int n_bushes_w_tot, unsigned int n_bushes_w_m,
+		unsigned int n_bushes_w_r, unsigned int n_bushes_h_m,
 		unsigned int n_bushes_h_r)
 {
-	bushes_w_d = n_bushes_w_d; 
+	bushes_w_d = n_bushes_w_d;
 	bushes_w_tot = n_bushes_w_tot;
 	bushes_w_m = n_bushes_w_m;
 	bushes_w_r = n_bushes_w_r;
-	bushes_h_m = n_bushes_h_m; 
+	bushes_h_m = n_bushes_h_m;
 	bushes_h_r = n_bushes_h_r;
 	if ( !check_bushes_parameters() ) {
 		throw "Engine::set_bushes_properties() ERROR: bad parameters for bushes, the game risks a loop.";
@@ -251,7 +275,7 @@ void Engine :: set_bushes_properties (unsigned int n_bushes_w_d,
 void Engine :: set_movement_properties (unsigned int n_dt_uint_sheep,
 		char n_left_mov, char n_right_mov)
 {
-	dt_uint_sheep = n_dt_uint_sheep; 
+	dt_uint_sheep = n_dt_uint_sheep;
 	left_mov = n_left_mov;
 	right_mov = n_right_mov;
 }
