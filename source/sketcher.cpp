@@ -251,6 +251,29 @@ void Sketcher :: Pencil (SpaceSheep* sheep)
 	}
 }
 
+void Sketcher :: Pencil (SpaceBull* bull)
+{
+	attron(COLOR_PAIR(5)); // enable bull color pair
+	for (unsigned int i=0; i < (bull->get_fatness()+1); ++i) {
+		for (unsigned int j=0; j < (2*i)+1; ++j) {
+			mvprintw(M_yOffset+(bull->get_ref()).y-bull->get_fatness()+i,
+					M_xOffset+(bull->get_ref()).x-i+j, "@");
+		}
+	}
+	for (unsigned int i=bull->get_fatness(); i > 2 ; --i) {
+		for (unsigned int j=0; j < (2*i)-1; ++j) {
+			mvprintw(M_yOffset+(bull->get_ref()).y+(bull->get_fatness()-i+1),
+					M_xOffset+(bull->get_ref()).x-i+1+j, "@");
+		}
+	}
+	mvprintw(M_yOffset+(bull->get_ref()).y+bull->get_fatness()-1,
+			M_xOffset+(bull->get_ref()).x-1, "O@O");
+	mvprintw(M_yOffset+(bull->get_ref()).y+bull->get_fatness(),
+			M_xOffset+(bull->get_ref()).x, "W");
+	
+	attroff(COLOR_PAIR(5)); // disable bull color pair
+}
+
 void Sketcher :: Rubber (RectObstacle* bush)
 {
 	for (unsigned int i=0; i < (bush->get_rec()).height; ++i) {
@@ -272,18 +295,18 @@ void Sketcher :: Rubber (RectObstacle* bush)
 	}
 }
 
-void Sketcher :: Rubber (SpaceSheep* sheep)
+void Sketcher :: Rubber (CircleObstacle* circle)
 {
-	for (unsigned int i=0; i < (sheep->get_fatness()+1); ++i) {
+	for (unsigned int i=0; i < (circle->get_fatness()+1); ++i) {
 		for (unsigned int j=0; j < (2*i)+1; ++j) {
-			mvprintw(M_yOffset+(sheep->get_ref()).y-sheep->get_fatness()+i,
-					M_xOffset+(sheep->get_ref()).x-i+j, " ");
+			mvprintw(M_yOffset+(circle->get_ref()).y-circle->get_fatness()+i,
+					M_xOffset+(circle->get_ref()).x-i+j, " ");
 		}
 	}
-	for (unsigned int i=sheep->get_fatness(); i > 0 ; --i) {
+	for (unsigned int i=circle->get_fatness(); i > 0 ; --i) {
 		for (unsigned int j=0; j < (2*i)-1; ++j) {
-			mvprintw(M_yOffset+(sheep->get_ref()).y+(sheep->get_fatness()-i+1),
-					M_xOffset+(sheep->get_ref()).x-i+1+j, " ");
+			mvprintw(M_yOffset+(circle->get_ref()).y+(circle->get_fatness()-i+1),
+					M_xOffset+(circle->get_ref()).x-i+1+j, " ");
 		}
 	}
 }
@@ -291,7 +314,7 @@ void Sketcher :: Rubber (SpaceSheep* sheep)
 void Sketcher :: Animation (RectObstacle* bush)
 {
 	Rubber(bush);
-	bush->move();
+	bush->drop();
 	Pencil(bush);
 }
 
@@ -307,5 +330,12 @@ void Sketcher :: Animation (SpaceSheep* sheep, unsigned int x)
 	Rubber(sheep);
 	sheep->move(x);
 	Pencil(sheep);
+}
+
+void Sketcher :: Animation (SpaceBull* bull)
+{
+	Rubber(bull);
+	bull->drop();
+	Pencil(bull);
 }
 

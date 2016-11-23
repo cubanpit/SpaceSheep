@@ -93,14 +93,14 @@ bool UDPSSMcastReceiver :: recv_msg()
 	}
 }
 
-std::string compose_msg(SpaceSheep* sheep)
+std::string compose_msg(CircleObstacle* circle)
 {
 	/*
 	 * We can convert int to char without troubles only because we are sure
 	 * that x position, width and height are less than 255 and non negative.
 	 */
-	std::string msg{'s', (char) (sheep->get_ref()).x,
-					(char) sheep->get_fatness(), '0', '0'};
+	std::string msg{'c', (char) (circle->get_ref()).x, (char) (circle->get_ref()).y,
+					(char) circle->get_fatness(), '0'};
 	return msg;
 }
 

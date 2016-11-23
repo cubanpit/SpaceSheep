@@ -42,7 +42,7 @@ class Obstacle
 
 		position get_ref(){ return m_ref; }
 		void set_ref(position& new_ref){ m_ref = new_ref; }
-
+		
 	private:
 		position m_ref; //riferimento della figura
 };
@@ -57,7 +57,7 @@ class RectObstacle : public Obstacle
 		HitBoxRect& get_hitbox(){ return m_hitbox; }
 		rectangle get_rec(){ return m_rec; }
 		void set_hitbox(HitBoxRect& tmp_hitbox) { m_hitbox = tmp_hitbox; }
-		void move();
+		void drop();
 
 	private:
 		HitBoxRect m_hitbox;
@@ -66,22 +66,42 @@ class RectObstacle : public Obstacle
 };
 
 // cause everything is more cool in space!
-class SpaceSheep : public Obstacle
+class CircleObstacle : public Obstacle
 {
 	public:
-		SpaceSheep(int x, int y, unsigned int fatness = 1);
-		SpaceSheep(position ref, unsigned int fatness = 1);
-
+		CircleObstacle(int x, int y, unsigned int fatness = 1);
+		CircleObstacle(position ref, unsigned int fatness = 1);
+		~CircleObstacle(){ }
+		
 		HitBoxCircle& get_hitbox(){ return m_hitbox; }
 		void set_fatness(int fatness){ m_fatness = fatness; }
 		unsigned int get_fatness(){ return m_fatness; }
-		void move(char dir); // move right if dir is true, else move left.
-		void move(unsigned int x); // move to x.
 
-	private:
+	protected:
 		HitBoxCircle m_hitbox;
 		unsigned int m_fatness;
 
+};
+
+class SpaceSheep : public CircleObstacle
+{
+	public:
+		SpaceSheep(int x, int y, unsigned int fatness);
+		SpaceSheep(position ref, unsigned int fatness);
+		~SpaceSheep(){ }
+	
+		void move(char dir); // move right if dir is true, else move left.
+		void move(unsigned int x); // move to x.
+};
+
+class SpaceBull : public CircleObstacle
+{
+	public:
+		SpaceBull(int x, int y, unsigned int fatness);
+		SpaceBull(position ref, unsigned int fatness);
+		~SpaceBull(){ }
+		
+		void drop();
 };
 
 #endif // _OBSTACLE_H_

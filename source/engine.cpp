@@ -140,11 +140,16 @@ void Engine::run_good()
 	bushes.clear(); //clear vector, if it's not empty
 	
 	UDPSSMcastSender sender("",_UDPMcastSender_h_DEFAULT_TTL,"127.0.0.1", 3262); //open socket
+	UDPSSMcastReceiver recv("","127.0.0.1", 3261);
+
 	sender.send_msg(compose_msg(sheep));
 	
 	m_artist.GameTable();
 	m_artist.Pencil(sheep);
 	char ch; //needed for sheep movement
+	
+	std::vector<char> message;
+
 	
 	// TIME STUFF
 	// WARNING: clocks goes on during execution, if you use sleep_until(20:00)
@@ -157,6 +162,9 @@ void Engine::run_good()
 	unsigned int count = 0;
 	bool dead = false;
 	bool new_game = true;
+	bool got_bull = false;
+	
+	SpaceBull* bull; //TMP
 
 	if ( !check_bushes_parameters() ) {
 		throw "Engine::run_local() ERROR: bad parameters for bushes, the game risks a loop.";
@@ -223,18 +231,30 @@ void Engine::run_good()
 				}
 			}
 			m_artist.Score(score);
+			if( recv.recv_msg() ) {
+				message.assign(recv.get_msg(), recv.get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
+				if( !got_bull ){
+					bull = new SpaceBull(message[1] ,message[2], message[3]);
+					got_bull = true;
+					m_artist.Pencil(bull);
+				}
+				else {
+					m_artist.Rubber(bull);
+					delete bull;
+					bull = new SpaceBull(message[1] ,message[2], message[3]);
+					got_bull = true;
+					m_artist.Pencil(bull);
+				}
+			}
 			refresh();
 			sender.send_msg(compose_msg(sheep));
 			t_track_sheep += dt_sheep;
 			std::this_thread::sleep_until(t_track_sheep);
 		}
 		refresh();
-	}
-	
+	}	
 	new_game = m_artist.ExitScreen(score);
-	if ( new_game ) run_local();
-
-
+	if ( new_game ) run_local();//tmp
 }
 
 void Engine::run_evil()
@@ -242,8 +262,12 @@ void Engine::run_evil()
 	m_artist.GameTable();
 	refresh();
 	UDPSSMcastReceiver recv("","127.0.0.1", 3262);
+	UDPSSMcastSender sender("",_UDPMcastSender_h_DEFAULT_TTL,"127.0.0.1", 3261); //open socket
+	SpaceBull* bull;
+	unsigned short bull_prod = 0;
 
 	bool got_sheep = false;
+	bool first_run = true;
 	std::vector<char> message;
 	bushes.clear(); //clear vector, if it's not empty
 	
@@ -251,13 +275,13 @@ void Engine::run_evil()
 		recv.recv_msg();
 		message.assign(recv.get_msg(), recv.get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
 		
-		if( message[0] == 's' ) {
+		if( message[0] == 'c' ) {
 			position tmp_ref;
 			tmp_ref.x = message[1];
-			tmp_ref.y = m_artist.get_GameH()-1-message[2];
+			tmp_ref.y = m_artist.get_GameH()-1-message[3];
 			
 			sheep->set_ref(tmp_ref);
-			sheep->set_fatness(message[2]);
+			sheep->set_fatness(message[3]);
 			
 			m_artist.Pencil(sheep);
 			got_sheep = true;
@@ -266,7 +290,7 @@ void Engine::run_evil()
 	
 	while( recv.recv_msg() ){
 		message.assign(recv.get_msg(), recv.get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
-		if( message[0] == 's' ){
+		if( message[0] == 'c' ){
 			if( !got_sheep ){
 				if( bushes.size() > 0 ){
 					for (auto it = bushes.begin(); it != bushes.end(); it++) {
@@ -292,6 +316,23 @@ void Engine::run_evil()
 			RectObstacle * tmp_bush = new RectObstacle(message[1], message[2], message[3], message[4]);
 			bushes.push_back(tmp_bush);
 		}
+		if( bull_prod%10 == 0 ) {
+			if( first_run ) { 
+				bull = new SpaceBull(10, -3, 2);
+				m_artist.Pencil(bull);
+				first_run = false;
+			}
+			else if( (bull->get_ref()).y > (int)m_artist.get_GameH() ) {
+				delete bull;
+				bull = new SpaceBull(10, -3, 2);
+				m_artist.Pencil(bull);
+			}
+			else {
+				m_artist.Animation(bull);
+			}
+			sender.send_msg(compose_msg(bull));
+		}
+		++bull_prod;
 	}
 }
 

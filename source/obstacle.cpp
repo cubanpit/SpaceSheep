@@ -43,7 +43,7 @@ RectObstacle :: RectObstacle
 	m_rec.height = height;
 }
 
-void RectObstacle :: move()
+void RectObstacle :: drop()
 {
 	position tmp_ref;
 	tmp_ref.x = get_ref().x;
@@ -52,16 +52,26 @@ void RectObstacle :: move()
 	m_hitbox.set_v(tmp_ref);
 }
 
-SpaceSheep :: SpaceSheep(position ref, unsigned int fatness):
+CircleObstacle :: CircleObstacle(int x, int y, unsigned int fatness):
+	Obstacle(x,y), m_hitbox(x,y,fatness)
+{
+	m_fatness = fatness;
+}
+
+CircleObstacle :: CircleObstacle(position ref, unsigned int fatness):
 	Obstacle(ref), m_hitbox(ref, fatness)
 {
 	m_fatness = fatness;
 }
 
 SpaceSheep :: SpaceSheep(int x, int y, unsigned int fatness):
-	Obstacle(x,y), m_hitbox(x,y,fatness)
+	CircleObstacle(x, y, fatness)
 {
-	m_fatness = fatness;
+}
+
+SpaceSheep :: SpaceSheep(position ref, unsigned int fatness):
+	CircleObstacle(ref, fatness)
+{
 }
 
 void SpaceSheep :: move(char dir)
@@ -79,6 +89,25 @@ void SpaceSheep :: move(unsigned int x)
 	position tmp_ref;
 	tmp_ref.y = get_ref().y;
 	tmp_ref.x = x;
+	set_ref(tmp_ref);
+	m_hitbox.set_ref(tmp_ref);
+}
+
+SpaceBull :: SpaceBull(int x, int y, unsigned int fatness):
+	CircleObstacle(x, y, fatness)
+{
+}
+
+SpaceBull :: SpaceBull(position ref, unsigned int fatness):
+	CircleObstacle(ref, fatness)
+{
+}
+
+void SpaceBull :: drop()
+{
+	position tmp_ref;
+	tmp_ref.x = get_ref().x;
+	tmp_ref.y = get_ref().y + 1 ;
 	set_ref(tmp_ref);
 	m_hitbox.set_ref(tmp_ref);
 }

@@ -2,6 +2,7 @@ TODO LIST:
  
 - Obstacle: m_hitbox public can be wrong choice?
 - Obstacle: m_hitbox and m_ref as pointers could enhance performance?
+- Obstacle: controllare nomi funzioni movimento pecora
 - HitBox: in alcune situazioni (all'interno di un grosso rettangolo) la pecora 
            non è sovrapposta
 - Engine: alcune variabili possono essere messe static (seed, chrono, random)?

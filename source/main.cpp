@@ -49,7 +49,7 @@ int main (int argc, char **argv)
 
         if(d == 1)	game.run_good();
         else if(d == 0) game.run_evil();
-        ///////////////////////////
+        /////////////////////////
         endwin(); // end terminal world [ncurses] tmp
 	}
 	catch ( const char* msg ) {

@@ -52,13 +52,15 @@ class Sketcher
 
 		void Pencil(RectObstacle* bush); //print bushes
 		void Pencil(SpaceSheep* sheep); //print sheep
+		void Pencil(SpaceBull* bull); //print bull
 
 		void Rubber(RectObstacle* bush); //erase bushes
-		void Rubber(SpaceSheep* sheep); //erase sheep
+		void Rubber(CircleObstacle* circle); //erase circle
 
 		void Animation(RectObstacle* bush); //animate bush movement
 		void Animation(SpaceSheep* sheep, char dir); //animate sheep movement
 		void Animation(SpaceSheep* sheep, unsigned int x); //animate sheep movement 
+		void Animation(SpaceBull* bull); //animate bull movement
 		
 		unsigned int get_GameW() { return M_GameW; }
 		unsigned int get_GameH() { return M_GameH; }

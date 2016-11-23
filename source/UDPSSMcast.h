@@ -80,7 +80,7 @@ class UDPSSMcastReceiver : public UDPMcastReceiver
 		unsigned short m_stimeout;
 };
 
-std::string compose_msg(SpaceSheep* sheep);
+std::string compose_msg(CircleObstacle* circle);
 std::string compose_msg(RectObstacle* rect);
 
 #endif // _UDPSSMCAST_H_
