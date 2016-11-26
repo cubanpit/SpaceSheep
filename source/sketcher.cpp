@@ -177,6 +177,20 @@ bool Sketcher :: PauseScreen ()
 	else if ( tmp_ch == 'q' ) return 1;
 }
 
+bool Sketcher :: PairScreen ()
+{
+	timeout(0);
+	erase();
+	GameTable();
+	mvprintw(M_yOffset+15,M_xOffset+(M_GameW/2)-28,"Waiting for connection...");
+	mvprintw(M_yOffset+17,M_xOffset+(M_GameW/2)-28,"Press 'q' to cancel.");
+	refresh();
+	char tmp_ch = '0';
+	tmp_ch = getch();
+	if ( tmp_ch == 'q' ) return true;
+	else return false;
+}
+
 void Sketcher :: Score (unsigned int score)
 {
 	std::string s_ch[6];

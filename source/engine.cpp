@@ -139,17 +139,32 @@ void Engine::run_good()
 	erase();
 	bushes.clear(); //clear vector, if it's not empty
 	
-	UDPSSMcastSender sender("",_UDPMcastSender_h_DEFAULT_TTL,"127.0.0.1", 3262); //open socket
-	UDPSSMcastReceiver recv("","127.0.0.1", 3261);
-
-	sender.send_msg(compose_msg(sheep));
+	UDPSSMcastSender ping_sender("",_UDPMcastSender_h_DEFAULT_TTL,"127.0.0.1", 3263); //open socket
+	UDPSSMcastReceiver ping_recv("","127.0.0.1", 3264);
 	
-	m_artist.GameTable();
-	m_artist.Pencil(sheep);
 	char ch; //needed for sheep movement
-	
 	std::vector<char> message;
-
+	bool paired = false;
+	
+	while(!paired) {
+		if( m_artist.PairScreen() ) return;
+		ping_sender.send_msg("ping");
+		if( ping_recv.recv_msg() ){
+			message.assign(ping_recv.get_msg(), ping_recv.get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
+			if( message[0] == 'p' and message[1] == 'o' and
+				message[2] == 'n' and message[3] == 'g' ) {
+				paired = true;
+			}
+		}
+	}
+	erase();
+	m_artist.GameTable();
+	refresh();
+	
+	UDPSSMcastSender sender("",_UDPMcastSender_h_DEFAULT_TTL,"127.0.0.1", 3262); //open socket
+	UDPSSMcastReceiver recv("","127.0.0.1", 3261);	
+	sender.send_msg(compose_msg(sheep));
+	m_artist.Pencil(sheep);
 	
 	// TIME STUFF
 	// WARNING: clocks goes on during execution, if you use sleep_until(20:00)
@@ -254,22 +269,40 @@ void Engine::run_good()
 		refresh();
 	}	
 	new_game = m_artist.ExitScreen(score);
-	if ( new_game ) run_local();//tmp
 }
 
 void Engine::run_evil()
 {
-	m_artist.GameTable();
-	refresh();
-	UDPSSMcastReceiver recv("","127.0.0.1", 3262);
-	UDPSSMcastSender sender("",_UDPMcastSender_h_DEFAULT_TTL,"127.0.0.1", 3261); //open socket
+	UDPSSMcastReceiver ping_recv("","127.0.0.1", 3263);
+	UDPSSMcastSender ping_sender("",_UDPMcastSender_h_DEFAULT_TTL,"127.0.0.1", 3264); //open socket
 	SpaceBull* bull;
 	unsigned short bull_prod = 0;
 
 	bool got_sheep = false;
 	bool first_run = true;
+	bool paired = false;
+	bool cancel = false;
+	
 	std::vector<char> message;
 	bushes.clear(); //clear vector, if it's not empty
+	
+	while(!paired) {
+		if( m_artist.PairScreen() ) return;
+		if( ping_recv.recv_msg() ){
+			message.assign(ping_recv.get_msg(), ping_recv.get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
+			if( message[0] == 'p' and message[1] == 'i' and 
+				message[2] == 'n' and message[3] == 'g' ) {
+				ping_sender.send_msg("pong");
+				paired = true;
+			}
+		}
+	}
+	erase();
+	m_artist.GameTable();
+	refresh();
+	
+	UDPSSMcastReceiver recv("","127.0.0.1", 3262);
+	UDPSSMcastSender sender("",_UDPMcastSender_h_DEFAULT_TTL,"127.0.0.1", 3261); //open socket
 	
 	while( !got_sheep ){
 		recv.recv_msg();
@@ -288,33 +321,44 @@ void Engine::run_evil()
 		}
 	}
 	
-	while( recv.recv_msg() ){
-		message.assign(recv.get_msg(), recv.get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
-		if( message[0] == 'c' ){
-			if( !got_sheep ){
-				if( bushes.size() > 0 ){
-					for (auto it = bushes.begin(); it != bushes.end(); it++) {
-						m_artist.Pencil(*it);
-					}
-				}
-				got_sheep = true;
-			}
-			m_artist.Animation(sheep, (unsigned int) message[1]);
-			refresh();
+	bool online = true;
+	bool received = false;
+	while( online ){
+		try {
+			received = recv.recv_msg();
 		}
-		else if( message[0] == 'r' ){
-			if( got_sheep ){
-				if( bushes.size() > 0 ){
-					for (auto it = bushes.begin(); it != bushes.end(); it++) {
-						m_artist.Rubber(*it);
-						delete *it;
+		catch ( const char* msg ) {
+			endwin();
+			std::cerr << msg << std::endl;
+		}
+		if( received ) {
+			message.assign(recv.get_msg(), recv.get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
+			if( message[0] == 'c' ){
+				if( !got_sheep ){
+					if( bushes.size() > 0 ){
+						for (auto it = bushes.begin(); it != bushes.end(); it++) {
+							m_artist.Pencil(*it);
+						}
 					}
-					bushes.clear();
+					got_sheep = true;
 				}
-				got_sheep = false;
+				m_artist.Animation(sheep, (unsigned int) message[1]);
+				refresh();
 			}
-			RectObstacle * tmp_bush = new RectObstacle(message[1], message[2], message[3], message[4]);
-			bushes.push_back(tmp_bush);
+			else if( message[0] == 'r' ){
+				if( got_sheep ){
+					if( bushes.size() > 0 ){
+						for (auto it = bushes.begin(); it != bushes.end(); it++) {
+							m_artist.Rubber(*it);
+							delete *it;
+						}
+						bushes.clear();
+					}
+					got_sheep = false;
+				}
+				RectObstacle * tmp_bush = new RectObstacle(message[1], message[2], message[3], message[4]);
+				bushes.push_back(tmp_bush);
+			}
 		}
 		if( bull_prod%10 == 0 ) {
 			if( first_run ) { 

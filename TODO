@@ -19,3 +19,4 @@ TODO LIST:
              tasti è troppo alto
 - Rete: aggiungere gestione eccezioni ( timeout? )
 - Rete: considerare se mettere poll a send()
+- Rete: constrollo costruttore socket con good()

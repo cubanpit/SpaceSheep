@@ -80,13 +80,13 @@ bool UDPSSMcastReceiver :: recv_msg()
 		}
 		else {
 			if( m_psfd->revents & POLLNVAL ) {
-				throw "UDPMcastReceiver::recv_data() ERROR: poll() found fd not open.";
+				throw "UDPMcastReceiver::recv_data() ERROR: poll() found fd not open";
 			}
 			if( m_psfd->revents & POLLHUP ) {
-				throw "UDPMcastReceiver::recv_data() ERROR: poll() returned hang up.";
+				throw "UDPMcastReceiver::recv_data() ERROR: poll() returned hang up";
 			}
 			if( m_psfd->revents & POLLERR ) {
-				throw "UDPMcastReceiver::recv_data() ERROR: poll() returned an error condition.";
+				throw "UDPMcastReceiver::recv_data() ERROR: poll() returned an error condition";
 			}
 			return false;
 		}

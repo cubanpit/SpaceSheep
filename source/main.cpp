@@ -53,10 +53,12 @@ int main (int argc, char **argv)
         endwin(); // end terminal world [ncurses] tmp
 	}
 	catch ( const char* msg ) {
+		endwin();
 		std::cerr << msg << std::endl;
 	}
 	catch (std::bad_alloc& ba)
 	{
+		endwin();
 		std::cerr << "main() bad_alloc caught: " << ba.what() << std::endl;
 		exit (EXIT_FAILURE);
 	}
