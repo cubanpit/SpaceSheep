@@ -73,6 +73,7 @@ class UDPSSMcastReceiver : public UDPMcastReceiver
 
 		bool recv_msg();
 		char* get_msg(){ return m_msg; };
+		void flush_socket();
 
 	private:
 		char m_msg[_UDPSSMcast_h_DEFAULT_MSG_LEN];

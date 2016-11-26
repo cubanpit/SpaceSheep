@@ -57,6 +57,7 @@ UDPSSMcastReceiver :: UDPSSMcastReceiver(const std::string &listen_interface,
 	m_stimeout = stimeout;
 	m_psfd = new pollfd{ m_sfd, POLLIN };
 }
+
 UDPSSMcastReceiver :: ~UDPSSMcastReceiver()
 {
 }
@@ -91,6 +92,11 @@ bool UDPSSMcastReceiver :: recv_msg()
 			return false;
 		}
 	}
+}
+
+void UDPSSMcastReceiver :: flush_socket()
+{
+	while( recv_msg() );
 }
 
 std::string compose_msg(CircleObstacle* circle)

@@ -43,6 +43,7 @@ class Engine
 			   unsigned int yDim = 30,
 		       unsigned int n_fatness = 2,
 	    	   unsigned int n_bushes_prod = 14,
+			   unsigned int n_bull_prod = 10,
 			   unsigned int n_dt_uint_bushes = 1500);
 		~Engine(){}
 
@@ -66,12 +67,14 @@ class Engine
 
 	private:
 		SpaceSheep* sheep;
+		SpaceBull* bull;
 		Sketcher m_artist;
 		
 		std::vector<RectObstacle*> bushes;
 
 		unsigned int fatness; //set sheep fatness
 		unsigned int bushes_prod; //set vertical frequency (production) of obstacle
+		unsigned int bull_prod; //set bull speed
 		unsigned int dt_uint_bushes; //set time frequency of bushes movement
 
 		unsigned int bushes_w_d = 4; //margin between bushes distance and sheep width

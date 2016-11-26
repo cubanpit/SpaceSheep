@@ -11,6 +11,7 @@ TODO LIST:
 		   multi-threading?)
 - Engine: aggiungere controllo sull'altezza
 - Engine: controllare eliminazione elementi del vettore di cespugli
+- Engine: capire perché bull in run_evil() rallenta dopo che il gioco viene bloccato in run_good()
 - all: rivedere e ampliare i commenti (aggiornarli alla gestione delle eccezioni)
 - Sketcher: opzione 'q' per uscire dalla WelcomeScreen
 - Sketcher: errore dimensione, aggiungere stampa dimensione attuale
@@ -19,4 +20,4 @@ TODO LIST:
              tasti è troppo alto
 - Rete: aggiungere gestione eccezioni ( timeout? )
 - Rete: considerare se mettere poll a send()
-- Rete: constrollo costruttore socket con good()
+- Rete: controllo costruttore socket con good()
