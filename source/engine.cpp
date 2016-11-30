@@ -278,9 +278,11 @@ void Engine::run_good()
 
 void Engine::run_evil()
 {
+	timeout(0);
 	UDPSSMcastReceiver recv("","127.0.0.1", 3263);
 	UDPSSMcastSender sender("",_UDPMcastSender_h_DEFAULT_TTL,"127.0.0.1", 3264); //open socket
 	unsigned short count = 0;
+	char ch = '0';
 
 	bool got_sheep = false;
 	bool first_run = true;
@@ -367,19 +369,25 @@ void Engine::run_evil()
 				m_artist.Pencil(*it);
 			}
 			if( first_run ) { 
-				bull = new SpaceBull(10, -3, 2);
-				m_artist.Pencil(bull);
-				first_run = false;
+				ch = getch();
+				if ( ch == 'a'){
+					bull = new SpaceBull(10, -3, 2);
+					m_artist.Pencil(bull);
+					first_run = false;
+					sender.send_msg(compose_msg(bull));
+				}
+				else if ( ch == 'ERR' ) std::cerr << "cosa a caso " << std::endl;
+				else ch = '0';
 			}
 			else if( ((int)(bull->get_ref()).y - (int)(bull->get_fatness()) - 1) > (int)m_artist.get_GameH() ) {
 				delete bull;
-				bull = new SpaceBull(10, -3, 2);
-				m_artist.Pencil(bull);
+				first_run = true;
 			}
 			else {
 				m_artist.Animation(bull);
+				sender.send_msg(compose_msg(bull));
 			}
-			sender.send_msg(compose_msg(bull));
+			
 			refresh();
 		}
 		++count;

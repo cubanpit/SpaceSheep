@@ -1,8 +1,9 @@
 TODO LIST:
  
-- Obstacle: m_hitbox public can be wrong choice?
 - Obstacle: m_hitbox and m_ref as pointers could enhance performance?
 - Obstacle: controllare nomi funzioni movimento pecora
+- Obstacle: cambiare metodi contenenti 'fatness' sostituendoci 'radius'
+- Obstacle/HitBox: verificare nomi metodi, get_ref() o get_v()?
 - HitBox: in alcune situazioni (all'interno di un grosso rettangolo) la pecora 
            non è sovrapposta
 - Engine: alcune variabili possono essere messe static (seed, chrono, random)?
@@ -12,10 +13,13 @@ TODO LIST:
 - Engine: aggiungere controllo sull'altezza
 - Engine: controllare eliminazione elementi del vettore di cespugli
 - Engine: capire perché bull in run_evil() rallenta dopo che il gioco viene bloccato in run_good()
+- Engine: pecora dopo la schermata di uscita non resetta la sua posizione
 - all: rivedere e ampliare i commenti (aggiornarli alla gestione delle eccezioni)
 - Sketcher: opzione 'q' per uscire dalla WelcomeScreen
 - Sketcher: errore dimensione, aggiungere stampa dimensione attuale
-- Engine: pecora dopo la schermata di uscita non resetta la sua posizione
+- Sketcher: disegno SpaceBull, possibile con due variabili intere in meno?
+- Sketcher: disegno SpaceBull, correggere creazione Bull, non so dove, spunta non gradualmente
+- Sketcher: modificare cancellazione SpaceBull
 - Sketcher: nella schermata iniziale il tempo di attesa per la pressione dei
              tasti è troppo alto
 - Rete: aggiungere gestione eccezioni ( timeout? )

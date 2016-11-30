@@ -268,23 +268,52 @@ void Sketcher :: Pencil (SpaceSheep* sheep)
 void Sketcher :: Pencil (SpaceBull* bull)
 {
 	attron(COLOR_PAIR(5)); // enable bull color pair
-	for (unsigned int i=0; i < (bull->get_fatness()+1); ++i) {
-		for (unsigned int j=0; j < (2*i)+1; ++j) {
-			mvprintw(M_yOffset+(bull->get_ref()).y-bull->get_fatness()+i,
-					M_xOffset+(bull->get_ref()).x-i+j, "@");
+	if ( abs((bull->get_ref()).y-bull->get_fatness()) < (M_yDim-2) ) {
+		unsigned int i_top_up = 0;
+		unsigned int i_top_down = bull->get_fatness() + 1;
+		unsigned int i_bottom_up = bull->get_fatness();
+		unsigned int i_bottom_down = 0;
+		unsigned int i_bottom_limit = 2;
+		if ( (bull->get_ref()).y-(int)bull->get_fatness() < 0 ) {
+			i_top_up = abs((bull->get_ref()).y-(int)bull->get_fatness());
 		}
-	}
-	for (unsigned int i=bull->get_fatness(); i > 2 ; --i) {
-		for (unsigned int j=0; j < (2*i)-1; ++j) {
-			mvprintw(M_yOffset+(bull->get_ref()).y+(bull->get_fatness()-i+1),
-					M_xOffset+(bull->get_ref()).x-i+1+j, "@");
+		if ( (bull->get_ref()).y > ((int)M_yDim-3) ) {
+			i_top_down = bull->get_fatness() + 1 - abs((bull->get_ref()).y
+					-((int)M_yDim-3));
 		}
-	}
-	mvprintw(M_yOffset+(bull->get_ref()).y+bull->get_fatness()-1,
-			M_xOffset+(bull->get_ref()).x-1, "O@O");
-	mvprintw(M_yOffset+(bull->get_ref()).y+bull->get_fatness(),
-			M_xOffset+(bull->get_ref()).x, "W");
-	
+		if ( (bull->get_ref()).y < 1 ) {
+			if ( ((int)bull->get_fatness()+(bull->get_ref()).y) > 0 ) {
+				i_bottom_up = (int)bull->get_fatness() + 1 + (bull->get_ref()).y;
+			} else i_bottom_up = 0;
+		}
+		if ( ((bull->get_ref()).y+(int)bull->get_fatness()) > ((int)M_yDim-3) ) {
+			i_bottom_down = (bull->get_ref()).y + (int)bull->get_fatness()
+				- (int)M_yDim + 3;
+		}
+		for (unsigned int i=i_top_up; i < i_top_down; ++i) {
+			for (unsigned int j=0; j < (2*i)+1; ++j) {
+				mvprintw(M_yOffset+(bull->get_ref()).y-bull->get_fatness()+i,
+						M_xOffset+(bull->get_ref()).x-i+j, "@");
+			}
+		}
+		if ( i_bottom_down > 2 ) i_bottom_limit = i_bottom_down;
+		for (unsigned int i=i_bottom_up; i > i_bottom_limit; --i) {
+			for (unsigned int j=0; j < (2*i)-1; ++j) {
+				mvprintw(M_yOffset+(bull->get_ref()).y+(bull->get_fatness()-i+1),
+						M_xOffset+(bull->get_ref()).x-i+1+j, "@");
+			}
+		}
+		if ( i_bottom_down < 2
+				and ((bull->get_ref()).y+(int)bull->get_fatness()-1) >= 0 ) {
+			mvprintw(M_yOffset+(bull->get_ref()).y+bull->get_fatness()-1,
+					M_xOffset+(bull->get_ref()).x-1, "O@O");
+		}	
+		if ( i_bottom_down < 1
+				and ((bull->get_ref()).y+(int)bull->get_fatness()) >= 0 ) {
+			mvprintw(M_yOffset+(bull->get_ref()).y+bull->get_fatness(),
+					M_xOffset+(bull->get_ref()).x, "W");
+		}
+	}	
 	attroff(COLOR_PAIR(5)); // disable bull color pair
 }
 

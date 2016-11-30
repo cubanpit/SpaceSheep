@@ -90,7 +90,7 @@ class SpaceSheep : public CircleObstacle
 		SpaceSheep(position ref, unsigned int fatness);
 		~SpaceSheep(){ }
 	
-		void move(char dir); // move right if dir is true, else move left.
+		void move(char dir); // move right if dir is 'r', move left if dir is 'l'.
 		void move(unsigned int x); // move to x.
 };
 

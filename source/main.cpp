@@ -37,7 +37,7 @@ int main (int argc, char **argv)
 
 	try {
 		if ( !has_colors() ) {
-			throw "main() ERROR: this terminal doesn't support colors properly. "
+			throw "main() ERROR: this terminal doesn't support colors properly."
 				"Take five bucks and go buy a better computer!";
 		}
 		start_color(); // enable colors in this window [ncurses]
