@@ -32,7 +32,7 @@
 int main (int argc, char **argv)
 {
 	initscr(); // start the terminal world [ncurses] tmp
-    curs_set(0); // hide cursor position [ncurses] tmp
+	curs_set(0); // hide cursor position [ncurses] tmp
 	noecho(); // to hide input obtained with getch() [ncurses] tmp
 
 	try {
@@ -42,14 +42,8 @@ int main (int argc, char **argv)
 		}
 		start_color(); // enable colors in this window [ncurses]
 		Engine game(100,30);
-        //tmp///////////////////
-        int d = 0;
-        std::cout << "scegli il tuo destino ( 0 per cattivo, 1 per buono!)" << std::endl;
-        std::cin >> d;
+		game.start();
 
-        if(d == 1)	game.run_good();
-        else if(d == 0) game.run_evil();
-        /////////////////////////
         endwin(); // end terminal world [ncurses] tmp
 	}
 	catch ( const char* msg ) {

@@ -47,6 +47,7 @@ class Engine
 			   unsigned int n_dt_uint_bushes = 1500);
 		~Engine(){}
 
+		void start(); //start the game!
 		void run_local(); //play local mode
 		void run_good(); //play as good sheep versus the evil bull creator
 		void run_evil(); //play as evil bull creator versus the good sheep

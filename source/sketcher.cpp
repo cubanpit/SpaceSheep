@@ -72,7 +72,7 @@ void Sketcher :: GameTable ()
 	attroff(COLOR_PAIR(1));
 }
 
-void Sketcher :: WelcomeScreen ()
+char Sketcher :: WelcomeScreen ()
 {
 	timeout(0); // getch() waits no time for input [ncurses]
 	erase();
@@ -103,7 +103,7 @@ void Sketcher :: WelcomeScreen ()
 	SpaceSheep *tmp = new SpaceSheep((M_GameW/2)-16,M_GameH-3,2);
 	Pencil(tmp);
 	bool ctrl = false;
-	char tmp_ch;
+	char return_ch;
 	unsigned int tmp_count = 0;
 	while (!ctrl) {
 		refresh();
@@ -116,11 +116,14 @@ void Sketcher :: WelcomeScreen ()
 			Animation(tmp,'l');
 		}
 		++tmp_count;
-		tmp_ch = getch();
-		if ( tmp_ch == 'n' ) ctrl = true;
+		return_ch = getch();
+		if ( return_ch == 'n' ) ctrl = true;
+		else if ( return_ch == 'e' ) ctrl = true;
+		else if ( return_ch == 'g' ) ctrl = true;
 	}
 	delete tmp;
 	erase();
+	return return_ch;
 }
 
 bool Sketcher :: ExitScreen (unsigned int score)

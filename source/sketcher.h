@@ -45,7 +45,7 @@ class Sketcher
 		~Sketcher(){}
 
 		void GameTable(); //print game table limits
-		void WelcomeScreen(); //print welcome screen
+		char WelcomeScreen(); //print welcome screen and return user choice
 		bool PauseScreen(); //print pause screen
 		bool PairScreen(); //print pair screen
 		bool ExitScreen(unsigned int score); //print exit screen

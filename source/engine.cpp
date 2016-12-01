@@ -34,8 +34,15 @@ Engine::Engine(unsigned int xDim, unsigned int yDim, unsigned int n_fatness,
 	m_artist(xDim,yDim), fatness(n_fatness),
 	bushes_prod(n_bushes_prod), bull_prod(n_bull_prod), dt_uint_bushes(n_dt_uint_bushes)
 {
-	m_artist.WelcomeScreen();
-	sheep = new SpaceSheep(m_artist.get_GameW()/2,m_artist.get_GameH()-1-fatness,fatness);
+}
+
+void Engine::start()
+{
+	char user_choice;
+	user_choice = m_artist.WelcomeScreen();	
+    if ( user_choice == 'n' ) run_local();
+	else if ( user_choice == 'e' ) run_evil();
+	else if ( user_choice == 'g' ) run_good();
 }
 
 void Engine::run_local()
@@ -45,6 +52,7 @@ void Engine::run_local()
 	bushes.clear(); //clear vector, if it's not empty
 
 	m_artist.GameTable();
+	sheep = new SpaceSheep(m_artist.get_GameW()/2,m_artist.get_GameH()-1-fatness,fatness);
 	m_artist.Pencil(sheep);
 	char ch; //needed for sheep movement
 
@@ -161,6 +169,7 @@ void Engine::run_good()
 	m_artist.GameTable();
 	refresh();
 	
+	sheep = new SpaceSheep(m_artist.get_GameW()/2,m_artist.get_GameH()-1-fatness,fatness);
 	sender.send_msg(compose_msg(sheep));
 	m_artist.Pencil(sheep);
 	
