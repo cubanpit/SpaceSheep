@@ -340,16 +340,38 @@ void Sketcher :: Rubber (RectObstacle* bush)
 
 void Sketcher :: Rubber (CircleObstacle* circle)
 {
-	for (unsigned int i=0; i < (circle->get_fatness()+1); ++i) {
-		for (unsigned int j=0; j < (2*i)+1; ++j) {
-			mvprintw(M_yOffset+(circle->get_ref()).y-circle->get_fatness()+i,
-					M_xOffset+(circle->get_ref()).x-i+j, " ");
+	if ( abs((circle->get_ref()).y-circle->get_fatness()) < (M_yDim-2) ) {
+		unsigned int i_top_up = 0;
+		unsigned int i_top_down = circle->get_fatness() + 1;
+		unsigned int i_bottom_up = circle->get_fatness();
+		unsigned int i_bottom_down = 0;
+		if ( (circle->get_ref()).y-(int)circle->get_fatness() < 0 ) {
+			i_top_up = abs((circle->get_ref()).y-(int)circle->get_fatness());
 		}
-	}
-	for (unsigned int i=circle->get_fatness(); i > 0 ; --i) {
-		for (unsigned int j=0; j < (2*i)-1; ++j) {
-			mvprintw(M_yOffset+(circle->get_ref()).y+(circle->get_fatness()-i+1),
-					M_xOffset+(circle->get_ref()).x-i+1+j, " ");
+		if ( (circle->get_ref()).y > ((int)M_yDim-3) ) {
+			i_top_down = circle->get_fatness() + 1 - abs((circle->get_ref()).y
+					-((int)M_yDim-3));
+		}
+		if ( (circle->get_ref()).y < 1 ) {
+			if ( ((int)circle->get_fatness()+(circle->get_ref()).y) > 0 ) {
+				i_bottom_up = (int)circle->get_fatness() + 1 + (circle->get_ref()).y;
+			} else i_bottom_up = 0;
+		}
+		if ( ((circle->get_ref()).y+(int)circle->get_fatness()) > ((int)M_yDim-3) ) {
+			i_bottom_down = (circle->get_ref()).y + (int)circle->get_fatness()
+				- (int)M_yDim + 3;
+		}
+		for (unsigned int i=i_top_up; i < i_top_down; ++i) {
+			for (unsigned int j=0; j < (2*i)+1; ++j) {
+				mvprintw(M_yOffset+(circle->get_ref()).y-circle->get_fatness()+i,
+						M_xOffset+(circle->get_ref()).x-i+j, " ");
+			}
+		}
+		for (unsigned int i=i_bottom_up; i > i_bottom_down; --i) {
+			for (unsigned int j=0; j < (2*i)-1; ++j) {
+				mvprintw(M_yOffset+(circle->get_ref()).y+(circle->get_fatness()-i+1),
+						M_xOffset+(circle->get_ref()).x-i+1+j, " ");
+			}
 		}
 	}
 }
