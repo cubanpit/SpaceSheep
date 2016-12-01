@@ -79,23 +79,27 @@ char Sketcher :: WelcomeScreen ()
 
 	GameTable();
 	attron(COLOR_PAIR(4));
-	mvprintw(M_yOffset+4,M_xOffset+(M_GameW/2)-28,"________________________________________________________");
+	mvprintw(M_yOffset+1,M_xOffset+(M_GameW/2)-28,"________________________________________________________");
 	attroff(COLOR_PAIR(4));
 	attron(COLOR_PAIR(3));
-	mvprintw(M_yOffset+5,M_xOffset+(M_GameW/2)-28,"   _____                      _____ __                  ");
-	mvprintw(M_yOffset+6,M_xOffset+(M_GameW/2)-28,"  / ___/____  ____  ________ / ___// /_  ___  ___  ____ ");
-	mvprintw(M_yOffset+7,M_xOffset+(M_GameW/2)-28,"  \\__ \\/ __ \\/ __ `/ ___/ _ \\\\__ \\/ __ \\/ _ \\/ _ \\/ __ \\");
-	mvprintw(M_yOffset+8,M_xOffset+(M_GameW/2)-28," ___/ / /_/ / /_/ / /__/  __/__/ / / / /  __/  __/ /_/ /");
-	mvprintw(M_yOffset+9,M_xOffset+(M_GameW/2)-28,"/____/ .___/\\__,_/\\___/\\___/____/_/ /_/\\___/\\___/ .___/ ");
-	mvprintw(M_yOffset+10,M_xOffset+(M_GameW/2)-28,"    /_/                                        /_/      ");
+	mvprintw(M_yOffset+2,M_xOffset+(M_GameW/2)-28,"   _____                      _____ __                  ");
+	mvprintw(M_yOffset+3,M_xOffset+(M_GameW/2)-28,"  / ___/____  ____  ________ / ___// /_  ___  ___  ____ ");
+	mvprintw(M_yOffset+4,M_xOffset+(M_GameW/2)-28,"  \\__ \\/ __ \\/ __ `/ ___/ _ \\\\__ \\/ __ \\/ _ \\/ _ \\/ __ \\");
+	mvprintw(M_yOffset+5,M_xOffset+(M_GameW/2)-28," ___/ / /_/ / /_/ / /__/  __/__/ / / / /  __/  __/ /_/ /");
+	mvprintw(M_yOffset+6,M_xOffset+(M_GameW/2)-28,"/____/ .___/\\__,_/\\___/\\___/____/_/ /_/\\___/\\___/ .___/ ");
+	mvprintw(M_yOffset+7,M_xOffset+(M_GameW/2)-28,"    /_/                                        /_/      ");
 	attroff(COLOR_PAIR(3));
 	attron(COLOR_PAIR(4));
-	mvprintw(M_yOffset+11,M_xOffset+(M_GameW/2)-28,"________________________________________________________");
+	mvprintw(M_yOffset+8,M_xOffset+(M_GameW/2)-28,"________________________________________________________");
 	attroff(COLOR_PAIR(4));
-	mvprintw(M_yOffset+15,M_xOffset+(M_GameW/2)-28,"Welcome in the Sheeps Galaxy!");
-	mvprintw(M_yOffset+17,M_xOffset+(M_GameW/2)-28,"Help SpaceSheep to avoid space bushes using 'j' and 'l' key.");
-	mvprintw(M_yOffset+18,M_xOffset+(M_GameW/2)-28,"Press 'p' during the game to take a break.");
-	mvprintw(M_yOffset+20,M_xOffset+(M_GameW/2)-28,"Press 'n' to begin!");
+	mvprintw(M_yOffset+11,M_xOffset+(M_GameW/2)-28,"Welcome in the Sheeps Galaxy!");
+	mvprintw(M_yOffset+13,M_xOffset+(M_GameW/2)-28,"Help SpaceSheep to avoid space bushes using 'j' and 'l' key.");
+	mvprintw(M_yOffset+15,M_xOffset+(M_GameW/2)-28,"Press:");
+	mvprintw(M_yOffset+16,M_xOffset+(M_GameW/2)-28," 'p' during the game to take a break.");
+	mvprintw(M_yOffset+17,M_xOffset+(M_GameW/2)-28," 'n' to start a local game. You against your computer!");
+	mvprintw(M_yOffset+18,M_xOffset+(M_GameW/2)-28," 'g' to start a 1v1 game, moving the sheep. Fear the bull!");
+	mvprintw(M_yOffset+19,M_xOffset+(M_GameW/2)-28," 'e' to start a 1v1 game, creating evil bulls. Hit the sheep!");
+	mvprintw(M_yOffset+20,M_xOffset+(M_GameW/2)-28," 'q' to quit the game now.");
 
 	std::chrono::system_clock::time_point t_tmp_sheep = std::chrono::system_clock::now();
 	std::chrono::duration<int,std::milli> dt_tmp_sheep(300);
@@ -120,6 +124,7 @@ char Sketcher :: WelcomeScreen ()
 		if ( return_ch == 'n' ) ctrl = true;
 		else if ( return_ch == 'e' ) ctrl = true;
 		else if ( return_ch == 'g' ) ctrl = true;
+		else if ( return_ch == 'q' ) ctrl = true;
 	}
 	delete tmp;
 	erase();
