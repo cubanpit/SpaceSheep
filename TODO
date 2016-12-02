@@ -2,6 +2,7 @@ TODO LIST:
  
 - all: rivedere e ampliare i commenti (aggiornarli alla gestione delle eccezioni)
 - all: aggiungere global namespace prima delle funzioni definite globalmente?
+- all: disegnare tutto in grassetto? difetto cornice
 - Obstacle: m_hitbox and m_ref as pointers could enhance performance?
 - Obstacle: controllare nomi funzioni movimento pecora
 - Obstacle: cambiare metodi contenenti 'fatness' sostituendoci 'radius'
@@ -14,13 +15,13 @@ TODO LIST:
 		   multi-threading?)
 - Engine: aggiungere controllo sull'altezza
 - Engine: controllare eliminazione elementi del vettore di cespugli
-- Engine: capire perché bull in run_evil() rallenta dopo che il gioco viene bloccato in run_good()
+- Engine: capire perché bull in run_evil() rallenta dopo che il gioco viene
+			bloccato in run_good()
 - Engine: pecora dopo la schermata di uscita non resetta la sua posizione
-- Sketcher: opzione 'q' per uscire dalla WelcomeScreen
 - Sketcher: errore dimensione, aggiungere stampa dimensione attuale
 (- Sketcher: disegno SpaceBull, possibile con due variabili intere in meno?)
 - Sketcher: nella schermata iniziale il tempo di attesa per la pressione dei
-             tasti è troppo alto
+            tasti è troppo alto
 - Rete: aggiungere gestione eccezioni ( timeout? )
 - Rete: controllo costruttore socket con good()
 (- Rete: considerare se mettere poll a send())

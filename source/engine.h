@@ -43,8 +43,8 @@ class Engine
 			   unsigned int yDim = 30,
 		       unsigned int n_fatness = 2,
 	    	   unsigned int n_bushes_prod = 14,
-			   unsigned int n_bull_prod = 50,
-			   unsigned int n_dt_uint_bushes = 1500);
+			   unsigned int n_bull_prod = 20,
+			   unsigned int n_dt_uint_bushes = 350);
 		~Engine(){}
 
 		void start(); //start the game!
@@ -67,10 +67,9 @@ class Engine
 
 
 	private:
+		Sketcher m_artist;
 		SpaceSheep* sheep;
 		SpaceBull* bull;
-		Sketcher m_artist;
-		
 		std::vector<RectObstacle*> bushes;
 
 		unsigned int fatness; //set sheep fatness

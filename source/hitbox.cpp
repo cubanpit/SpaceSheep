@@ -102,13 +102,13 @@ bool HitBox :: Overlap_RectCircle(HitBoxRect& r, HitBoxCircle& c) const
 	 *
 	 *   This is a Circle:
 	 *
-	 *		C    | radius = height
+	 *		C    | radius = height/2
 	 *	   C#C   |
-	 *    C#O#C  |
+	 *    C#O#C  -
 	 *     C#C   |
 	 *      C    |
-	 *    _____
-	 *    radius = width
+	 *    __|__
+	 *    radius = width/2
 	 *
 	 *    radius = abs(C.x - O.x) + abs(C.y - O.y)
 	 *    O = ref
@@ -173,13 +173,13 @@ bool HitBox :: Overlap_CircleCircle(HitBoxCircle& a, HitBoxCircle& b) const
 	/*
 	 * This is a Circle:
 	 *
-	 *		C    | radius = height
+	 *		C    | radius = height/2
 	 *	   C#C   |
-	 *    C#R#C  |
+	 *    C#R#C  -
 	 *     C#C   |
 	 *      C    |
-	 *    _____
-	 *    radius = width
+	 *    __|__
+	 *    radius = width/2
 	 *
 	 *    radius = abs(C.x - R.x) + abs(C.y - R.y)
 	 */

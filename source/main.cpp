@@ -36,11 +36,9 @@ int main (int argc, char **argv)
 	noecho(); // to hide input obtained with getch() [ncurses] tmp
 
 	try {
-		if ( !has_colors() ) {
-			throw "main() ERROR: this terminal doesn't support colors properly."
-				"Take five bucks and go buy a better computer!";
+		if ( has_colors() ) {
+			start_color(); // enable colors in this window [ncurses]
 		}
-		start_color(); // enable colors in this window [ncurses]
 		Engine game(100,30);
 		game.start();
 

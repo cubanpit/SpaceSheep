@@ -138,7 +138,7 @@ void Engine::run_local()
 		refresh();
 	}
 	new_game = m_artist.ExitScreen(score);
-	if ( new_game ) run_local();
+	if ( new_game ) start();
 }
 
 void Engine::run_good()
@@ -275,7 +275,15 @@ void Engine::run_good()
 					break;
 				}
 			}
+			
+			// With this we are sure that the bull is over bushes, and they are
+			//  always in sync.
+			for (auto it = bushes.begin(); it != bushes.end(); it++) {
+				m_artist.Pencil(*it);
+			}
+			if ( got_bull ) m_artist.Pencil(bull);
 			refresh();
+			
 			sender.send_msg(compose_msg(sheep));
 			t_track_sheep += dt_sheep;
 			std::this_thread::sleep_until(t_track_sheep);
@@ -290,19 +298,12 @@ void Engine::run_evil()
 	timeout(0);
 	UDPSSMcastReceiver recv("","127.0.0.1", 3263);
 	UDPSSMcastSender sender("",_UDPMcastSender_h_DEFAULT_TTL,"127.0.0.1", 3264); //open socket
-	unsigned short count = 0;
-	char ch = '0';
 
-	bool got_sheep = false;
-	bool first_run = true;
 	bool paired = false;
-	bool cancel = false;
-	bool online = true;
-	bool received = false;
-	
 	std::vector<char> message;
 	bushes.clear(); //clear vector, if it's not empty
 	
+	// This loop waits endlessly till the good guy is online
 	while(!paired) {
 		if( m_artist.PairScreen() ) return;
 		if( recv.recv_msg() ){
@@ -314,11 +315,15 @@ void Engine::run_evil()
 			}
 		}
 	}
+	// We flush any garbage on the socket, there shouldn't be anything
 	recv.flush_socket();
 	erase();
 	m_artist.GameTable();
 	refresh();
 	
+	bool got_sheep = false;
+	sheep = new SpaceSheep(m_artist.get_GameW()/2,m_artist.get_GameH()-1-fatness,fatness);
+
 	while( !got_sheep ){
 		recv.recv_msg();
 		message.assign(recv.get_msg(), recv.get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
@@ -328,14 +333,20 @@ void Engine::run_evil()
 			tmp_ref.x = message[1];
 			tmp_ref.y = m_artist.get_GameH()-1-message[3];
 			
-			sheep->set_ref(tmp_ref);
-			sheep->set_fatness(message[3]);
-			
+			sheep = new SpaceSheep(tmp_ref,(unsigned int)message[3]);
 			m_artist.Pencil(sheep);
 			got_sheep = true;
 		}
 	}
+	recv.flush_socket();
 	
+	bool got_bull = false;
+	bool online = true;
+	bool received = false;
+
+	unsigned short int count = 0;
+	char ch = '0';
+
 	while( online ){
 		try {
 			received = recv.recv_msg();
@@ -356,6 +367,7 @@ void Engine::run_evil()
 					got_sheep = true;
 				}
 				m_artist.Animation(sheep, (unsigned int) message[1]);
+				if ( got_bull ) m_artist.Pencil(bull);
 				refresh();
 			}
 			else if( message[0] == 'r' ){
@@ -373,30 +385,42 @@ void Engine::run_evil()
 				bushes.push_back(tmp_bush);
 			}
 		}
-		if( count%bull_prod == 0 ) {
-			for (auto it = bushes.begin(); it != bushes.end(); it++) {
-				m_artist.Pencil(*it);
-			}
-			if( first_run ) { 
-				ch = getch();
-				if ( ch == 'a'){
+		if ( count%bull_prod == 0 ) {
+			if( !got_bull ) {
+				ch = '0';
+				int i = 0;
+				char tmp_char = '0';
+				// This loop eats the queue on stdin, remains only 1 char.
+				while ( true ) { 
+					tmp_char = getch();
+					if ( tmp_char == EOF ) break;
+					else ch = tmp_char;
+					++i;
+				}
+				if ( i == 0 ) continue;
+				else if ( ch == 'a'){
 					bull = new SpaceBull(10, -3, 2);
 					m_artist.Pencil(bull);
-					first_run = false;
+					got_bull = true;
 					sender.send_msg(compose_msg(bull));
 				}
-				else if ( ch == 'ERR' ) std::cerr << "cosa a caso " << std::endl;
-				else ch = '0';
+				else if ( ch == 'E' ) std::cerr << "cosa a caso " << std::endl;
 			}
-			else if( ((int)(bull->get_ref()).y - (int)(bull->get_fatness()) - 1) > (int)m_artist.get_GameH() ) {
+			else if ( ((int)(bull->get_ref()).y - (int)(bull->get_fatness()) - 1) > (int)m_artist.get_GameH() ) {
 				delete bull;
-				first_run = true;
+				got_bull = false;
 			}
 			else {
 				m_artist.Animation(bull);
 				sender.send_msg(compose_msg(bull));
 			}
-			
+
+			// With this we are sure that the bull is over bushes, and they are
+			//  always in sync.
+			for (auto it = bushes.begin(); it != bushes.end(); it++) {
+				m_artist.Pencil(*it);
+			}
+			if ( got_bull ) m_artist.Pencil(bull);
 			refresh();
 		}
 		++count;
@@ -450,12 +474,13 @@ void Engine :: add_obstacle_bushes ()
 			if ( (x + w) <= (int)m_artist.get_GameW() ) ctrl = true;
 			if ( i > 0 ) {
 				if ( ctrl ) {
-					if ( ((x >= (((*(bushes.back())).get_ref()).x + (int)((*(bushes.back())).get_rec()).width)) and
-								(x - (((*(bushes.back())).get_ref()).x +
-									  (int)((*(bushes.back())).get_rec()).width)) <
+					if ( ((x >= (((*(bushes.back())).get_ref()).x 
+								+ (int)((*(bushes.back())).get_rec()).width)) and
+							(x - (((*(bushes.back())).get_ref()).x +
+								(int)((*(bushes.back())).get_rec()).width)) <
 								((int)(*sheep).get_fatness()*2+1+(int)bushes_w_d)) ) ctrl = false;
 					if ( (((x+(int)w) <= ((*(bushes.back())).get_ref()).x) and
-								(((*(bushes.back())).get_ref()).x - (x + (int)w)) <
+							(((*(bushes.back())).get_ref()).x - (x + (int)w)) <
 								((int)(*sheep).get_fatness()*2+1+(int)bushes_w_d)) ) ctrl = false;
 				}
 				if ( ctrl ) {
