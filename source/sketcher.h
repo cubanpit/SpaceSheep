@@ -50,6 +50,7 @@ class Sketcher
 		bool PairScreen(); //print pair screen
 		bool ExitScreen(unsigned int score); //print exit screen
 		void Score(unsigned int score); //print actual score on Game screen
+		void CreatorChoice();
 
 		void Pencil(RectObstacle* bush); //print bushes
 		void Pencil(SpaceSheep* sheep); //print sheep

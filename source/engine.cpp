@@ -320,6 +320,7 @@ void Engine::run_evil()
 	recv.flush_socket();
 	erase();
 	m_artist.GameTable();
+	m_artist.CreatorChoice();
 	refresh();
 
 	bool got_sheep = false;
@@ -345,9 +346,7 @@ void Engine::run_evil()
 	bool online = true;
 	bool received = false;
 	bool new_game = true;
-
 	unsigned short int count = 0;
-	char ch = '0';
 
 	while( online ){
 		try {
@@ -389,24 +388,11 @@ void Engine::run_evil()
 		}
 		if ( count%bull_prod == 0 ) {
 			if( !got_bull ) {
-				ch = '0';
-				int i = 0;
-				char tmp_char = '0';
-				// This loop eats the queue on stdin, remains only 1 char.
-				while ( true ) {
-					tmp_char = getch();
-					if ( tmp_char == EOF ) break;
-					else ch = tmp_char;
-					++i;
-				}
-				if ( i == 0 ) continue;
-				else if ( ch == 'a'){
-					bull = new SpaceBull(10, -3, 2);
+				got_bull = bull_creator_choice();
+				if ( got_bull ) {
 					m_artist.Pencil(bull);
-					got_bull = true;
 					sender.send_msg(compose_msg(bull));
 				}
-				else if ( ch == 'E' ) std::cerr << "cosa a caso " << std::endl;
 			}
 			else if ( ((int)(bull->get_ref()).y - (int)(bull->get_fatness()) - 1) > (int)m_artist.get_GameH() ) {
 				delete bull;
@@ -531,6 +517,61 @@ bool Engine :: check_bushes_parameters ()
 		return false;
 	}
 	else return true;
+}
+
+bool Engine :: bull_creator_choice()
+{
+	char user_choice = '0';
+	char tmp_char = '0';
+	unsigned short int count_input = 0;
+	// This loop eats the queue on stdin, remains only 1 char.
+	while ( true ) {
+		tmp_char = getch();
+		if ( tmp_char == EOF ) break;
+		else user_choice = tmp_char;
+		++count_input;
+	}
+	if ( count_input == 0 ) return false;
+	else if ( user_choice == 'q'){
+		bull = new SpaceBull(m_artist.get_GameW()/11, -2, 2);
+		return true;
+	}
+	else if ( user_choice == 'w'){
+		bull = new SpaceBull(2*m_artist.get_GameW()/11, -2, 2);
+		return true;
+	}
+	else if ( user_choice == 'e'){
+		bull = new SpaceBull(3*m_artist.get_GameW()/11, -2, 2);
+		return true;
+	}
+	else if ( user_choice == 'r'){
+		bull = new SpaceBull(4*m_artist.get_GameW()/11, -2, 2);
+		return true;
+	}
+	else if ( user_choice == 't'){
+		bull = new SpaceBull(5*m_artist.get_GameW()/11, -2, 2);
+		return true;
+	}
+	else if ( user_choice == 'y'){
+		bull = new SpaceBull(6*m_artist.get_GameW()/11, -2, 2);
+		return true;
+	}
+	else if ( user_choice == 'u'){
+		bull = new SpaceBull(7*m_artist.get_GameW()/11, -2, 2);
+		return true;
+	}
+	else if ( user_choice == 'i'){
+		bull = new SpaceBull(8*m_artist.get_GameW()/11, -2, 2);
+		return true;
+	}
+	else if ( user_choice == 'o'){
+		bull = new SpaceBull(9*m_artist.get_GameW()/11, -2, 2);
+		return true;
+	}
+	else if ( user_choice == 'p'){
+		bull = new SpaceBull(10*m_artist.get_GameW()/11, -2, 2);
+		return true;
+	}
 }
 
 void Engine :: set_bushes_properties (unsigned int n_bushes_w_d,

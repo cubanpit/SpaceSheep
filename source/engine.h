@@ -54,6 +54,7 @@ class Engine
 
 		void add_obstacle_bushes();
 		bool check_bushes_parameters();
+		bool bull_creator_choice();
 
 		void set_bushes_properties(	unsigned int n_bushes_w_d = 4,
 									unsigned int n_bushes_w_tot = 50,

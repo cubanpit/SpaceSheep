@@ -214,6 +214,20 @@ void Sketcher :: Score (unsigned int score)
 	}
 }
 
+void Sketcher :: CreatorChoice()
+{
+	mvprintw(M_yOffset-1, M_xOffset+M_GameW/11, "q");
+	mvprintw(M_yOffset-1, M_xOffset+2*M_GameW/11, "w");
+	mvprintw(M_yOffset-1, M_xOffset+3*M_GameW/11, "e");
+	mvprintw(M_yOffset-1, M_xOffset+4*M_GameW/11, "r");
+	mvprintw(M_yOffset-1, M_xOffset+5*M_GameW/11, "t");
+	mvprintw(M_yOffset-1, M_xOffset+6*M_GameW/11, "y");
+	mvprintw(M_yOffset-1, M_xOffset+7*M_GameW/11, "u");
+	mvprintw(M_yOffset-1, M_xOffset+8*M_GameW/11, "i");
+	mvprintw(M_yOffset-1, M_xOffset+9*M_GameW/11, "o");
+	mvprintw(M_yOffset-1, M_xOffset+10*M_GameW/11, "p");
+}
+
 void Sketcher :: Pencil (RectObstacle* bush)
 {
 	// (width-1) and (height-1) because we have a side from x to x+5 we
