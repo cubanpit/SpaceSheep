@@ -33,7 +33,7 @@
 #define _SKE_H_
 
 #include <ncurses.h>
-#include <string> //std::string, std::to_string
+#include <string> // std::string, std::to_string
 #include <chrono> // std::chrono::system_clock
 #include <thread> // std::this_thread::sleep_until
 #include "obstacle.h"
@@ -60,9 +60,9 @@ class Sketcher
 
 		void Animation(RectObstacle* bush); //animate bush movement
 		void Animation(SpaceSheep* sheep, char dir); //animate sheep movement
-		void Animation(SpaceSheep* sheep, unsigned int x); //animate sheep movement 
+		void Animation(SpaceSheep* sheep, unsigned int x); //animate sheep movement
 		void Animation(SpaceBull* bull); //animate bull movement
-		
+
 		unsigned int get_GameW() { return M_GameW; }
 		unsigned int get_GameH() { return M_GameH; }
 

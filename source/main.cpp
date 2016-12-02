@@ -29,7 +29,7 @@
 
 #include "engine.h"
 
-int main (int argc, char **argv)
+int main (void)
 {
 	initscr(); // start the terminal world [ncurses] tmp
 	curs_set(0); // hide cursor position [ncurses] tmp
@@ -41,8 +41,7 @@ int main (int argc, char **argv)
 		}
 		Engine game(100,30);
 		game.start();
-
-        endwin(); // end terminal world [ncurses] tmp
+		endwin(); // end terminal world [ncurses] tmp
 	}
 	catch ( const char* msg ) {
 		endwin();

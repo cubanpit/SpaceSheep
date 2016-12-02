@@ -35,7 +35,7 @@ Sketcher :: Sketcher (unsigned int xDim, unsigned int yDim)
 	M_yDim = yDim;
 	M_GameW = xDim - 2;
 	M_GameH = yDim - 2;
-	if (COLS >= M_xDim and LINES >= M_yDim) {
+	if (COLS >= (int)M_xDim and LINES >= (int)M_yDim) {
 		// (Offset+1) because we want all body drawn without overlapping
 		//  the game table
 		M_xOffset = ((COLS - M_xDim) / 2) + 1 ;
@@ -57,11 +57,11 @@ void Sketcher :: GameTable ()
 {
 	attron(COLOR_PAIR(1));
 	// (Offset-1) beacuse we have put a +1 in the offset, see previous comment
-	for (unsigned int i=1; i<(M_yDim-1); ++i) {
+	for (unsigned short int i=1; i<(M_yDim-1); ++i) {
 		mvprintw(M_yOffset-1+i, M_xOffset-1, "|");
 		mvprintw(M_yOffset-1+i, M_xOffset-1+M_xDim-1, "|");
 	}
-	for (unsigned int i=1; i<(M_xDim-1); ++i) {
+	for (unsigned short int i=1; i<(M_xDim-1); ++i) {
 		mvprintw(M_yOffset-1, M_xOffset-1+i, "-");
 		mvprintw(M_yOffset-1+M_yDim-1, M_xOffset-1+i, "-");
 	}
@@ -163,8 +163,8 @@ bool Sketcher :: ExitScreen (unsigned int score)
 	}
 	erase();
 	timeout(0);
-	if ( tmp_ch == 'q' ) return false;
-	else if ( tmp_ch == 'n' ) return true;
+	if ( tmp_ch == 'n' ) return true;
+	else return false;
 }
 
 bool Sketcher :: PauseScreen ()
@@ -181,8 +181,8 @@ bool Sketcher :: PauseScreen ()
 	}
 	erase();
 	timeout(0);
-	if ( tmp_ch == 'p' ) return 0;
-	else if ( tmp_ch == 'q' ) return 1;
+	if ( tmp_ch == 'q' ) return true;
+	else return false;
 }
 
 bool Sketcher :: PairScreen ()
@@ -209,7 +209,7 @@ void Sketcher :: Score (unsigned int score)
 	s_ch[4] = std::to_string((int)((score % 100000) / 10000));
 	s_ch[5] = std::to_string((int)((score % 1000000) / 100000));
 	for (int i=0; i<6; ++i) {
-		const char * c = s_ch[i].c_str();
+		const char* c = s_ch[i].c_str();
 		mvprintw(M_yOffset-1, M_xOffset+M_xDim-4-i, c);
 	}
 }
@@ -220,7 +220,7 @@ void Sketcher :: Pencil (RectObstacle* bush)
 	//  have a width of 6
 
 	attron(COLOR_PAIR(2)); // enable bush color pair
-	if ( abs((bush->get_ref()).y) < (M_yDim-2) ) {
+	if ( (unsigned int)abs((bush->get_ref()).y) < (M_yDim-2) ) {
 		unsigned int i_stop_top = 1;
 		unsigned int i_stop_bottom = ((bush->get_rec()).height-1);
 		if ( ((bush->get_ref()).y+(bush->get_rec()).height) >= (M_yDim-1) ) {
@@ -276,7 +276,7 @@ void Sketcher :: Pencil (SpaceSheep* sheep)
 void Sketcher :: Pencil (SpaceBull* bull)
 {
 	attron(COLOR_PAIR(5)); // enable bull color pair
-	if ( abs((bull->get_ref()).y-bull->get_fatness()) < (M_yDim-2) ) {
+	if ( (unsigned int)abs((bull->get_ref()).y-bull->get_fatness()) < (M_yDim-2) ) {
 		unsigned int i_top_up = 0;
 		unsigned int i_top_down = bull->get_fatness() + 1;
 		unsigned int i_bottom_up = bull->get_fatness();
@@ -315,31 +315,33 @@ void Sketcher :: Pencil (SpaceBull* bull)
 				and ((bull->get_ref()).y+(int)bull->get_fatness()-1) >= 0 ) {
 			mvprintw(M_yOffset+(bull->get_ref()).y+bull->get_fatness()-1,
 					M_xOffset+(bull->get_ref()).x-1, "O@O");
-		}	
+		}
 		if ( i_bottom_down < 1
 				and ((bull->get_ref()).y+(int)bull->get_fatness()) >= 0 ) {
 			mvprintw(M_yOffset+(bull->get_ref()).y+bull->get_fatness(),
 					M_xOffset+(bull->get_ref()).x, "W");
 		}
-	}	
+	}
 	attroff(COLOR_PAIR(5)); // disable bull color pair
 }
 
 void Sketcher :: Rubber (RectObstacle* bush)
 {
 	for (unsigned int i=0; i < (bush->get_rec()).height; ++i) {
-		if ( (bush->get_ref()).y+i != -1 and (bush->get_ref()).y+i != (M_yDim-2) ) {
+		if ( (bush->get_ref()).y+(int)i != -1 and
+				(bush->get_ref()).y+(int)i != (int)(M_yDim-2) ) {
 			mvprintw(M_yOffset+(bush->get_ref()).y+i, M_xOffset+(bush->get_ref()).x, " ");
 			mvprintw(M_yOffset+(bush->get_ref()).y+i, M_xOffset+(bush->get_ref()).x+((bush->get_rec()).width-1), " ");
 		}
 	}
 
-	if ( (bush->get_ref()).y != -1 and (bush->get_ref()).y != (M_yDim-2) ) {
+	if ( (bush->get_ref()).y != -1 and (bush->get_ref()).y != (int)(M_yDim-2) ) {
 		for (unsigned int i=0; i < (bush->get_rec()).width; ++i) {
 			mvprintw(M_yOffset+(bush->get_ref()).y, M_xOffset+(bush->get_ref()).x+i, " ");
 		}
 	}
-	if ( (bush->get_ref()).y+((bush->get_rec()).height-1) != -1 and (bush->get_ref()).y+((bush->get_rec()).height-1) != (M_yDim-2) ) {
+	if ( (bush->get_ref()).y+((int)(bush->get_rec()).height-1) != -1 and
+			(bush->get_ref()).y+((int)(bush->get_rec()).height-1) != (int)(M_yDim-2) ) {
 		for (unsigned int i=0; i < (bush->get_rec()).width; ++i) {
 			mvprintw(M_yOffset+(bush->get_ref()).y+((bush->get_rec()).height-1), M_xOffset+(bush->get_ref()).x+i, " ");
 		}
@@ -348,7 +350,7 @@ void Sketcher :: Rubber (RectObstacle* bush)
 
 void Sketcher :: Rubber (CircleObstacle* circle)
 {
-	if ( abs((circle->get_ref()).y-circle->get_fatness()) < (M_yDim-2) ) {
+	if ( abs((circle->get_ref()).y-(int)circle->get_fatness()) < (int)(M_yDim-2) ) {
 		unsigned int i_top_up = 0;
 		unsigned int i_top_down = circle->get_fatness() + 1;
 		unsigned int i_bottom_up = circle->get_fatness();

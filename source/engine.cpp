@@ -39,7 +39,7 @@ Engine::Engine(unsigned int xDim, unsigned int yDim, unsigned int n_fatness,
 void Engine::start()
 {
 	char user_choice;
-	user_choice = m_artist.WelcomeScreen();	
+	user_choice = m_artist.WelcomeScreen();
     if ( user_choice == 'n' ) run_local();
 	else if ( user_choice == 'e' ) run_evil();
 	else if ( user_choice == 'g' ) run_good();
@@ -102,7 +102,7 @@ void Engine::run_local()
 			}
 		}
 
-		for (int i=0; i<dt_uint_bushes and !dead; i+=dt_uint_sheep) {
+		for (unsigned short int i=0; i<dt_uint_bushes and !dead; i+=dt_uint_sheep) {
 			ch = getch();
 			if ( ch == left_mov and  (((*sheep).get_ref()).x -
 						(int)(*sheep).get_fatness()) > 1 ) {
@@ -146,14 +146,14 @@ void Engine::run_good()
 	timeout(0); // getch() does not wait for input [ncurses]
 	erase();
 	bushes.clear(); //clear vector, if it's not empty
-	
+
 	UDPSSMcastSender sender("",_UDPMcastSender_h_DEFAULT_TTL,"127.0.0.1", 3263); //open socket
 	UDPSSMcastReceiver recv("","127.0.0.1", 3264);
-	
+
 	char ch; //needed for sheep movement
 	std::vector<char> message;
 	bool paired = false;
-	
+
 	while(!paired) {
 		if( m_artist.PairScreen() ) return;
 		sender.send_msg("ping");
@@ -168,11 +168,11 @@ void Engine::run_good()
 	erase();
 	m_artist.GameTable();
 	refresh();
-	
+
 	sheep = new SpaceSheep(m_artist.get_GameW()/2,m_artist.get_GameH()-1-fatness,fatness);
 	sender.send_msg(compose_msg(sheep));
 	m_artist.Pencil(sheep);
-	
+
 	// TIME STUFF
 	// WARNING: clocks goes on during execution, if you use sleep_until(20:00)
 	//  for obstacle and sleep(19:00) for sheep, the second will be ignored,
@@ -185,7 +185,7 @@ void Engine::run_good()
 	bool dead = false;
 	bool new_game = true;
 	bool got_bull = false;
-	
+
 	if ( !check_bushes_parameters() ) {
 		throw "Engine::run_local() ERROR: bad parameters for bushes, the game risks a loop.";
 	}
@@ -217,7 +217,7 @@ void Engine::run_good()
 			}
 		}
 
-		for (int i=0; i<dt_uint_bushes and !dead; i+=dt_uint_sheep) {
+		for (unsigned short int i=0; i<dt_uint_bushes and !dead; i+=dt_uint_sheep) {
 			ch = getch();
 			if ( ch == left_mov and  (((*sheep).get_ref()).x -
 						(int)(*sheep).get_fatness()) > 1 ) {
@@ -245,12 +245,12 @@ void Engine::run_good()
 					break;
 				}
 			}
-					
+
 			if( got_bull and ((*bull).get_hitbox()).Overlap((*sheep).get_hitbox()) ) {
 				dead = true;
 				break;
 			}
-			
+
 			m_artist.Score(score);
 			if( recv.recv_msg() ) {
 				for (auto it = bushes.begin(); it != bushes.end(); it++) {
@@ -269,13 +269,13 @@ void Engine::run_good()
 					if( ((int) message[2] - (int) message[3]) > (int)m_artist.get_GameH() ) got_bull = false;
 					else m_artist.Pencil(bull);
 				}
-				
+
 				if( got_bull and ((*bull).get_hitbox()).Overlap((*sheep).get_hitbox()) ) {
 					dead = true;
 					break;
 				}
 			}
-			
+
 			// With this we are sure that the bull is over bushes, and they are
 			//  always in sync.
 			for (auto it = bushes.begin(); it != bushes.end(); it++) {
@@ -283,7 +283,7 @@ void Engine::run_good()
 			}
 			if ( got_bull ) m_artist.Pencil(bull);
 			refresh();
-			
+
 			sender.send_msg(compose_msg(sheep));
 			t_track_sheep += dt_sheep;
 			std::this_thread::sleep_until(t_track_sheep);
@@ -291,6 +291,7 @@ void Engine::run_good()
 		refresh();
 	}
 	new_game = m_artist.ExitScreen(score);
+	if ( new_game ) start();
 }
 
 void Engine::run_evil()
@@ -302,13 +303,13 @@ void Engine::run_evil()
 	bool paired = false;
 	std::vector<char> message;
 	bushes.clear(); //clear vector, if it's not empty
-	
+
 	// This loop waits endlessly till the good guy is online
 	while(!paired) {
 		if( m_artist.PairScreen() ) return;
 		if( recv.recv_msg() ){
 			message.assign(recv.get_msg(), recv.get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
-			if( message[0] == 'p' and message[1] == 'i' and 
+			if( message[0] == 'p' and message[1] == 'i' and
 				message[2] == 'n' and message[3] == 'g' ) {
 				sender.send_msg("pong");
 				paired = true;
@@ -320,29 +321,30 @@ void Engine::run_evil()
 	erase();
 	m_artist.GameTable();
 	refresh();
-	
+
 	bool got_sheep = false;
 	sheep = new SpaceSheep(m_artist.get_GameW()/2,m_artist.get_GameH()-1-fatness,fatness);
 
 	while( !got_sheep ){
 		recv.recv_msg();
 		message.assign(recv.get_msg(), recv.get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
-		
+
 		if( message[0] == 'c' ) {
 			position tmp_ref;
 			tmp_ref.x = message[1];
 			tmp_ref.y = m_artist.get_GameH()-1-message[3];
-			
+
 			sheep = new SpaceSheep(tmp_ref,(unsigned int)message[3]);
 			m_artist.Pencil(sheep);
 			got_sheep = true;
 		}
 	}
 	recv.flush_socket();
-	
+
 	bool got_bull = false;
 	bool online = true;
 	bool received = false;
+	bool new_game = true;
 
 	unsigned short int count = 0;
 	char ch = '0';
@@ -391,7 +393,7 @@ void Engine::run_evil()
 				int i = 0;
 				char tmp_char = '0';
 				// This loop eats the queue on stdin, remains only 1 char.
-				while ( true ) { 
+				while ( true ) {
 					tmp_char = getch();
 					if ( tmp_char == EOF ) break;
 					else ch = tmp_char;
@@ -425,6 +427,8 @@ void Engine::run_evil()
 		}
 		++count;
 	}
+	new_game = m_artist.ExitScreen(0);
+	if ( new_game ) start();
 }
 
 void Engine :: add_obstacle_bushes ()
@@ -460,10 +464,10 @@ void Engine :: add_obstacle_bushes ()
 	// Random stuff
 	unsigned int seed = std::chrono::system_clock::now().time_since_epoch().count();
 	std::default_random_engine generator(seed);
-	std::uniform_int_distribution<int> distribution(0,m_artist.get_GameW()-1);
+	std::uniform_int_distribution<unsigned int> distribution(0,m_artist.get_GameW()-1);
 
-	unsigned int w = 1, h = 1;
-	int x = 0, y = 0;
+	unsigned int x = 0, w = 1, h = 1;
+	int y = 0;
 	bool ctrl = false; //to check obstacle spawn
 
 	for ( unsigned int i=0; i<2; ++i) {
@@ -471,20 +475,20 @@ void Engine :: add_obstacle_bushes ()
 		while (!ctrl) {
 			w = (distribution(generator) % bushes_w_r) + bushes_w_m; //(dist%range)+min
 			x = distribution(generator);
-			if ( (x + w) <= (int)m_artist.get_GameW() ) ctrl = true;
+			if ( (x + w) <= m_artist.get_GameW() ) ctrl = true;
 			if ( i > 0 ) {
 				if ( ctrl ) {
-					if ( ((x >= (((*(bushes.back())).get_ref()).x 
+					if ( (((int)x >= (((*(bushes.back())).get_ref()).x
 								+ (int)((*(bushes.back())).get_rec()).width)) and
-							(x - (((*(bushes.back())).get_ref()).x +
+							((int)x - (((*(bushes.back())).get_ref()).x +
 								(int)((*(bushes.back())).get_rec()).width)) <
 								((int)(*sheep).get_fatness()*2+1+(int)bushes_w_d)) ) ctrl = false;
-					if ( (((x+(int)w) <= ((*(bushes.back())).get_ref()).x) and
-							(((*(bushes.back())).get_ref()).x - (x + (int)w)) <
+					if ( ((((int)x+(int)w) <= ((*(bushes.back())).get_ref()).x) and
+							(((*(bushes.back())).get_ref()).x - ((int)x + (int)w)) <
 								((int)(*sheep).get_fatness()*2+1+(int)bushes_w_d)) ) ctrl = false;
 				}
 				if ( ctrl ) {
-					if ( (int)((*(bushes.back())).get_rec()).width+(int)w < bushes_w_tot ) {
+					if ( ((*(bushes.back())).get_rec()).width+w < bushes_w_tot ) {
 						ctrl = false;
 					}
 				}
@@ -520,8 +524,10 @@ void Engine :: add_obstacle_bushes ()
 
 bool Engine :: check_bushes_parameters ()
 {
-	if ( !( (((int)bushes_w_m/2) + ((int)m_artist.get_GameW()/2) - ((int)(*sheep).get_fatness()*2+1+(int)bushes_w_d)) >= (int)bushes_w_tot
-				and (((int)m_artist.get_GameW()/2) - (((int)bushes_w_m+(int)bushes_w_r)/2) - ((int)(*sheep).get_fatness()*2+1+(int)bushes_w_d)) >= bushes_w_m ) ) {
+	if ( !( (((int)bushes_w_m/2) + ((int)m_artist.get_GameW()/2) -
+				((int)(*sheep).get_fatness()*2+1+(int)bushes_w_d)) >= (int)bushes_w_tot
+			and (((int)m_artist.get_GameW()/2) - (((int)bushes_w_m+(int)bushes_w_r)/2) -
+				((int)(*sheep).get_fatness()*2+1+(int)bushes_w_d)) >= (int)bushes_w_m ) ) {
 		return false;
 	}
 	else return true;

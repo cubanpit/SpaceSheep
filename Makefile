@@ -3,7 +3,7 @@
 #
 # File: Makefile
 #
-# Authors: 
+# Authors:
 #  Martina Crippa 				<martina.crippa2@studenti.unimi.it>
 #  Pietro Francesco Fontana 	<pietrofrancesco.fontana@studenti.unimi.it>
 #
@@ -26,11 +26,9 @@
 
 OS := $(shell uname)
 ifeq ($(OS), Linux)
-	export MAKEFLAGS="-j $(grep -c ^processor /proc/cpuinfo)" \
-else($(OS), Darwin)
-	export MAKEFLAGS="-j $(sysctl-n hw.ncpu)" \
-else
-	#Windows? 
+	export MAKEFLAGS="-j $(grep -c ^processor /proc/cpuinfo)"
+else ifeq ($(OS), Darwin)
+	export MAKEFLAGS="-j $(sysctl-n hw.ncpu)"
 endif
 
 VPATH=./source/
@@ -40,6 +38,7 @@ TARGET := game
 OBJ:= obstacle.o hitbox.o sketcher.o engine.o UDPMcastSender.o UDPMcastReceiver.o UDPSSMcast.o
 
 DEBUG := -g
+WARNING := -Wall -Wextra
 
 CXXFLAGS := $(CXXFLAGS) -std=c++11 -lncurses
 

@@ -55,6 +55,7 @@ UDPSSMcastReceiver :: UDPSSMcastReceiver(const std::string &listen_interface,
 				UDPMcastReceiver(listen_interface, listen_address, listen_port)
 {
 	m_stimeout = stimeout;
+	//there is a third element in struct, implicitly set to 0 (returns warning)
 	m_psfd = new pollfd{ m_sfd, POLLIN };
 }
 

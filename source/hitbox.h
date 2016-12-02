@@ -92,6 +92,7 @@ class HitBoxRect : public HitBox
 		rectangle get_rec(){ return m_rec; }
 
 		virtual bool Overlap(HitBox& b) { return b.Overlap(*this); }
+		// These function return through HitBox::Overlap_XxYy(Xx,Yy)
 		virtual bool Overlap(HitBoxRect& b) { Overlap_RectRect(*this,b); }
 		virtual bool Overlap(HitBoxCircle& b) { Overlap_RectCircle(*this,b); }
 
@@ -112,6 +113,7 @@ class HitBoxCircle : public HitBox
 		unsigned int get_radius(){ return m_radius; }
 
 		virtual bool Overlap(HitBox& b) { return b.Overlap(*this); }
+		// These function return through HitBox::Overlap_XxYy(Xx,Yy)
 		virtual bool Overlap(HitBoxRect& b) { Overlap_RectCircle(b,*this); }
 		virtual bool Overlap(HitBoxCircle& b) { Overlap_CircleCircle(*this,b); }
 
