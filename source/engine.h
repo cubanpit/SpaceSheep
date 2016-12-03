@@ -39,12 +39,12 @@
 class Engine
 {
 	public:
-		Engine(unsigned int xDim = 100,
-			   unsigned int yDim = 30,
-		       unsigned int n_fatness = 2,
-	    	   unsigned int n_bushes_prod = 14,
-			   unsigned int n_bull_prod = 20,
-			   unsigned int n_dt_uint_bushes = 350);
+		Engine(	unsigned int xDim = 100,
+				unsigned int yDim = 30,
+				unsigned int n_fatness = 2,
+				unsigned int n_bushes_prod = 14,
+				unsigned int n_bull_prod = 20,
+				unsigned int n_dt_uint_bushes = 350);
 		~Engine(){}
 
 		void start(); //start the game!
