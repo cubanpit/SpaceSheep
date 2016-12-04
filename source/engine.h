@@ -41,54 +41,58 @@ class Engine
 	public:
 		Engine(	unsigned int xDim = 100,
 				unsigned int yDim = 30,
-				unsigned int n_fatness = 2,
-				unsigned int n_bushes_prod = 14,
-				unsigned int n_bull_prod = 20,
-				unsigned int n_dt_uint_bushes = 350);
-		~Engine(){}
+				unsigned int fatness = 2,
+				unsigned int bushes_prod = 14,
+				unsigned int dt_uint_bull = 200,
+				unsigned int dt_uint_bushes = 350);
+		~Engine();
 
 		void start(); //start the game!
 		void run_local(); //play local mode
 		void run_good(); //play as good sheep versus the evil bull creator
 		void run_evil(); //play as evil bull creator versus the good sheep
 
-		void add_obstacle_bushes();
-		bool check_bushes_parameters();
-		bool bull_creator_choice();
+		void add_obstacle_bushes(); //add a bush to existent bushes vector
+		bool check_bushes_parameters(); //check if bushes param. are legal
+		bool bull_creator_choice(); //receive input from creator to spawn a bull
 
-		void set_bushes_properties(	unsigned int n_bushes_w_d = 4,
-									unsigned int n_bushes_w_tot = 50,
-									unsigned int n_bushes_w_m = 20,
-									unsigned int n_bushes_w_r = 20,
-									unsigned int n_bushes_h_m = 3,
-									unsigned int n_bushes_h_r = 4);
-		void set_movement_properties(	unsigned int n_dt_uint_sheep = 10,
-										char n_left_mov = 'j',
-										char n_right_mov = 'l');
+		//change bushes size or density limit
+		void set_bushes_properties(	unsigned int bushes_w_d = 4,
+									unsigned int bushes_w_tot = 50,
+									unsigned int bushes_w_m = 20,
+									unsigned int bushes_w_r = 20,
+									unsigned int bushes_h_m = 3,
+									unsigned int bushes_h_r = 4);
+		//change movement keys or speed
+		void set_movement_properties(	unsigned int dt_uint_sheep = 10,
+										char left_mov = 'j',
+										char right_mov = 'l');
 
 
 	private:
 		Sketcher m_artist;
-		SpaceSheep* sheep;
-		SpaceBull* bull;
-		std::vector<RectObstacle*> bushes;
+		SpaceSheep* m_sheep;
+		SpaceBull* m_bull;
+		std::vector<RectObstacle*> m_bushes;
+		UDPSSMcastSender* m_sender;
+		UDPSSMcastReceiver* m_recver;
 
-		unsigned int fatness; //set sheep fatness
-		unsigned int bushes_prod; //set vertical frequency (production) of obstacle
-		unsigned int bull_prod; //set bull speed
-		unsigned int dt_uint_bushes; //set time frequency of bushes movement
+		unsigned int m_fatness; //sheep fatness
+		unsigned int m_bushes_prod; //vertical space frequency (production) of obstacle
+		unsigned int m_dt_uint_bull; //time interval of bull movement (ms)
+		unsigned int m_dt_uint_bushes; //time interval of bushes movement (ms)
 
-		unsigned int bushes_w_d = 4; //margin between bushes distance and sheep width
-		unsigned int bushes_w_tot = 50; //minimal total width of bushes on the same row
-		unsigned int bushes_w_m = 20; //minimal width of bushes
-		unsigned int bushes_w_r = 20; //range of width, w_m+(w_r-1)=maximum width
-		unsigned int bushes_h_m = 3; //minimal height of bushes
-		unsigned int bushes_h_r = 4; //range of height
+		unsigned int m_bushes_w_d = 4; //margin between bushes distance and sheep width
+		unsigned int m_bushes_w_tot = 50; //minimal total width of bushes on the same row
+		unsigned int m_bushes_w_m = 20; //minimal width of bushes
+		unsigned int m_bushes_w_r = 20; //range of width, w_m+(w_r-1)=maximum width
+		unsigned int m_bushes_h_m = 3; //minimal height of bushes
+		unsigned int m_bushes_h_r = 4; //range of height
 
-		unsigned int dt_uint_sheep = 10; //maybe milliseconds (tmp)
-		unsigned int score = 0;
-		char left_mov = 'j', right_mov = 'l';
-		char pause = 'p';
+		unsigned int m_dt_uint_sheep = 10; //time interval of sheep movement (ms)
+		unsigned int m_score = 0;
+		char m_left_mov = 'j', m_right_mov = 'l';
+		char m_pause = 'p';
 };
 
 #endif // _ENGINE_H_

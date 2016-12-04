@@ -1,31 +1,32 @@
 TODO LIST:
 
 - all: rivedere e ampliare i commenti (aggiornarli alla gestione delle eccezioni)
-- all: aggiungere global namespace prima delle funzioni definite globalmente?
-- all: disegnare tutto in grassetto? difetto cornice
 - all: correggere periodicamente 'errori' riportati da 'gcc -Wall -Wextra'
 			possibile rimuovere l'avvertimento sulle funzioni di Hitbox?
-- all: si potrebbero sostituire molti 'unisgned int' con 'unsigned short int',
-			ma probabilmente non ne vale la pena
-- Obstacle: m_hitbox and m_ref as pointers could enhance performance?
+- all: verificare che tutti i membri ed i metodi privati siano contrassegnati
 - Obstacle: controllare nomi funzioni movimento pecora
 - Obstacle: cambiare metodi contenenti 'fatness' sostituendoci 'radius'
 - Obstacle/HitBox: verificare nomi metodi, get_ref() o get_v()?
-- HitBox: in alcune situazioni (all'interno di un grosso rettangolo) la pecora
-           non è sovrapposta
-- Engine: alcune variabili possono essere messe static (seed, chrono, random)?
-- Engine: bushes, da sostituire vector con list, OutOfTheBox non funziona
-- Engine: separare funzione per il movimento della pecora (possibile senza
-		   multi-threading?)
 - Engine: aggiungere controllo sull'altezza
 - Engine: controllare eliminazione elementi del vettore di cespugli
 - Engine: capire perché bull in run_evil() rallenta dopo che il gioco viene
 			bloccato in run_good()
-- Engine: pecora dopo la schermata di uscita non resetta la sua posizione
 - Sketcher: errore dimensione, aggiungere stampa dimensione attuale
-(- Sketcher: disegno SpaceBull, possibile con due variabili intere in meno?)
 - Sketcher: nella schermata iniziale il tempo di attesa per la pressione dei
             tasti è troppo alto
 - Rete: aggiungere gestione eccezioni ( timeout? )
 - Rete: controllo costruttore socket con good()
-(- Rete: considerare se mettere poll a send())
+
+-- all: aggiungere global namespace prima delle funzioni definite globalmente?
+-- all: disegnare tutto in grassetto? difetto cornice
+-- all: si potrebbero sostituire molti 'unsigned int' con 'unsigned short int',
+			ma probabilmente non ne vale la pena
+-- HitBox: in alcune situazioni (all'interno di un grosso rettangolo) la pecora
+           non è sovrapposta
+-- Obstacle: m_hitbox and m_ref as pointers could enhance performance?
+-- Engine: alcune variabili possono essere messe static (seed, chrono, random)?
+-- Engine: bushes, da sostituire vector con list, OutOfTheBox non funziona
+-- Engine: separare funzione per il movimento della pecora (possibile senza
+		   multi-threading?)
+-- Sketcher: disegno SpaceBull, possibile con due variabili intere in meno?
+-- Rete: considerare se mettere poll a send()
