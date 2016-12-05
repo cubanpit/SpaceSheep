@@ -218,22 +218,22 @@ void Engine::run_good()
 		}
 	}
 
-	char ch; //needed for sheep movement
 	std::vector<char> message;
-	bool paired = false;
-
-	while(!paired) {
-		if( m_artist.PairScreen() ) start();
-		m_sender->send_msg("ping");
-		if( m_recver->recv_msg() ){
-			message.assign(m_recver->get_msg(), m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
-			if( message[0] == 'p' and message[1] == 'o' and
-				message[2] == 'n' and message[3] == 'g' ) {
-				paired = true;
-			}
-		}
-	}
-	erase();
+//	bool paired = false;
+//
+//	while(!paired) {
+//		if( m_artist.PairScreen() ) start();
+//		m_sender->send_msg("ping");
+//		if( m_recver->recv_msg() ){
+//			message.assign(m_recver->get_msg(), m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
+//			if( message[0] == 'p' and message[1] == 'o' and
+//				message[2] == 'n' and message[3] == 'g' ) {
+//				paired = true;
+//			}
+//		}
+//	}
+//	erase();
+	pair_with_opponent();
 	m_artist.GameTable();
 	refresh();
 
@@ -254,6 +254,7 @@ void Engine::run_good()
 	bool dead = false;
 	bool new_game = true;
 	bool got_bull = false;
+	char ch; //needed for sheep movement
 
 	if ( !check_bushes_parameters() ) {
 		throw "Engine::run_local() ERROR: bad parameters for bushes, the game risks a loop.";
@@ -406,25 +407,26 @@ void Engine::run_evil()
 		}
 	}
 
-	bool paired = false;
 	std::vector<char> message;
 	m_bushes.clear(); //clear vector, if it's not empty
-
-	// This loop waits endlessly till the good guy is online
-	while(!paired) {
-		if( m_artist.PairScreen() ) start();
-		if( m_recver->recv_msg() ){
-			message.assign(m_recver->get_msg(), m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
-			if( message[0] == 'p' and message[1] == 'i' and
-				message[2] == 'n' and message[3] == 'g' ) {
-				m_sender->send_msg("pong");
-				paired = true;
-			}
-		}
-	}
-	// We flush any garbage on the socket, there shouldn't be anything
-	m_recver->flush_socket();
-	erase();
+//	bool paired = false;
+//
+//	// This loop waits endlessly till the good guy is online
+//	while(!paired) {
+//		if( m_artist.PairScreen() ) start();
+//		if( m_recver->recv_msg() ){
+//			message.assign(m_recver->get_msg(), m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
+//			if( message[0] == 'p' and message[1] == 'i' and
+//				message[2] == 'n' and message[3] == 'g' ) {
+//				m_sender->send_msg("pong");
+//				paired = true;
+//			}
+//		}
+//	}
+//	// We flush any garbage on the socket, there shouldn't be anything
+//	m_recver->flush_socket();
+//	erase();
+	pair_with_opponent();
 	m_artist.GameTable();
 	m_artist.CreatorChoice();
 	refresh();
@@ -693,6 +695,37 @@ bool Engine :: bull_creator_choice()
 		return true;
 	}
 	else return false;
+}
+
+// pair opponents, both should be able to send and receive packages
+void Engine::pair_with_opponent() {
+	std::vector<char> message;
+	bool paired = false;
+	while(!paired) {
+		if( m_artist.PairScreen() ) start();
+		m_sender->send_msg("ping");
+		if( m_recver->recv_msg() ){
+			message.assign(m_recver->get_msg(),
+				m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
+			if( message[0] == 'p' and message[1] == 'i'
+				and	message[2] == 'n' and message[3] == 'g' ) {
+				for (unsigned short int i=0; i<10 and !paired; ++i) {
+					if( m_artist.PairScreen() ) start();
+					m_sender->send_msg("pong");
+					if( m_recver->recv_msg() ){
+						message.assign(m_recver->get_msg(),
+							m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
+						if( message[0] == 'p' and message[1] == 'o'
+							and	message[2] == 'n' and message[3] == 'g' ) {
+							paired = true;
+						}
+					}
+				}
+			}
+		}
+	}
+	m_recver->flush_socket();
+	erase();
 }
 
 void Engine :: set_bushes_properties (unsigned int bushes_w_d,

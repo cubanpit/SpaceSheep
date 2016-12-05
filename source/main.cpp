@@ -47,6 +47,10 @@ int main (void)
 		endwin();
 		std::cerr << msg << std::endl;
 	}
+	catch ( std::string msg ) {
+		endwin();
+		std::cerr << msg << std::endl;
+	}
 	catch (std::bad_alloc& ba)
 	{
 		endwin();

@@ -55,6 +55,7 @@ class Engine
 		void add_obstacle_bushes(); //add a bush to existent bushes vector
 		bool check_bushes_parameters(); //check if bushes param. are legal
 		bool bull_creator_choice(); //receive input from creator to spawn a bull
+		void pair_with_opponent(); //pair opponents through network
 
 		//change bushes size or density limit
 		void set_bushes_properties(	unsigned int bushes_w_d = 4,
