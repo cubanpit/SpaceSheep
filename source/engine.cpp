@@ -75,6 +75,10 @@ void Engine::start()
     if ( user_choice == 'n' ) run_local();
 	else if ( user_choice == 'e' ) run_evil();
 	else if ( user_choice == 'g' ) run_good();
+	else if ( user_choice == 'q' ) {
+		endwin();
+		exit(EXIT_SUCCESS);
+	}
 }
 
 void Engine::run_local()
@@ -176,11 +180,42 @@ void Engine::run_good()
 	erase();
 	m_bushes.clear(); //clear vector, if it's not empty
 
-	if ( m_sender == nullptr ) {
-		m_sender = new UDPSSMcastSender("",_UDPMcastSender_h_DEFAULT_TTL,"127.0.0.1", 3263); //open socket
+	unsigned int count = 0;
+	while ( m_sender == nullptr ) {
+		try {
+			m_sender = new UDPSSMcastSender("",_UDPMcastSender_h_DEFAULT_TTL,
+											"127.0.0.1", 3263); //open socket
+			if ( !m_sender->good() ) {
+				throw m_sender->get_error();
+			}
+		}
+		catch ( std::string msg ) {
+			delete m_sender;
+			m_sender = nullptr;
+			++count;
+			if ( count > 10 ) {
+				throw "Engine::run_good() ERROR: Impossible to open sending "
+					"socket correctly - Last error: "+msg;
+			}
+		}
 	}
-	if ( m_recver == nullptr ) {
-		m_recver = new UDPSSMcastReceiver("","127.0.0.1", 3264);
+	count = 0;
+	while ( m_recver == nullptr ) {
+		try {
+			m_recver = new UDPSSMcastReceiver("","127.0.0.1", 3264);
+			if ( !m_recver->good() ) {
+				throw m_recver->get_error();
+			}
+		}
+		catch ( std::string msg ) {
+			delete m_recver;
+			m_recver = nullptr;
+			++count;
+			if ( count > 10 ) {
+				throw "Engine::run_good() ERROR: Impossible to open receiving "
+					"socket correctly - Last error: "+msg;
+			}
+		}
 	}
 
 	char ch; //needed for sheep movement
@@ -215,7 +250,7 @@ void Engine::run_good()
 	std::chrono::system_clock::time_point t_track_sheep = std::chrono::system_clock::now();
 	std::chrono::duration<int,std::milli> dt_sheep(m_dt_uint_sheep);
 
-	unsigned int count = 0;
+	count = 0;
 	bool dead = false;
 	bool new_game = true;
 	bool got_bull = false;
@@ -332,11 +367,43 @@ void Engine::run_good()
 void Engine::run_evil()
 {
 	timeout(0);
-	if ( m_sender == nullptr ) {
-		m_sender = new UDPSSMcastSender("",_UDPMcastSender_h_DEFAULT_TTL,"127.0.0.1", 3264); //open socket
+
+	unsigned int count = 0;
+	while ( m_sender == nullptr ) {
+		try {
+			m_sender = new UDPSSMcastSender("",_UDPMcastSender_h_DEFAULT_TTL,
+											"127.0.0.1", 3264); //open socket
+			if ( !m_sender->good() ) {
+				throw m_sender->get_error();
+			}
+		}
+		catch ( std::string msg ) {
+			delete m_sender;
+			m_sender = nullptr;
+			++count;
+			if ( count > 10 ) {
+				throw "Engine::run_evil() ERROR: Impossible to open sending "
+					"socket correctly - Last error: "+msg;
+			}
+		}
 	}
-	if ( m_recver == nullptr ) {
-		m_recver = new UDPSSMcastReceiver("","127.0.0.1", 3263);
+	count = 0;
+	while ( m_recver == nullptr ) {
+		try {
+			m_recver = new UDPSSMcastReceiver("","127.0.0.1", 3263);
+			if ( !m_recver->good() ) {
+				throw m_recver->get_error();
+			}
+		}
+		catch ( std::string msg ) {
+			delete m_recver;
+			m_recver = nullptr;
+			++count;
+			if ( count > 10 ) {
+				throw "Engine::run_evil() ERROR: Impossible to open receiving "
+					"socket correctly - Last error: "+msg;
+			}
+		}
 	}
 
 	bool paired = false;
@@ -384,8 +451,8 @@ void Engine::run_evil()
 	bool victory = false;
 	bool received = false;
 	bool new_game = true;
-	unsigned short int count = 0;
 
+	count = 0;
 	while ( !victory ){
 		try {
 			received = m_recver->recv_msg();
