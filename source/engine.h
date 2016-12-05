@@ -36,6 +36,8 @@
 #include "sketcher.h"
 #include "UDPSSMcast.h"
 
+const unsigned short int _Engine_h_MAX_FATNESS = 5;
+
 class Engine
 {
 	public:
@@ -56,6 +58,7 @@ class Engine
 		bool check_bushes_parameters(); //check if bushes param. are legal
 		bool bull_creator_choice(); //receive input from creator to spawn a bull
 		void pair_with_opponent(); //pair opponents through network
+		bool create_bull(std::vector<char>&); //create bull if param. are valid
 
 		//change bushes size or density limit
 		void set_bushes_properties(	unsigned int bushes_w_d = 4,

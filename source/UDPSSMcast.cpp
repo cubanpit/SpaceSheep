@@ -65,7 +65,7 @@ UDPSSMcastReceiver :: ~UDPSSMcastReceiver()
 
 bool UDPSSMcastReceiver :: recv_msg()
 {
-	int p_result = ::poll(m_psfd, _UDPSSMcast_h_SOCK_N, m_stimeout);
+	int p_result = ::poll(m_psfd, (int)_UDPSSMcast_h_SOCK_N, m_stimeout);
 	if( p_result == -1) {
 		std::string err(::strerror(errno));
 		throw  "UDPMcastReceiver::recv_data() ERROR: " + err;
@@ -77,7 +77,7 @@ bool UDPSSMcastReceiver :: recv_msg()
 	}
 	else {
 		if( m_psfd->revents & POLLIN ) {
-			if( ::recv(m_sfd, m_msg, _UDPSSMcast_h_DEFAULT_MSG_LEN, 0) > 0) return true;
+			if( ::recv(m_sfd, m_msg, (int)_UDPSSMcast_h_DEFAULT_MSG_LEN, 0) > 0) return true;
 			else return false;
 		}
 		else {

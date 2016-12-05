@@ -34,6 +34,9 @@ Engine::Engine(unsigned int xDim, unsigned int yDim, unsigned int fatness,
 	m_artist(xDim,yDim), m_fatness(fatness),
 	m_bushes_prod(bushes_prod), m_dt_uint_bull(dt_uint_bull), m_dt_uint_bushes(dt_uint_bushes)
 {
+	if ( fatness > _Engine_h_MAX_FATNESS ) {
+		throw "Engine::Engine() ERROR: Sheep is too fat!";
+	}
 	m_sheep = nullptr;
 	m_bull = nullptr;
 	m_bushes.clear();
@@ -89,7 +92,8 @@ void Engine::run_local()
 
 	m_artist.GameTable();
 	if ( m_sheep != nullptr ) delete m_sheep;
-	m_sheep = new SpaceSheep(m_artist.get_GameW()/2,m_artist.get_GameH()-1-m_fatness,m_fatness);
+	m_sheep = new SpaceSheep(m_artist.get_GameW()/2,
+							m_artist.get_GameH()-1-m_fatness,m_fatness);
 	m_artist.Pencil(m_sheep);
 	char ch; //needed for sheep movement
 
@@ -116,7 +120,8 @@ void Engine::run_local()
 			}
 			catch (std::bad_alloc& ba)
 			{
-				std::cerr << "Engine::add_obstacle_bushes() bad_alloc caught: " << ba.what() << std::endl;
+				std::cerr << "Engine::add_obstacle_bushes() bad_alloc caught: "
+					<< ba.what() << std::endl;
 				exit (EXIT_FAILURE);
 			}
 		}
@@ -184,7 +189,7 @@ void Engine::run_good()
 	while ( m_sender == nullptr ) {
 		try {
 			m_sender = new UDPSSMcastSender("",_UDPMcastSender_h_DEFAULT_TTL,
-											"127.0.0.1", 3263); //open socket
+											"192.168.1.67", 3263); //open socket
 			if ( !m_sender->good() ) {
 				throw m_sender->get_error();
 			}
@@ -202,7 +207,7 @@ void Engine::run_good()
 	count = 0;
 	while ( m_recver == nullptr ) {
 		try {
-			m_recver = new UDPSSMcastReceiver("","127.0.0.1", 3264);
+			m_recver = new UDPSSMcastReceiver("","192.168.1.79", 3264);
 			if ( !m_recver->good() ) {
 				throw m_recver->get_error();
 			}
@@ -218,27 +223,13 @@ void Engine::run_good()
 		}
 	}
 
-	std::vector<char> message;
-//	bool paired = false;
-//
-//	while(!paired) {
-//		if( m_artist.PairScreen() ) start();
-//		m_sender->send_msg("ping");
-//		if( m_recver->recv_msg() ){
-//			message.assign(m_recver->get_msg(), m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
-//			if( message[0] == 'p' and message[1] == 'o' and
-//				message[2] == 'n' and message[3] == 'g' ) {
-//				paired = true;
-//			}
-//		}
-//	}
-//	erase();
 	pair_with_opponent();
 	m_artist.GameTable();
 	refresh();
 
 	if ( m_sheep != nullptr ) delete m_sheep;
-	m_sheep = new SpaceSheep(m_artist.get_GameW()/2,m_artist.get_GameH()-1-m_fatness,m_fatness);
+	m_sheep = new SpaceSheep(m_artist.get_GameW()/2,
+						m_artist.get_GameH()-1-m_fatness,m_fatness);
 	m_sender->send_msg(compose_msg(m_sheep));
 	m_artist.Pencil(m_sheep);
 
@@ -254,7 +245,9 @@ void Engine::run_good()
 	bool dead = false;
 	bool new_game = true;
 	bool got_bull = false;
+	bool received = false;
 	char ch; //needed for sheep movement
+	std::vector<char> message;
 
 	if ( !check_bushes_parameters() ) {
 		throw "Engine::run_local() ERROR: bad parameters for bushes, the game risks a loop.";
@@ -267,7 +260,8 @@ void Engine::run_good()
 			}
 			catch (std::bad_alloc& ba)
 			{
-				std::cerr << "Engine::add_obstacle_bushes() bad_alloc caught: " << ba.what() << std::endl;
+				std::cerr << "Engine::add_obstacle_bushes() bad_alloc caught: "
+							<< ba.what() << std::endl;
 				exit (EXIT_FAILURE);
 			}
 		}
@@ -315,30 +309,22 @@ void Engine::run_good()
 					break;
 				}
 			}
-
 			if( got_bull and ((*m_bull).get_hitbox()).Overlap((*m_sheep).get_hitbox()) ) {
 				dead = true;
 				break;
 			}
 
-			m_artist.Score(m_score);
-			if( m_recver->recv_msg() ) {
-				for (auto it = m_bushes.begin(); it != m_bushes.end(); it++) {
-					m_artist.Pencil(*it);
-				}
-				message.assign(m_recver->get_msg(), m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
-				if( !got_bull ){
-					m_bull = new SpaceBull(message[1] ,message[2], message[3]);
-					got_bull = true;
-					m_artist.Pencil(m_bull);
-				}
-				else {
-					m_artist.Rubber(m_bull);
-					delete m_bull;
-					m_bull = new SpaceBull(message[1] ,message[2], message[3]);
-					if( ((int) message[2] - (int) message[3]) > (int)m_artist.get_GameH() ) got_bull = false;
-					else m_artist.Pencil(m_bull);
-				}
+			try {
+				received = m_recver->recv_msg();
+			}
+			catch ( const char* msg ) {
+				endwin();
+				std::cerr << msg << std::endl;
+			}
+			if( received ) {
+				message.assign(m_recver->get_msg(),
+						m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
+				got_bull = create_bull(message);
 
 				if( got_bull and ((*m_bull).get_hitbox()).Overlap((*m_sheep).get_hitbox()) ) {
 					dead = true;
@@ -352,6 +338,7 @@ void Engine::run_good()
 				m_artist.Pencil(*it);
 			}
 			if ( got_bull ) m_artist.Pencil(m_bull);
+			m_artist.Score(m_score);
 			refresh();
 
 			m_sender->send_msg(compose_msg(m_sheep));
@@ -368,12 +355,14 @@ void Engine::run_good()
 void Engine::run_evil()
 {
 	timeout(0);
+	erase();
+	m_bushes.clear(); //clear vector, if it's not empty
 
 	unsigned int count = 0;
 	while ( m_sender == nullptr ) {
 		try {
 			m_sender = new UDPSSMcastSender("",_UDPMcastSender_h_DEFAULT_TTL,
-											"127.0.0.1", 3264); //open socket
+											"192.168.1.67", 3264); //open socket
 			if ( !m_sender->good() ) {
 				throw m_sender->get_error();
 			}
@@ -391,7 +380,7 @@ void Engine::run_evil()
 	count = 0;
 	while ( m_recver == nullptr ) {
 		try {
-			m_recver = new UDPSSMcastReceiver("","127.0.0.1", 3263);
+			m_recver = new UDPSSMcastReceiver("","192.168.1.79", 3263);
 			if ( !m_recver->good() ) {
 				throw m_recver->get_error();
 			}
@@ -407,30 +396,12 @@ void Engine::run_evil()
 		}
 	}
 
-	std::vector<char> message;
-	m_bushes.clear(); //clear vector, if it's not empty
-//	bool paired = false;
-//
-//	// This loop waits endlessly till the good guy is online
-//	while(!paired) {
-//		if( m_artist.PairScreen() ) start();
-//		if( m_recver->recv_msg() ){
-//			message.assign(m_recver->get_msg(), m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
-//			if( message[0] == 'p' and message[1] == 'i' and
-//				message[2] == 'n' and message[3] == 'g' ) {
-//				m_sender->send_msg("pong");
-//				paired = true;
-//			}
-//		}
-//	}
-//	// We flush any garbage on the socket, there shouldn't be anything
-//	m_recver->flush_socket();
-//	erase();
 	pair_with_opponent();
 	m_artist.GameTable();
 	m_artist.CreatorChoice();
 	refresh();
 
+	std::vector<char> message;
 	bool got_sheep = false;
 	while( !got_sheep ){
 		m_recver->recv_msg();
@@ -698,7 +669,8 @@ bool Engine :: bull_creator_choice()
 }
 
 // pair opponents, both should be able to send and receive packages
-void Engine::pair_with_opponent() {
+void Engine::pair_with_opponent()
+{
 	std::vector<char> message;
 	bool paired = false;
 	while(!paired) {
@@ -726,6 +698,42 @@ void Engine::pair_with_opponent() {
 	}
 	m_recver->flush_socket();
 	erase();
+}
+
+bool Engine::create_bull(std::vector<char>& message)
+{
+	// message[1] = X position
+	// message[2] = Y position
+	// message[3] = fatness
+	if( m_bull == nullptr ){
+		if( ((int)message[2] - (int)message[3])
+				> (int)m_artist.get_GameH()
+			or (int)message[3] > (int)_Engine_h_MAX_FATNESS
+			or (int)message[1] > (int)m_artist.get_GameW() ) {
+			return false;
+		}
+		else {
+			m_bull = new SpaceBull(message[1] ,message[2],
+												message[3]);
+			return true;
+		}
+	}
+	else {
+		m_artist.Rubber(m_bull);
+		delete m_bull;
+		m_bull = nullptr;
+		if( ((int)message[2] - (int)message[3])
+				> (int)m_artist.get_GameH()
+			or (int)message[3] > (int)_Engine_h_MAX_FATNESS
+			or (int)message[1] > (int)m_artist.get_GameW() ) {
+			return false;
+		}
+		else {
+			m_bull = new SpaceBull(message[1] ,message[2],
+												message[3]);
+			return true;
+		}
+	}
 }
 
 void Engine :: set_bushes_properties (unsigned int bushes_w_d,

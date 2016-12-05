@@ -10,10 +10,12 @@ TODO LIST:
 - Engine: controllare eliminazione elementi del vettore di cespugli
 - Engine: capire perché bull in run_evil() rallenta dopo che il gioco viene
 			bloccato in run_good()
+- Engine/Rete: o si aggiunge gestione eccezioni della Rete in Engine o si toglie
+			l'abbozzo presente fino ad ora, che uccide il programma non nel main
+- Rete: aggiungere gestione eccezioni ( timeout? )
 - Sketcher: errore dimensione, aggiungere stampa dimensione attuale
 - Sketcher: nella schermata iniziale il tempo di attesa per la pressione dei
 			tasti è troppo alto
-- Rete: aggiungere gestione eccezioni ( timeout? )
 
 -- all: aggiungere global namespace prima delle funzioni definite globalmente?
 -- all: disegnare tutto in grassetto? difetto cornice

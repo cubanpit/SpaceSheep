@@ -46,10 +46,12 @@ int main (void)
 	catch ( const char* msg ) {
 		endwin();
 		std::cerr << msg << std::endl;
+		exit (EXIT_FAILURE);
 	}
 	catch ( std::string msg ) {
 		endwin();
 		std::cerr << msg << std::endl;
+		exit (EXIT_FAILURE);
 	}
 	catch (std::bad_alloc& ba)
 	{
