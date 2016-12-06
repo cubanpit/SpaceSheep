@@ -189,15 +189,19 @@ void Engine::run_good()
 	erase();
 	m_bushes.clear(); //clear vector, if it's not empty
 
-	std::string my_ip_addr = m_artist.AddressInputScreen("your own",
+	/*std::string my_ip_addr = m_artist.AddressInputScreen("your own",
 									_UDPMcastSender_h_DEFAULT_PORT);
 	std::string opp_ip_addr = m_artist.AddressInputScreen("your opponent's",
 									_UDPMcastSender_h_DEFAULT_PORT);
+	*/
+	std::string my_ip_addr = "127.0.0.1";
+	std::string opp_ip_addr = "127.0.0.1";
+
 	unsigned int count = 0;
 	while ( m_sender == nullptr ) {
 		try {
 			m_sender = new UDPSSMcastSender("",_UDPMcastSender_h_DEFAULT_TTL,
-											opp_ip_addr); //open socket
+											"127.0.0.1",3263); //open socket
 			if ( !m_sender->good() ) {
 				throw m_sender->get_error();
 			}
@@ -215,7 +219,7 @@ void Engine::run_good()
 	count = 0;
 	while ( m_recver == nullptr ) {
 		try {
-			m_recver = new UDPSSMcastReceiver("",my_ip_addr);
+			m_recver = new UDPSSMcastReceiver("","127.0.0.1",3264);
 			if ( !m_recver->good() ) {
 				throw m_recver->get_error();
 			}
@@ -366,15 +370,19 @@ void Engine::run_evil()
 	erase();
 	m_bushes.clear(); //clear vector, if it's not empty
 
-	std::string my_ip_addr = m_artist.AddressInputScreen("your own",
+	/*std::string my_ip_addr = m_artist.AddressInputScreen("your own",
 									_UDPMcastSender_h_DEFAULT_PORT);
 	std::string opp_ip_addr = m_artist.AddressInputScreen("your opponent's",
 									_UDPMcastSender_h_DEFAULT_PORT);
+	*/
+	std::string my_ip_addr = "127.0.0.1";
+	std::string opp_ip_addr = "127.0.0.1";
+
 	unsigned int count = 0;
 	while ( m_sender == nullptr ) {
 		try {
 			m_sender = new UDPSSMcastSender("",_UDPMcastSender_h_DEFAULT_TTL,
-											opp_ip_addr); //open socket
+											"127.0.0.1",3264); //open socket
 			if ( !m_sender->good() ) {
 				throw m_sender->get_error();
 			}
@@ -392,7 +400,7 @@ void Engine::run_evil()
 	count = 0;
 	while ( m_recver == nullptr ) {
 		try {
-			m_recver = new UDPSSMcastReceiver("",my_ip_addr);
+			m_recver = new UDPSSMcastReceiver("","127.0.0.1",3263);
 			if ( !m_recver->good() ) {
 				throw m_recver->get_error();
 			}
@@ -689,6 +697,7 @@ void Engine::pair_with_opponent()
 		if( m_artist.PairScreen() ) start();
 		m_sender->send_msg("ping");
 		if( m_recver->recv_msg() ){
+			m_sender->send_msg("ping");
 			message.assign(m_recver->get_msg(),
 				m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
 			if( message[0] == 'p' and message[1] == 'i'
