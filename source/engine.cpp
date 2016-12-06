@@ -72,6 +72,10 @@ void Engine::start()
 		delete *it;
 	}
 	m_bushes.clear();
+	if ( m_sender != nullptr ) delete m_sender;
+	m_sender = nullptr;
+	if ( m_recver != nullptr ) delete m_recver;
+	m_recver = nullptr;
 
 	char user_choice;
 	user_choice = m_artist.WelcomeScreen();
@@ -185,11 +189,15 @@ void Engine::run_good()
 	erase();
 	m_bushes.clear(); //clear vector, if it's not empty
 
+	std::string my_ip_addr = m_artist.AddressInputScreen("your own",
+									_UDPMcastSender_h_DEFAULT_PORT);
+	std::string opp_ip_addr = m_artist.AddressInputScreen("your opponent's",
+									_UDPMcastSender_h_DEFAULT_PORT);
 	unsigned int count = 0;
 	while ( m_sender == nullptr ) {
 		try {
 			m_sender = new UDPSSMcastSender("",_UDPMcastSender_h_DEFAULT_TTL,
-											"192.168.1.67", 3263); //open socket
+											opp_ip_addr); //open socket
 			if ( !m_sender->good() ) {
 				throw m_sender->get_error();
 			}
@@ -207,7 +215,7 @@ void Engine::run_good()
 	count = 0;
 	while ( m_recver == nullptr ) {
 		try {
-			m_recver = new UDPSSMcastReceiver("","192.168.1.79", 3264);
+			m_recver = new UDPSSMcastReceiver("",my_ip_addr);
 			if ( !m_recver->good() ) {
 				throw m_recver->get_error();
 			}
@@ -358,11 +366,15 @@ void Engine::run_evil()
 	erase();
 	m_bushes.clear(); //clear vector, if it's not empty
 
+	std::string my_ip_addr = m_artist.AddressInputScreen("your own",
+									_UDPMcastSender_h_DEFAULT_PORT);
+	std::string opp_ip_addr = m_artist.AddressInputScreen("your opponent's",
+									_UDPMcastSender_h_DEFAULT_PORT);
 	unsigned int count = 0;
 	while ( m_sender == nullptr ) {
 		try {
 			m_sender = new UDPSSMcastSender("",_UDPMcastSender_h_DEFAULT_TTL,
-											"192.168.1.67", 3264); //open socket
+											opp_ip_addr); //open socket
 			if ( !m_sender->good() ) {
 				throw m_sender->get_error();
 			}
@@ -380,7 +392,7 @@ void Engine::run_evil()
 	count = 0;
 	while ( m_recver == nullptr ) {
 		try {
-			m_recver = new UDPSSMcastReceiver("","192.168.1.79", 3263);
+			m_recver = new UDPSSMcastReceiver("",my_ip_addr);
 			if ( !m_recver->good() ) {
 				throw m_recver->get_error();
 			}

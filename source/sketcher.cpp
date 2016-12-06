@@ -185,6 +185,36 @@ bool Sketcher :: PauseScreen ()
 	else return false;
 }
 
+std::string Sketcher :: AddressInputScreen (std::string owner,
+											unsigned int default_port)
+{
+	timeout(-1); // getch() waits endlessly for input [ncurses]
+	curs_set(1); // show cursor position [ncurses]
+	echo(); // show user input [ncurses]
+	erase();
+	GameTable();
+	mvprintw(M_yOffset+15,M_xOffset+(M_GameW/2)-28,
+			"You've chosen to play against an opponent through network.");
+	std::string port_str = std::to_string(default_port);
+	mvprintw(M_yOffset+16,M_xOffset+(M_GameW/2)-28,
+			"The default port used to connect, that should be open, is UDP/");
+	printw(port_str.c_str());
+	unsigned short int owner_space = owner.length();
+	mvprintw(M_yOffset+17,M_xOffset+(M_GameW/2)-28,"Give me ");
+	printw(owner.c_str());
+	mvprintw(M_yOffset+17,M_xOffset+(M_GameW/2)-20+owner_space,
+			" IPv4 address: ");
+	refresh();
+	char input[20];
+	getstr(input);
+	std::string str_input(input);
+	erase();
+	timeout(0); // getch() doesn't wait for input
+	curs_set(0); // doesn't show cursor
+	noecho(); // hide user input
+	return str_input;
+}
+
 bool Sketcher :: PairScreen ()
 {
 	timeout(0);
@@ -208,10 +238,8 @@ void Sketcher :: Score (unsigned int score)
 	s_ch[3] = std::to_string((int)((score % 10000) / 1000));
 	s_ch[4] = std::to_string((int)((score % 100000) / 10000));
 	s_ch[5] = std::to_string((int)((score % 1000000) / 100000));
-	for (int i=0; i<6; ++i) {
-		const char* c = s_ch[i].c_str();
-		mvprintw(M_yOffset-1, M_xOffset+M_xDim-4-i, c);
-	}
+	std::string score_std = s_ch[5]+s_ch[4]+s_ch[3]+s_ch[2]+s_ch[1]+s_ch[0];
+	mvprintw(M_yOffset-1, M_xOffset+M_xDim-4-5, score_std.c_str());
 }
 
 void Sketcher :: CreatorChoice()

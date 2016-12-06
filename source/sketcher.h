@@ -47,10 +47,14 @@ class Sketcher
 		void GameTable(); //print game table limits
 		char WelcomeScreen(); //print welcome screen and return user choice
 		bool PauseScreen(); //print pause screen
+		//receive owner's IP addr from user input, 
+		// tell user which is the right port to open
+		std::string AddressInputScreen(	std::string owner,
+										unsigned int default_port);
 		bool PairScreen(); //print pair screen
 		bool ExitScreen(unsigned int score); //print exit screen
 		void Score(unsigned int score); //print actual score on Game screen
-		void CreatorChoice();
+		void CreatorChoice(); //print bull creation keybinds
 
 		void Pencil(RectObstacle* bush); //print bushes
 		void Pencil(SpaceSheep* sheep); //print sheep
