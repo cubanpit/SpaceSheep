@@ -79,8 +79,11 @@ class Engine
 		SpaceSheep* m_sheep;
 		SpaceBull* m_bull;
 		std::vector<RectObstacle*> m_bushes;
+
 		UDPSSMcastSender* m_sender;
 		UDPSSMcastReceiver* m_recver;
+		std::string m_my_ip_addr;
+		std::string m_opp_ip_addr;
 
 		unsigned int m_fatness; //sheep fatness
 		unsigned int m_bushes_prod; //vertical space frequency (production) of obstacle

@@ -1,13 +1,10 @@
 TODO LIST:
 
-URGENT:	- aggiungere salvataggio indirizzo IP per la sessione
-		- ripetizione richiesta indirizzo IP in caso di errore
-
-
 - all: rivedere e ampliare i commenti (aggiornarli alla gestione delle eccezioni)
 - all: correggere periodicamente 'errori' riportati da 'gcc -Wall -Wextra'
 			possibile rimuovere l'avvertimento sulle funzioni di Hitbox?
 - all: verificare che tutti i membri ed i metodi privati siano contrassegnati
+- all: contrassegnare come const tutte le funzioni che non modificano i membri
 - Obstacle: controllare nomi funzioni movimento pecora
 - Obstacle: cambiare metodi contenenti 'fatness' sostituendoci 'radius'
 - Obstacle/HitBox: verificare nomi metodi, get_ref() o get_v()?

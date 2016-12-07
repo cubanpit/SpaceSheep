@@ -186,13 +186,21 @@ bool Sketcher :: PauseScreen ()
 }
 
 std::string Sketcher :: AddressInputScreen (std::string owner,
-											unsigned int default_port)
+											unsigned int default_port,
+											std::string error)
 {
 	timeout(-1); // getch() waits endlessly for input [ncurses]
 	curs_set(1); // show cursor position [ncurses]
 	echo(); // show user input [ncurses]
 	erase();
 	GameTable();
+	if ( error.length() > 0 ) {
+		attron(COLOR_PAIR(5)); // enable red color
+		mvprintw(M_yOffset+10,M_xOffset+1,error.c_str());
+		attroff(COLOR_PAIR(5)); // disable red color
+		mvprintw(M_yOffset+11,M_xOffset+1,"Please double check the IP address "
+				"and retry.");
+	}
 	mvprintw(M_yOffset+15,M_xOffset+(M_GameW/2)-28,
 			"You've chosen to play against an opponent through network.");
 	std::string port_str = std::to_string(default_port);

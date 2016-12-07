@@ -42,6 +42,8 @@ Engine::Engine(unsigned int xDim, unsigned int yDim, unsigned int fatness,
 	m_bushes.clear();
 	m_sender = nullptr;
 	m_recver = nullptr;
+	m_my_ip_addr = "";
+	m_opp_ip_addr = "";
 }
 
 Engine::~Engine()
@@ -102,9 +104,7 @@ bool Engine::run_local()
 	char ch; //needed for sheep movement
 
 	// TIME STUFF
-	// WARNING: clocks goes on during execution, if you use sleep_until(20:00)
-	//  for obstacle and sleep(19:00) for sheep, the second will be ignored,
-	//  time has passed!
+	// WARNING: clocks goes on during execution.
 	// SOLUTION: reassign time_point before using it, if necessary.
 	std::chrono::system_clock::time_point t_track_sheep = std::chrono::system_clock::now();
 	std::chrono::duration<int,std::milli> dt_sheep(m_dt_uint_sheep);
@@ -189,47 +189,34 @@ bool Engine::run_good()
 	erase();
 	m_bushes.clear(); //clear vector, if it's not empty
 
-	std::string my_ip_addr = m_artist.AddressInputScreen("your own",
-									_UDPMcastSender_h_DEFAULT_PORT);
-	std::string opp_ip_addr = m_artist.AddressInputScreen("your opponent's",
-									_UDPMcastSender_h_DEFAULT_PORT);
 
-	unsigned int count = 0;
+	std::string error_string = "";
 	while ( m_sender == nullptr ) {
-		try {
-			m_sender = new UDPSSMcastSender("",_UDPMcastSender_h_DEFAULT_TTL,
-											opp_ip_addr,3264); //open socket
-			if ( !m_sender->good() ) {
-				throw m_sender->get_error();
-			}
+		if ( error_string.length() > 0 or m_opp_ip_addr.length() == 0 ) {
+			m_opp_ip_addr = m_artist.AddressInputScreen("your opponent's",
+								_UDPMcastSender_h_DEFAULT_PORT,	error_string);
 		}
-		catch ( std::string msg ) {
+		m_sender = new UDPSSMcastSender("",_UDPMcastSender_h_DEFAULT_TTL,
+										m_opp_ip_addr,3264); //open socket
+		if ( !m_sender->good() ) {
+			error_string = m_sender->get_error();
 			delete m_sender;
 			m_sender = nullptr;
-			++count;
-			if ( count > 10 ) {
-				throw "Engine::run_good() ERROR: Impossible to open sending "
-					"socket correctly - Last error: "+msg;
-			}
 		}
+		else error_string = "";
 	}
-	count = 0;
 	while ( m_recver == nullptr ) {
-		try {
-			m_recver = new UDPSSMcastReceiver("",my_ip_addr,3263);
-			if ( !m_recver->good() ) {
-				throw m_recver->get_error();
-			}
+		if ( error_string.length() > 0 or m_my_ip_addr.length() == 0 ) {
+			m_my_ip_addr = m_artist.AddressInputScreen("your own",
+								_UDPMcastSender_h_DEFAULT_PORT,	error_string);
 		}
-		catch ( std::string msg ) {
+		m_recver = new UDPSSMcastReceiver("",m_my_ip_addr,3263);
+		if ( !m_recver->good() ) {
+			error_string = m_recver->get_error();
 			delete m_recver;
 			m_recver = nullptr;
-			++count;
-			if ( count > 10 ) {
-				throw "Engine::run_good() ERROR: Impossible to open receiving "
-					"socket correctly - Last error: "+msg;
-			}
 		}
+		else error_string = "";
 	}
 
 	bool exit_to_menu = false;
@@ -244,14 +231,12 @@ bool Engine::run_good()
 	m_artist.Pencil(m_sheep);
 
 	// TIME STUFF
-	// WARNING: clocks goes on during execution, if you use sleep_until(20:00)
-	//  for obstacle and sleep(19:00) for sheep, the second will be ignored,
-	//  time has passed!
+	// WARNING: clocks goes on during execution.
 	// SOLUTION: reassign time_point before using it, if necessary.
 	std::chrono::system_clock::time_point t_track_sheep = std::chrono::system_clock::now();
 	std::chrono::duration<int,std::milli> dt_sheep(m_dt_uint_sheep);
 
-	count = 0;
+	unsigned int count = 0;
 	bool dead = false;
 	bool got_bull = false;
 	bool received = false;
@@ -368,47 +353,34 @@ bool Engine::run_evil()
 	erase();
 	m_bushes.clear(); //clear vector, if it's not empty
 
-	std::string my_ip_addr = m_artist.AddressInputScreen("your own",
-									_UDPMcastSender_h_DEFAULT_PORT);
-	std::string opp_ip_addr = m_artist.AddressInputScreen("your opponent's",
-									_UDPMcastSender_h_DEFAULT_PORT);
-
-	unsigned int count = 0;
+	std::string error_string = "";
 	while ( m_sender == nullptr ) {
-		try {
-			m_sender = new UDPSSMcastSender("",_UDPMcastSender_h_DEFAULT_TTL,
-											opp_ip_addr,3263); //open socket
-			if ( !m_sender->good() ) {
-				throw m_sender->get_error();
-			}
+		if ( error_string.length() > 0 or m_opp_ip_addr.length() == 0 ) {
+			m_opp_ip_addr = m_artist.AddressInputScreen("your opponent's",
+								_UDPMcastSender_h_DEFAULT_PORT,error_string);
 		}
-		catch ( std::string msg ) {
+		m_sender = new UDPSSMcastSender("",_UDPMcastSender_h_DEFAULT_TTL,
+											m_opp_ip_addr,3263); //open socket
+		if ( !m_sender->good() ) {
+			error_string = m_sender->get_error();
 			delete m_sender;
 			m_sender = nullptr;
-			++count;
-			if ( count > 10 ) {
-				throw "Engine::run_evil() ERROR: Impossible to open sending "
-					"socket correctly - Last error: "+msg;
-			}
 		}
+		else error_string = "";
+		char tmp_char;
 	}
-	count = 0;
 	while ( m_recver == nullptr ) {
-		try {
-			m_recver = new UDPSSMcastReceiver("",my_ip_addr,3264);
-			if ( !m_recver->good() ) {
-				throw m_recver->get_error();
-			}
+		if ( error_string.length() > 0 or m_my_ip_addr.length() == 0 ) {
+			m_my_ip_addr = m_artist.AddressInputScreen("your own",
+								_UDPMcastSender_h_DEFAULT_PORT,error_string);
 		}
-		catch ( std::string msg ) {
+		m_recver = new UDPSSMcastReceiver("",m_my_ip_addr,3264);
+		if ( !m_recver->good() ) {
+			error_string = m_recver->get_error();
 			delete m_recver;
 			m_recver = nullptr;
-			++count;
-			if ( count > 10 ) {
-				throw "Engine::run_evil() ERROR: Impossible to open receiving "
-					"socket correctly - Last error: "+msg;
-			}
 		}
+		else error_string = "";
 	}
 
 	bool exit_to_menu = false;
@@ -439,7 +411,7 @@ bool Engine::run_evil()
 	bool victory = false;
 	bool received = false;
 
-	count = 0;
+	unsigned int count = 0;
 	while ( !victory and !exit_to_menu ){
 		try {
 			received = m_recver->recv_msg();
