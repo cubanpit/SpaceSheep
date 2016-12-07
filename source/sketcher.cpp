@@ -107,12 +107,19 @@ char Sketcher :: WelcomeScreen ()
 	SpaceSheep *tmp = new SpaceSheep((M_GameW/2)-16,M_GameH-3,2);
 	Pencil(tmp);
 	bool ctrl = false;
-	char return_ch;
+	char return_ch, tmp_char;
 	unsigned int tmp_count = 0;
 	while (!ctrl) {
 		refresh();
 		t_tmp_sheep += dt_tmp_sheep;
 		std::this_thread::sleep_until(t_tmp_sheep);
+
+		// This loop eats the queue on stdin, remains only 1 char.
+		while ( true ) {
+			tmp_char = getch();
+			if ( tmp_char == EOF ) break;
+			else return_ch = tmp_char;
+		}
 		if ( tmp_count%32 < 16 ) {
 			Animation(tmp,'r');
 		}
@@ -120,7 +127,6 @@ char Sketcher :: WelcomeScreen ()
 			Animation(tmp,'l');
 		}
 		++tmp_count;
-		return_ch = getch();
 		if ( return_ch == 'n' ) ctrl = true;
 		else if ( return_ch == 'e' ) ctrl = true;
 		else if ( return_ch == 'g' ) ctrl = true;

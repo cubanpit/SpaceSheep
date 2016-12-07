@@ -101,7 +101,6 @@ bool Engine::run_local()
 	m_sheep = new SpaceSheep(m_artist.get_GameW()/2,
 							m_artist.get_GameH()-1-m_fatness,m_fatness);
 	m_artist.Pencil(m_sheep);
-	char ch; //needed for sheep movement
 
 	// TIME STUFF
 	// WARNING: clocks goes on during execution.
@@ -111,6 +110,7 @@ bool Engine::run_local()
 
 	unsigned int count = 0;
 	bool dead = false;
+	char ch; //needed for sheep movement
 
 	if ( !check_bushes_parameters() ) {
 		throw "Engine::run_local() ERROR: bad parameters for bushes, "
@@ -152,7 +152,8 @@ bool Engine::run_local()
 				m_artist.Animation(m_sheep,'l');
 			}
 			else if ( ch == m_right_mov and (((*m_sheep).get_ref()).x +
-						(int)(*m_sheep).get_fatness()) < ((int)m_artist.get_GameW() - 1) ) {
+						(int)(*m_sheep).get_fatness()) < 
+						((int)m_artist.get_GameW() - 1) ) {
 				m_artist.Animation(m_sheep,'r');
 			}
 			else if ( ch == m_pause ) {
@@ -188,7 +189,6 @@ bool Engine::run_good()
 	timeout(0); // getch() does not wait for input [ncurses]
 	erase();
 	m_bushes.clear(); //clear vector, if it's not empty
-
 
 	std::string error_string = "";
 	while ( m_sender == nullptr ) {
@@ -244,7 +244,8 @@ bool Engine::run_good()
 	std::vector<char> message;
 
 	if ( !check_bushes_parameters() ) {
-		throw "Engine::run_local() ERROR: bad parameters for bushes, the game risks a loop.";
+		throw "Engine::run_local() ERROR: bad parameters for bushes, the game "
+			"risks a loop.";
 	}
 
 	while ( !dead and !exit_to_menu ) {
@@ -283,19 +284,9 @@ bool Engine::run_good()
 				m_artist.Animation(m_sheep,'l');
 			}
 			else if ( ch == m_right_mov and (((*m_sheep).get_ref()).x +
-						(int)(*m_sheep).get_fatness()) < ((int)m_artist.get_GameW() - 1) ) {
+						(int)(*m_sheep).get_fatness()) < 
+						((int)m_artist.get_GameW() - 1) ) {
 				m_artist.Animation(m_sheep,'r');
-			}
-			else if ( ch == m_pause ) {
-				dead = m_artist.PauseScreen();
-				if ( !dead ) {
-					t_track_sheep = std::chrono::system_clock::now();
-					m_artist.GameTable();
-					for (auto it = m_bushes.begin(); it != m_bushes.end(); it++) {
-						m_artist.Pencil(*it);
-					}
-					m_artist.Pencil(m_sheep);
-				}
 			}
 
 			for (auto it = m_bushes.begin(); it != m_bushes.end(); it++) {
@@ -424,16 +415,9 @@ bool Engine::run_evil()
 			message.assign(m_recver->get_msg(), m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
 			if ( message[0] == 'c' ){
 				if ( !got_sheep ){
-					if ( m_bushes.size() > 0 ){
-						for (auto it = m_bushes.begin(); it != m_bushes.end(); it++) {
-							m_artist.Pencil(*it);
-						}
-					}
 					got_sheep = true;
 				}
 				m_artist.Animation(m_sheep, (unsigned int) message[1]);
-				if ( got_bull ) m_artist.Pencil(m_bull);
-				refresh();
 			}
 			else if ( message[0] == 'r' ){
 				if( got_sheep ){
@@ -471,14 +455,13 @@ bool Engine::run_evil()
 				m_artist.Animation(m_bull);
 				m_sender->send_msg(compose_msg(m_bull));
 			}
-
-			// With this we are sure that the bull is over bushes, and they are
-			//  always in sync.
-			for (auto it = m_bushes.begin(); it != m_bushes.end(); it++) {
-				m_artist.Pencil(*it);
-			}
-			if ( got_bull ) m_artist.Pencil(m_bull);
 		}
+		// With this we are sure that the bull is over bushes, and they are
+		//  always in sync.
+		for (auto it = m_bushes.begin(); it != m_bushes.end(); it++) {
+			m_artist.Pencil(*it);
+		}
+		if ( got_bull ) m_artist.Pencil(m_bull);
 		refresh();
 		++count;
 	}
