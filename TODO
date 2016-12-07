@@ -1,5 +1,9 @@
 TODO LIST:
 
+URGENT:	- aggiungere salvataggio indirizzo IP per la sessione
+		- ripetizione richiesta indirizzo IP in caso di errore
+
+
 - all: rivedere e ampliare i commenti (aggiornarli alla gestione delle eccezioni)
 - all: correggere periodicamente 'errori' riportati da 'gcc -Wall -Wextra'
 			possibile rimuovere l'avvertimento sulle funzioni di Hitbox?
@@ -24,6 +28,9 @@ TODO LIST:
 -- HitBox: in alcune situazioni (all'interno di un grosso rettangolo) la pecora
 			non è sovrapposta
 -- Obstacle: m_hitbox and m_ref as pointers could enhance performance?
+-- Engine: aggiungere posizione laterale tori?
+-- Engine: aggiungere tori nel conteggio dello score
+-- Engine: aumentare gradualmente velocità nella modalità offline
 -- Engine: alcune variabili possono essere messe static (seed, chrono, random)?
 -- Engine: bushes, da sostituire vector con list, OutOfTheBox non funziona
 -- Engine: separare funzione per il movimento della pecora (possibile senza

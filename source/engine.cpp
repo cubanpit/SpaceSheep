@@ -63,32 +63,32 @@ Engine::~Engine()
 
 void Engine::start()
 {
-	//the game is starting, let's clean everything from any previous game
-	if ( m_bull != nullptr ) delete m_bull;
-	m_bull = nullptr;
-	if ( m_sheep != nullptr ) delete m_sheep;
-	m_sheep = nullptr;
-	for (auto it = m_bushes.begin(); it != m_bushes.end(); it++) {
-		delete *it;
-	}
-	m_bushes.clear();
-	if ( m_sender != nullptr ) delete m_sender;
-	m_sender = nullptr;
-	if ( m_recver != nullptr ) delete m_recver;
-	m_recver = nullptr;
+	bool gimme_more = true;
+	while ( gimme_more ) {
+		//the game is starting, let's clean everything from any previous game
+		if ( m_bull != nullptr ) delete m_bull;
+		m_bull = nullptr;
+		if ( m_sheep != nullptr ) delete m_sheep;
+		m_sheep = nullptr;
+		for (auto it = m_bushes.begin(); it != m_bushes.end(); it++) {
+			delete *it;
+		}
+		m_bushes.clear();
+		if ( m_sender != nullptr ) delete m_sender;
+		m_sender = nullptr;
+		if ( m_recver != nullptr ) delete m_recver;
+		m_recver = nullptr;
 
-	char user_choice;
-	user_choice = m_artist.WelcomeScreen();
-    if ( user_choice == 'n' ) run_local();
-	else if ( user_choice == 'e' ) run_evil();
-	else if ( user_choice == 'g' ) run_good();
-	else if ( user_choice == 'q' ) {
-		endwin();
-		exit(EXIT_SUCCESS);
+		char user_choice;
+		user_choice = m_artist.WelcomeScreen();
+	    if ( user_choice == 'n' ) gimme_more = run_local();
+		else if ( user_choice == 'e' ) gimme_more = run_evil();
+		else if ( user_choice == 'g' ) gimme_more = run_good();
+		else if ( user_choice == 'q' ) gimme_more = false;
 	}
 }
 
-void Engine::run_local()
+bool Engine::run_local()
 {
 	timeout(0); // getch() does not wait for input [ncurses]
 	erase();
@@ -111,10 +111,10 @@ void Engine::run_local()
 
 	unsigned int count = 0;
 	bool dead = false;
-	bool new_game = true;
 
 	if ( !check_bushes_parameters() ) {
-		throw "Engine::run_local() ERROR: bad parameters for bushes, the game risks a loop.";
+		throw "Engine::run_local() ERROR: bad parameters for bushes, "
+				"the game risks a loop.";
 	}
 
 	while (!dead) {
@@ -124,9 +124,10 @@ void Engine::run_local()
 			}
 			catch (std::bad_alloc& ba)
 			{
+				endwin();
 				std::cerr << "Engine::add_obstacle_bushes() bad_alloc caught: "
 					<< ba.what() << std::endl;
-				exit (EXIT_FAILURE);
+				exit(EXIT_FAILURE);
 			}
 		}
 		++count;
@@ -179,29 +180,25 @@ void Engine::run_local()
 		}
 		refresh();
 	}
-	new_game = m_artist.ExitScreen(m_score);
-	if ( new_game ) start();
+	return m_artist.ExitScreen(m_score);
 }
 
-void Engine::run_good()
+bool Engine::run_good()
 {
 	timeout(0); // getch() does not wait for input [ncurses]
 	erase();
 	m_bushes.clear(); //clear vector, if it's not empty
 
-	/*std::string my_ip_addr = m_artist.AddressInputScreen("your own",
+	std::string my_ip_addr = m_artist.AddressInputScreen("your own",
 									_UDPMcastSender_h_DEFAULT_PORT);
 	std::string opp_ip_addr = m_artist.AddressInputScreen("your opponent's",
 									_UDPMcastSender_h_DEFAULT_PORT);
-	*/
-	std::string my_ip_addr = "127.0.0.1";
-	std::string opp_ip_addr = "127.0.0.1";
 
 	unsigned int count = 0;
 	while ( m_sender == nullptr ) {
 		try {
 			m_sender = new UDPSSMcastSender("",_UDPMcastSender_h_DEFAULT_TTL,
-											"127.0.0.1",3263); //open socket
+											opp_ip_addr,3264); //open socket
 			if ( !m_sender->good() ) {
 				throw m_sender->get_error();
 			}
@@ -219,7 +216,7 @@ void Engine::run_good()
 	count = 0;
 	while ( m_recver == nullptr ) {
 		try {
-			m_recver = new UDPSSMcastReceiver("","127.0.0.1",3264);
+			m_recver = new UDPSSMcastReceiver("",my_ip_addr,3263);
 			if ( !m_recver->good() ) {
 				throw m_recver->get_error();
 			}
@@ -235,7 +232,8 @@ void Engine::run_good()
 		}
 	}
 
-	pair_with_opponent();
+	bool exit_to_menu = false;
+	exit_to_menu = !(pair_with_evil());
 	m_artist.GameTable();
 	refresh();
 
@@ -255,7 +253,6 @@ void Engine::run_good()
 
 	count = 0;
 	bool dead = false;
-	bool new_game = true;
 	bool got_bull = false;
 	bool received = false;
 	char ch; //needed for sheep movement
@@ -265,16 +262,17 @@ void Engine::run_good()
 		throw "Engine::run_local() ERROR: bad parameters for bushes, the game risks a loop.";
 	}
 
-	while (!dead) {
+	while ( !dead and !exit_to_menu ) {
 		if ( !(count%m_bushes_prod) ) {
 			try {
 				add_obstacle_bushes();
 			}
 			catch (std::bad_alloc& ba)
 			{
+				endwin();
 				std::cerr << "Engine::add_obstacle_bushes() bad_alloc caught: "
 							<< ba.what() << std::endl;
-				exit (EXIT_FAILURE);
+				exit(EXIT_FAILURE);
 			}
 		}
 		++count;
@@ -360,29 +358,26 @@ void Engine::run_good()
 		refresh();
 	}
 	m_sender->send_msg("dead");
-	new_game = m_artist.ExitScreen(m_score);
-	if ( new_game ) start();
+	if ( !exit_to_menu ) return m_artist.ExitScreen(m_score);
+	else return true;
 }
 
-void Engine::run_evil()
+bool Engine::run_evil()
 {
 	timeout(0);
 	erase();
 	m_bushes.clear(); //clear vector, if it's not empty
 
-	/*std::string my_ip_addr = m_artist.AddressInputScreen("your own",
+	std::string my_ip_addr = m_artist.AddressInputScreen("your own",
 									_UDPMcastSender_h_DEFAULT_PORT);
 	std::string opp_ip_addr = m_artist.AddressInputScreen("your opponent's",
 									_UDPMcastSender_h_DEFAULT_PORT);
-	*/
-	std::string my_ip_addr = "127.0.0.1";
-	std::string opp_ip_addr = "127.0.0.1";
 
 	unsigned int count = 0;
 	while ( m_sender == nullptr ) {
 		try {
 			m_sender = new UDPSSMcastSender("",_UDPMcastSender_h_DEFAULT_TTL,
-											"127.0.0.1",3264); //open socket
+											opp_ip_addr,3263); //open socket
 			if ( !m_sender->good() ) {
 				throw m_sender->get_error();
 			}
@@ -400,7 +395,7 @@ void Engine::run_evil()
 	count = 0;
 	while ( m_recver == nullptr ) {
 		try {
-			m_recver = new UDPSSMcastReceiver("","127.0.0.1",3263);
+			m_recver = new UDPSSMcastReceiver("",my_ip_addr,3264);
 			if ( !m_recver->good() ) {
 				throw m_recver->get_error();
 			}
@@ -416,14 +411,14 @@ void Engine::run_evil()
 		}
 	}
 
-	pair_with_opponent();
+	bool exit_to_menu = false;
+	exit_to_menu = !(pair_with_good());
 	m_artist.GameTable();
 	m_artist.CreatorChoice();
-	refresh();
 
 	std::vector<char> message;
 	bool got_sheep = false;
-	while( !got_sheep ){
+	while( !got_sheep and !exit_to_menu ){
 		m_recver->recv_msg();
 		message.assign(m_recver->get_msg(), m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
 
@@ -443,10 +438,9 @@ void Engine::run_evil()
 	bool got_bull = false;
 	bool victory = false;
 	bool received = false;
-	bool new_game = true;
 
 	count = 0;
-	while ( !victory ){
+	while ( !victory and !exit_to_menu ){
 		try {
 			received = m_recver->recv_msg();
 		}
@@ -512,12 +506,12 @@ void Engine::run_evil()
 				m_artist.Pencil(*it);
 			}
 			if ( got_bull ) m_artist.Pencil(m_bull);
-			refresh();
 		}
+		refresh();
 		++count;
 	}
-	new_game = m_artist.ExitScreen(0);
-	if ( new_game ) start();
+	if ( !exit_to_menu ) return m_artist.ExitScreen(m_score);
+	else return true;
 }
 
 void Engine :: add_obstacle_bushes ()
@@ -689,23 +683,46 @@ bool Engine :: bull_creator_choice()
 }
 
 // pair opponents, both should be able to send and receive packages
-void Engine::pair_with_opponent()
+bool Engine::pair_with_good()
 {
 	std::vector<char> message;
 	bool paired = false;
-	while(!paired) {
-		if( m_artist.PairScreen() ) start();
+	bool stop_pair = false;
+	while( !paired and !stop_pair ) {
+		stop_pair = m_artist.PairScreen();
 		m_sender->send_msg("ping");
-		if( m_recver->recv_msg() ){
-			m_sender->send_msg("ping");
+		if( m_recver->recv_msg() and !stop_pair ){
+			message.assign(m_recver->get_msg(),
+				m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
+			if( message[0] == 'p' and message[1] == 'o'
+				and	message[2] == 'n' and message[3] == 'g' ) {
+				m_sender->send_msg("pong");
+				paired = true;
+			}
+		}
+	}
+
+	m_recver->flush_socket();
+	erase();
+	return paired;
+}
+// pair opponents, both should be able to send and receive packages
+bool Engine::pair_with_evil()
+{
+	std::vector<char> message;
+	bool paired = false;
+	bool stop_pair = false;
+	while( !paired and !stop_pair ) {
+		stop_pair = m_artist.PairScreen();
+		if( m_recver->recv_msg() and !stop_pair ){
 			message.assign(m_recver->get_msg(),
 				m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
 			if( message[0] == 'p' and message[1] == 'i'
 				and	message[2] == 'n' and message[3] == 'g' ) {
-				for (unsigned short int i=0; i<10 and !paired; ++i) {
-					if( m_artist.PairScreen() ) start();
-					m_sender->send_msg("pong");
-					if( m_recver->recv_msg() ){
+				m_sender->send_msg("pong");
+				for(int i=0; i<100 and !paired and !stop_pair; ++i) {
+					stop_pair = m_artist.PairScreen();
+					if( m_recver->recv_msg() and !stop_pair ){
 						message.assign(m_recver->get_msg(),
 							m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
 						if( message[0] == 'p' and message[1] == 'o'
@@ -719,6 +736,7 @@ void Engine::pair_with_opponent()
 	}
 	m_recver->flush_socket();
 	erase();
+	return paired;
 }
 
 bool Engine::create_bull(std::vector<char>& message)

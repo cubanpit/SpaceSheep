@@ -45,19 +45,20 @@ class Engine
 				unsigned int yDim = 30,
 				unsigned int fatness = 2,
 				unsigned int bushes_prod = 14,
-				unsigned int dt_uint_bull = 200,
-				unsigned int dt_uint_bushes = 350);
+				unsigned int dt_uint_bull = 150,
+				unsigned int dt_uint_bushes = 200);
 		~Engine();
 
 		void start(); //start the game!
-		void run_local(); //play local mode
-		void run_good(); //play as good sheep versus the evil bull creator
-		void run_evil(); //play as evil bull creator versus the good sheep
+		bool run_local(); //play local mode
+		bool run_good(); //play as good sheep versus the evil bull creator
+		bool run_evil(); //play as evil bull creator versus the good sheep
 
 		void add_obstacle_bushes(); //add a bush to existent bushes vector
 		bool check_bushes_parameters(); //check if bushes param. are legal
 		bool bull_creator_choice(); //receive input from creator to spawn a bull
-		void pair_with_opponent(); //pair opponents through network
+		bool pair_with_good(); //pair opponents through network
+		bool pair_with_evil(); //pair opponents through network
 		bool create_bull(std::vector<char>&); //create bull if param. are valid
 
 		//change bushes size or density limit
