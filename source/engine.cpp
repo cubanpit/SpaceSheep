@@ -82,7 +82,7 @@ void Engine::start()
 		m_recver = nullptr;
 
 		char user_choice;
-		user_choice = m_artist.WelcomeScreen();
+		user_choice = m_artist.welcome_screen();
 	    if ( user_choice == 'n' ) gimme_more = run_local();
 		else if ( user_choice == 'e' ) gimme_more = run_evil();
 		else if ( user_choice == 'g' ) gimme_more = run_good();
@@ -96,11 +96,11 @@ bool Engine::run_local()
 	erase();
 	m_bushes.clear(); //clear vector, if it's not empty
 
-	m_artist.GameTable();
+	m_artist.game_table();
 	if ( m_sheep != nullptr ) delete m_sheep;
-	m_sheep = new SpaceSheep(m_artist.get_GameW()/2,
-							m_artist.get_GameH()-1-m_fatness,m_fatness);
-	m_artist.Pencil(m_sheep);
+	m_sheep = new SpaceSheep(m_artist.get_gameW()/2,
+							m_artist.get_gameH()-1-m_fatness,m_fatness);
+	m_artist.pencil(m_sheep);
 
 	// TIME STUFF
 	// WARNING: clocks goes on during execution.
@@ -132,14 +132,16 @@ bool Engine::run_local()
 		}
 		++count;
 		//compute score, different weight for different difficulty level
-		m_score = count*(200/(m_bushes_prod+(m_bushes_w_d*10)+(m_dt_uint_bushes/10)));
+		m_score = (float)count*(200/((float)m_bushes_prod+
+					((float)m_bushes_w_d*10)+((float)m_dt_uint_bushes/5)));
+		//increase difficult level with time
+		if ( !(count%10) ) --m_dt_uint_bushes;
 
 		for (auto it = m_bushes.begin(); it != m_bushes.end(); it++) {
-			m_artist.Animation(*it);
+			m_artist.animation(*it);
 		}
-
 		for (auto it = m_bushes.begin(); it != m_bushes.end(); it++) {
-			if ( ((*(*it)).get_hitbox()).Overlap((*m_sheep).get_hitbox()) ) {
+			if ( ((*(*it)).get_hitbox()).overlap((*m_sheep).get_hitbox()) ) {
 				dead = true;
 				break;
 			}
@@ -149,39 +151,39 @@ bool Engine::run_local()
 			ch = getch();
 			if ( ch == m_left_mov and  (((*m_sheep).get_ref()).x -
 						(int)(*m_sheep).get_fatness()) > 1 ) {
-				m_artist.Animation(m_sheep,'l');
+				m_artist.animation(m_sheep,'l');
 			}
 			else if ( ch == m_right_mov and (((*m_sheep).get_ref()).x +
-						(int)(*m_sheep).get_fatness()) < 
-						((int)m_artist.get_GameW() - 1) ) {
-				m_artist.Animation(m_sheep,'r');
+						(int)(*m_sheep).get_fatness()) <
+						((int)m_artist.get_gameW() - 1) ) {
+				m_artist.animation(m_sheep,'r');
 			}
 			else if ( ch == m_pause ) {
-				dead = m_artist.PauseScreen();
+				dead = m_artist.pause_screen();
 				if ( !dead ) {
 					t_track_sheep = std::chrono::system_clock::now();
-					m_artist.GameTable();
+					m_artist.game_table();
 					for (auto it = m_bushes.begin(); it != m_bushes.end(); it++) {
-						m_artist.Pencil(*it);
+						m_artist.pencil(*it);
 					}
-					m_artist.Pencil(m_sheep);
+					m_artist.pencil(m_sheep);
 				}
 			}
 
 			for (auto it = m_bushes.begin(); it != m_bushes.end(); it++) {
-				if ( ((*(*it)).get_hitbox()).Overlap((*m_sheep).get_hitbox()) ) {
+				if ( ((*(*it)).get_hitbox()).overlap((*m_sheep).get_hitbox()) ) {
 					dead = true;
 					break;
 				}
 			}
-			m_artist.Score(m_score);
+			m_artist.score(m_score);
 			refresh();
 			t_track_sheep += dt_sheep;
 			std::this_thread::sleep_until(t_track_sheep);
 		}
 		refresh();
 	}
-	return m_artist.ExitScreen(m_score);
+	return m_artist.exit_good_screen(m_score);
 }
 
 bool Engine::run_good()
@@ -193,7 +195,7 @@ bool Engine::run_good()
 	std::string error_string = "";
 	while ( m_sender == nullptr ) {
 		if ( error_string.length() > 0 or m_opp_ip_addr.length() == 0 ) {
-			m_opp_ip_addr = m_artist.AddressInputScreen("your opponent's",
+			m_opp_ip_addr = m_artist.addr_input_screen("your opponent's",
 								_UDPMcastSender_h_DEFAULT_PORT,	error_string);
 		}
 		m_sender = new UDPSSMcastSender("",_UDPMcastSender_h_DEFAULT_TTL,
@@ -207,7 +209,7 @@ bool Engine::run_good()
 	}
 	while ( m_recver == nullptr ) {
 		if ( error_string.length() > 0 or m_my_ip_addr.length() == 0 ) {
-			m_my_ip_addr = m_artist.AddressInputScreen("your own",
+			m_my_ip_addr = m_artist.addr_input_screen("your own",
 								_UDPMcastSender_h_DEFAULT_PORT,	error_string);
 		}
 		m_recver = new UDPSSMcastReceiver("",m_my_ip_addr,3263);
@@ -221,14 +223,14 @@ bool Engine::run_good()
 
 	bool exit_to_menu = false;
 	exit_to_menu = !(pair_with_evil());
-	m_artist.GameTable();
+	m_artist.game_table();
 	refresh();
 
 	if ( m_sheep != nullptr ) delete m_sheep;
-	m_sheep = new SpaceSheep(m_artist.get_GameW()/2,
-						m_artist.get_GameH()-1-m_fatness,m_fatness);
+	m_sheep = new SpaceSheep(m_artist.get_gameW()/2,
+						m_artist.get_gameH()-1-m_fatness,m_fatness);
 	m_sender->send_msg(compose_msg(m_sheep));
-	m_artist.Pencil(m_sheep);
+	m_artist.pencil(m_sheep);
 
 	// TIME STUFF
 	// WARNING: clocks goes on during execution.
@@ -263,15 +265,16 @@ bool Engine::run_good()
 		}
 		++count;
 		//compute score, different weight for different difficulty level
-		m_score = count*(200/(m_bushes_prod+(m_bushes_w_d*10)+(m_dt_uint_bushes/10)));
+		m_score = (float)count*(200/((float)m_bushes_prod+
+					((float)m_bushes_w_d*10)+((float)m_dt_uint_bushes/10)));
 
 		for (auto it = m_bushes.begin(); it != m_bushes.end(); it++) {
-			m_artist.Animation(*it);
+			m_artist.animation(*it);
 			m_sender->send_msg(compose_msg(*it));
 		}
 
 		for (auto it = m_bushes.begin(); it != m_bushes.end(); it++) {
-			if ( ((*(*it)).get_hitbox()).Overlap((*m_sheep).get_hitbox()) ) {
+			if ( ((*(*it)).get_hitbox()).overlap((*m_sheep).get_hitbox()) ) {
 				dead = true;
 				break;
 			}
@@ -281,21 +284,21 @@ bool Engine::run_good()
 			ch = getch();
 			if ( ch == m_left_mov and  (((*m_sheep).get_ref()).x -
 						(int)(*m_sheep).get_fatness()) > 1 ) {
-				m_artist.Animation(m_sheep,'l');
+				m_artist.animation(m_sheep,'l');
 			}
 			else if ( ch == m_right_mov and (((*m_sheep).get_ref()).x +
-						(int)(*m_sheep).get_fatness()) < 
-						((int)m_artist.get_GameW() - 1) ) {
-				m_artist.Animation(m_sheep,'r');
+						(int)(*m_sheep).get_fatness()) <
+						((int)m_artist.get_gameW() - 1) ) {
+				m_artist.animation(m_sheep,'r');
 			}
 
 			for (auto it = m_bushes.begin(); it != m_bushes.end(); it++) {
-				if ( ((*(*it)).get_hitbox()).Overlap((*m_sheep).get_hitbox()) ) {
+				if ( ((*(*it)).get_hitbox()).overlap((*m_sheep).get_hitbox()) ) {
 					dead = true;
 					break;
 				}
 			}
-			if( got_bull and ((*m_bull).get_hitbox()).Overlap((*m_sheep).get_hitbox()) ) {
+			if( got_bull and ((*m_bull).get_hitbox()).overlap((*m_sheep).get_hitbox()) ) {
 				dead = true;
 				break;
 			}
@@ -311,8 +314,9 @@ bool Engine::run_good()
 				message.assign(m_recver->get_msg(),
 						m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
 				got_bull = create_bull(message);
+				if ( got_bull ) m_score += 1;
 
-				if( got_bull and ((*m_bull).get_hitbox()).Overlap((*m_sheep).get_hitbox()) ) {
+				if( got_bull and ((*m_bull).get_hitbox()).overlap((*m_sheep).get_hitbox()) ) {
 					dead = true;
 					break;
 				}
@@ -321,10 +325,10 @@ bool Engine::run_good()
 			// With this we are sure that the bull is over bushes, and they are
 			//  always in sync.
 			for (auto it = m_bushes.begin(); it != m_bushes.end(); it++) {
-				m_artist.Pencil(*it);
+				m_artist.pencil(*it);
 			}
-			if ( got_bull ) m_artist.Pencil(m_bull);
-			m_artist.Score(m_score);
+			if ( got_bull ) m_artist.pencil(m_bull);
+			m_artist.score(m_score);
 			refresh();
 
 			m_sender->send_msg(compose_msg(m_sheep));
@@ -334,7 +338,7 @@ bool Engine::run_good()
 		refresh();
 	}
 	m_sender->send_msg("dead");
-	if ( !exit_to_menu ) return m_artist.ExitScreen(m_score);
+	if ( !exit_to_menu ) return m_artist.exit_good_screen(m_score);
 	else return true;
 }
 
@@ -347,7 +351,7 @@ bool Engine::run_evil()
 	std::string error_string = "";
 	while ( m_sender == nullptr ) {
 		if ( error_string.length() > 0 or m_opp_ip_addr.length() == 0 ) {
-			m_opp_ip_addr = m_artist.AddressInputScreen("your opponent's",
+			m_opp_ip_addr = m_artist.addr_input_screen("your opponent's",
 								_UDPMcastSender_h_DEFAULT_PORT,error_string);
 		}
 		m_sender = new UDPSSMcastSender("",_UDPMcastSender_h_DEFAULT_TTL,
@@ -358,11 +362,10 @@ bool Engine::run_evil()
 			m_sender = nullptr;
 		}
 		else error_string = "";
-		char tmp_char;
 	}
 	while ( m_recver == nullptr ) {
 		if ( error_string.length() > 0 or m_my_ip_addr.length() == 0 ) {
-			m_my_ip_addr = m_artist.AddressInputScreen("your own",
+			m_my_ip_addr = m_artist.addr_input_screen("your own",
 								_UDPMcastSender_h_DEFAULT_PORT,error_string);
 		}
 		m_recver = new UDPSSMcastReceiver("",m_my_ip_addr,3264);
@@ -376,8 +379,8 @@ bool Engine::run_evil()
 
 	bool exit_to_menu = false;
 	exit_to_menu = !(pair_with_good());
-	m_artist.GameTable();
-	m_artist.CreatorChoice();
+	m_artist.game_table();
+	m_artist.creator_choice();
 
 	std::vector<char> message;
 	bool got_sheep = false;
@@ -388,11 +391,11 @@ bool Engine::run_evil()
 		if( message[0] == 'c' ) {
 			position tmp_ref;
 			tmp_ref.x = message[1];
-			tmp_ref.y = m_artist.get_GameH()-1-message[3];
+			tmp_ref.y = m_artist.get_gameH()-1-message[3];
 
 			if ( m_sheep != nullptr ) delete m_sheep;
 			m_sheep = new SpaceSheep(tmp_ref,(unsigned int)message[3]);
-			m_artist.Pencil(m_sheep);
+			m_artist.pencil(m_sheep);
 			got_sheep = true;
 		}
 	}
@@ -417,13 +420,13 @@ bool Engine::run_evil()
 				if ( !got_sheep ){
 					got_sheep = true;
 				}
-				m_artist.Animation(m_sheep, (unsigned int) message[1]);
+				m_artist.animation(m_sheep, (unsigned int) message[1]);
 			}
 			else if ( message[0] == 'r' ){
 				if( got_sheep ){
 					if( m_bushes.size() > 0 ){
 						for (auto it = m_bushes.begin(); it != m_bushes.end(); it++) {
-							m_artist.Rubber(*it);
+							m_artist.rubber(*it);
 							delete *it;
 						}
 						m_bushes.clear();
@@ -442,30 +445,30 @@ bool Engine::run_evil()
 			if( !got_bull ) {
 				got_bull = bull_creator_choice();
 				if ( got_bull ) {
-					m_artist.Pencil(m_bull);
+					m_artist.pencil(m_bull);
 					m_sender->send_msg(compose_msg(m_bull));
 				}
 			}
-			else if ( ((int)(m_bull->get_ref()).y - (int)(m_bull->get_fatness()) - 1) > (int)m_artist.get_GameH() ) {
+			else if ( ((int)(m_bull->get_ref()).y - (int)(m_bull->get_fatness()) - 1) > (int)m_artist.get_gameH() ) {
 				delete m_bull;
 				m_bull = nullptr;
 				got_bull = false;
 			}
 			else {
-				m_artist.Animation(m_bull);
+				m_artist.animation(m_bull);
 				m_sender->send_msg(compose_msg(m_bull));
 			}
 		}
 		// With this we are sure that the bull is over bushes, and they are
 		//  always in sync.
 		for (auto it = m_bushes.begin(); it != m_bushes.end(); it++) {
-			m_artist.Pencil(*it);
+			m_artist.pencil(*it);
 		}
-		if ( got_bull ) m_artist.Pencil(m_bull);
+		if ( got_bull ) m_artist.pencil(m_bull);
 		refresh();
 		++count;
 	}
-	if ( !exit_to_menu ) return m_artist.ExitScreen(m_score);
+	if ( !exit_to_menu ) return m_artist.exit_evil_screen();
 	else return true;
 }
 
@@ -479,7 +482,7 @@ void Engine :: add_obstacle_bushes ()
 	 * - limits on (x+w) to have every obstacle inside Game Table
 	 * - minimum horizontal distance between obstacle, to be sure
 	 *    the SpaceSheep can pass (m_dist)
-	 * - minimum tot with of obstacle on same row, so it's always
+	 * - minimum tot width of obstacle on same row, so it's always
 	 *    engaging (tot_w)
 	 * - check obstacle overlapping
 	 *
@@ -502,7 +505,8 @@ void Engine :: add_obstacle_bushes ()
 	// Random stuff
 	unsigned int seed = std::chrono::system_clock::now().time_since_epoch().count();
 	std::default_random_engine generator(seed);
-	std::uniform_int_distribution<unsigned int> distribution(0,m_artist.get_GameW()-1);
+	std::uniform_int_distribution<unsigned int> distribution(0,
+														m_artist.get_gameW()-1);
 
 	unsigned int x = 0, w = 1, h = 1;
 	int y = 0;
@@ -511,9 +515,10 @@ void Engine :: add_obstacle_bushes ()
 	for ( unsigned int i=0; i<2; ++i) {
 		RectObstacle* tmp_bush = new RectObstacle(x,y,w,h);
 		while (!ctrl) {
-			w = (distribution(generator) % m_bushes_w_r) + m_bushes_w_m; //(dist%range)+min
+			//(dist%range)+min
+			w = (distribution(generator) % m_bushes_w_r) + m_bushes_w_m;
 			x = distribution(generator);
-			if ( (x + w) <= m_artist.get_GameW() ) ctrl = true;
+			if ( (x + w) <= m_artist.get_gameW() ) ctrl = true;
 			if ( i > 0 ) {
 				if ( ctrl ) {
 					if ( (((int)x >= (((*(m_bushes.back())).get_ref()).x
@@ -546,7 +551,7 @@ void Engine :: add_obstacle_bushes ()
 
 			if ( ctrl ) {
 				for (auto it = m_bushes.begin(); it != m_bushes.end(); it++) {
-					if ( ((*(*it)).get_hitbox()).Overlap((*tmp_bush).get_hitbox()) ) {
+					if ( ((*(*it)).get_hitbox()).overlap((*tmp_bush).get_hitbox()) ) {
 						ctrl = false;
 						break;
 					}
@@ -558,7 +563,7 @@ void Engine :: add_obstacle_bushes ()
 
 		// Old obstacles need to be erased from the vector TMP
 		for (auto it = m_bushes.begin(); it != m_bushes.end(); it++) {
-			if ( ((*(*it)).get_ref()).y > (int)m_artist.get_GameH() ) {
+			if ( ((*(*it)).get_ref()).y > (int)m_artist.get_gameH() ) {
 				delete *it;
 				m_bushes.erase(it);
 			}
@@ -568,10 +573,10 @@ void Engine :: add_obstacle_bushes ()
 
 bool Engine :: check_bushes_parameters ()
 {
-	if ( !( (((int)m_bushes_w_m/2) + ((int)m_artist.get_GameW()/2) -
+	if ( !( (((int)m_bushes_w_m/2) + ((int)m_artist.get_gameW()/2) -
 				((int)(*m_sheep).get_fatness()*2+1+(int)m_bushes_w_d))
 				>= (int)m_bushes_w_tot
-			and (((int)m_artist.get_GameW()/2) -
+			and (((int)m_artist.get_gameW()/2) -
 				(((int)m_bushes_w_m+(int)m_bushes_w_r)/2) -
 				((int)(*m_sheep).get_fatness()*2+1+(int)m_bushes_w_d))
 				>= (int)m_bushes_w_m ) ) {
@@ -595,43 +600,43 @@ bool Engine :: bull_creator_choice()
 	}
 	if ( count_input == 0 ) return false;
 	else if ( user_choice == 'q'){
-		m_bull = new SpaceBull(m_artist.get_GameW()/11, -2, 2);
+		m_bull = new SpaceBull(m_artist.get_gameW()/11, -2, 2);
 		return true;
 	}
 	else if ( user_choice == 'w'){
-		m_bull = new SpaceBull(2*m_artist.get_GameW()/11, -2, 2);
+		m_bull = new SpaceBull(2*m_artist.get_gameW()/11, -2, 2);
 		return true;
 	}
 	else if ( user_choice == 'e'){
-		m_bull = new SpaceBull(3*m_artist.get_GameW()/11, -2, 2);
+		m_bull = new SpaceBull(3*m_artist.get_gameW()/11, -2, 2);
 		return true;
 	}
 	else if ( user_choice == 'r'){
-		m_bull = new SpaceBull(4*m_artist.get_GameW()/11, -2, 2);
+		m_bull = new SpaceBull(4*m_artist.get_gameW()/11, -2, 2);
 		return true;
 	}
 	else if ( user_choice == 't'){
-		m_bull = new SpaceBull(5*m_artist.get_GameW()/11, -2, 2);
+		m_bull = new SpaceBull(5*m_artist.get_gameW()/11, -2, 2);
 		return true;
 	}
 	else if ( user_choice == 'y'){
-		m_bull = new SpaceBull(6*m_artist.get_GameW()/11, -2, 2);
+		m_bull = new SpaceBull(6*m_artist.get_gameW()/11, -2, 2);
 		return true;
 	}
 	else if ( user_choice == 'u'){
-		m_bull = new SpaceBull(7*m_artist.get_GameW()/11, -2, 2);
+		m_bull = new SpaceBull(7*m_artist.get_gameW()/11, -2, 2);
 		return true;
 	}
 	else if ( user_choice == 'i'){
-		m_bull = new SpaceBull(8*m_artist.get_GameW()/11, -2, 2);
+		m_bull = new SpaceBull(8*m_artist.get_gameW()/11, -2, 2);
 		return true;
 	}
 	else if ( user_choice == 'o'){
-		m_bull = new SpaceBull(9*m_artist.get_GameW()/11, -2, 2);
+		m_bull = new SpaceBull(9*m_artist.get_gameW()/11, -2, 2);
 		return true;
 	}
 	else if ( user_choice == 'p'){
-		m_bull = new SpaceBull(10*m_artist.get_GameW()/11, -2, 2);
+		m_bull = new SpaceBull(10*m_artist.get_gameW()/11, -2, 2);
 		return true;
 	}
 	else return false;
@@ -644,7 +649,7 @@ bool Engine::pair_with_good()
 	bool paired = false;
 	bool stop_pair = false;
 	while( !paired and !stop_pair ) {
-		stop_pair = m_artist.PairScreen();
+		stop_pair = m_artist.pair_screen();
 		m_sender->send_msg("ping");
 		if( m_recver->recv_msg() and !stop_pair ){
 			message.assign(m_recver->get_msg(),
@@ -668,7 +673,7 @@ bool Engine::pair_with_evil()
 	bool paired = false;
 	bool stop_pair = false;
 	while( !paired and !stop_pair ) {
-		stop_pair = m_artist.PairScreen();
+		stop_pair = m_artist.pair_screen();
 		if( m_recver->recv_msg() and !stop_pair ){
 			message.assign(m_recver->get_msg(),
 				m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
@@ -676,7 +681,7 @@ bool Engine::pair_with_evil()
 				and	message[2] == 'n' and message[3] == 'g' ) {
 				m_sender->send_msg("pong");
 				for(int i=0; i<100 and !paired and !stop_pair; ++i) {
-					stop_pair = m_artist.PairScreen();
+					stop_pair = m_artist.pair_screen();
 					if( m_recver->recv_msg() and !stop_pair ){
 						message.assign(m_recver->get_msg(),
 							m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
@@ -701,9 +706,9 @@ bool Engine::create_bull(std::vector<char>& message)
 	// message[3] = fatness
 	if( m_bull == nullptr ){
 		if( ((int)message[2] - (int)message[3])
-				> (int)m_artist.get_GameH()
+				> (int)m_artist.get_gameH()
 			or (int)message[3] > (int)_Engine_h_MAX_FATNESS
-			or (int)message[1] > (int)m_artist.get_GameW() ) {
+			or (int)message[1] > (int)m_artist.get_gameW() ) {
 			return false;
 		}
 		else {
@@ -713,13 +718,13 @@ bool Engine::create_bull(std::vector<char>& message)
 		}
 	}
 	else {
-		m_artist.Rubber(m_bull);
+		m_artist.rubber(m_bull);
 		delete m_bull;
 		m_bull = nullptr;
 		if( ((int)message[2] - (int)message[3])
-				> (int)m_artist.get_GameH()
+				> (int)m_artist.get_gameH()
 			or (int)message[3] > (int)_Engine_h_MAX_FATNESS
-			or (int)message[1] > (int)m_artist.get_GameW() ) {
+			or (int)message[1] > (int)m_artist.get_gameW() ) {
 			return false;
 		}
 		else {

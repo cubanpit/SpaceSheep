@@ -29,7 +29,7 @@
 
 #include "hitbox.h"
 
-bool HitBox :: Overlap_RectRect(HitBoxRect& a, HitBoxRect& b) const
+bool HitBox :: overlap_RectRect(HitBoxRect& a, HitBoxRect& b) const
 {
 	/*
 	 *   This is a Rectangle:
@@ -56,7 +56,7 @@ bool HitBox :: Overlap_RectRect(HitBoxRect& a, HitBoxRect& b) const
 	int b_w = (int)(b.get_rec()).width - 1 ;
 	int b_h = (int)(b.get_rec()).height - 1 ;
 	if ( a_w < 0 or b_w < 0 or a_h < 0 or b_h < 0 ) {
-		throw "HitBox::OverlapRectRect() ERROR: width or height < 0";
+		throw "HitBox::overlapRectRect() ERROR: width or height < 0";
 	}
 
 	//if the position it's the same they're always overlaped
@@ -87,7 +87,7 @@ bool HitBox :: Overlap_RectRect(HitBoxRect& a, HitBoxRect& b) const
 	}
 }
 
-bool HitBox :: Overlap_RectCircle(HitBoxRect& r, HitBoxCircle& c) const
+bool HitBox :: overlap_RectCircle(HitBoxRect& r, HitBoxCircle& c) const
 {
 	/*
 	 *   This is a Rectangle:
@@ -126,7 +126,7 @@ bool HitBox :: Overlap_RectCircle(HitBoxRect& r, HitBoxCircle& c) const
 	int c_r = (int)c.get_radius();
 
 	if ( r_w < 0 or r_h < 0 or c_r < 0 ) {
-		throw "HitBox::OverlapRectCircle() ERROR: width, height or radius < 0";
+		throw "HitBox::overlapRectCircle() ERROR: width, height or radius < 0";
 	}
 
 	if ( r_x >= c_x ) {
@@ -168,7 +168,7 @@ bool HitBox :: Overlap_RectCircle(HitBoxRect& r, HitBoxCircle& c) const
 	}
 }
 
-bool HitBox :: Overlap_CircleCircle(HitBoxCircle& a, HitBoxCircle& b) const
+bool HitBox :: overlap_CircleCircle(HitBoxCircle& a, HitBoxCircle& b) const
 {
 	/*
 	 * This is a Circle:
@@ -195,7 +195,7 @@ bool HitBox :: Overlap_CircleCircle(HitBoxCircle& a, HitBoxCircle& b) const
 	int b_r = (int)b.get_radius();
 
 	if ( a_r < 0 or b_r < 0 ) {
-		throw "HitBox::Overlap_CircleCircle() ERROR: radius < 0";
+		throw "HitBox::overlap_CircleCircle() ERROR: radius < 0";
 	}
 
 	if ( std::abs(a_x-b_x) + std::abs(a_y-b_y) <= (a_r+b_r) ) return true;

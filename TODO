@@ -5,15 +5,13 @@ TODO LIST:
 			possibile rimuovere l'avvertimento sulle funzioni di Hitbox?
 - all: verificare che tutti i membri ed i metodi privati siano contrassegnati
 - all: contrassegnare come const tutte le funzioni che non modificano i membri
-- all: rendere coerenti i nomi dei metodi delle varie classi (sketcher?)
 - Obstacle: controllare nomi funzioni movimento pecora
 - Obstacle: cambiare metodi contenenti 'fatness' sostituendoci 'radius'
 - Obstacle/HitBox: verificare nomi metodi, get_ref() o get_v()?
-- Engine: controllare eliminazione elementi del vettore di cespugli
 - Engine: capire perché bull in run_evil() rallenta dopo che il gioco viene
 			bloccato in run_good()
+- Engine: gestione eccezioni recv(), giusto uccidere tutto?
 - Rete: aggiungere gestione eccezioni ( timeout? )
-- Sketcher: verificare errore dimensione e aggiungere stampa dimensione attuale
 
 -- all: aggiungere global namespace prima delle funzioni definite globalmente?
 -- all: si potrebbero sostituire molti 'unsigned int' con 'unsigned short int',
@@ -22,8 +20,6 @@ TODO LIST:
 			non è sovrapposta
 -- Obstacle: m_hitbox and m_ref as pointers could enhance performance?
 -- Engine: aggiungere posizione laterale tori?
--- Engine: aggiungere tori nel conteggio dello score
--- Engine: aumentare gradualmente velocità nella modalità offline
 -- Engine: alcune variabili possono essere messe static (seed, chrono, random)?
 -- Engine: bushes, da sostituire vector con list, OutOfTheBox non funziona
 -- Engine: separare funzione per il movimento della pecora (possibile senza

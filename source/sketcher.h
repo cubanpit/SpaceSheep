@@ -29,8 +29,8 @@
  *******************************************************************************
  */
 
-#ifndef _SKE_H_
-#define _SKE_H_
+#ifndef _SKETCHER_H_
+#define _SKETCHER_H_
 
 #include <ncurses.h>
 #include <string> // std::string, std::to_string
@@ -44,38 +44,39 @@ class Sketcher
 		Sketcher(unsigned int xDim, unsigned int yDim);
 		~Sketcher(){}
 
-		void GameTable(); //print game table limits
-		char WelcomeScreen(); //print welcome screen and return user choice
-		bool PauseScreen(); //print pause screen
-		//Receive owner's IP addr from user input, tell user which is the 
+		void game_table(); //print game table limits
+		char welcome_screen(); //print welcome screen and return user choice
+		bool pause_screen(); //print pause screen
+		//Receive owner's IP addr from user input, tell user which is the
 		// right port to open and print error if present
-		std::string AddressInputScreen(	std::string owner,
+		std::string addr_input_screen(	std::string owner,
 										unsigned int default_port,
 										std::string error = "");
-		bool PairScreen(); //print pair screen
-		bool ExitScreen(unsigned int score); //print exit screen
-		void Score(unsigned int score); //print actual score on Game screen
-		void CreatorChoice(); //print bull creation keybinds
+		bool pair_screen(); //print pair screen
+		bool exit_good_screen(unsigned int score); //print exit screen with score
+		bool exit_evil_screen(); //print exit screen
+		void score(unsigned int score); //print actual score on Game screen
+		void creator_choice(); //print bull creation keybinds
 
-		void Pencil(RectObstacle* bush); //print bushes
-		void Pencil(SpaceSheep* sheep); //print sheep
-		void Pencil(SpaceBull* bull); //print bull
+		void pencil(RectObstacle* bush); //print bushes
+		void pencil(SpaceSheep* sheep); //print sheep
+		void pencil(SpaceBull* bull); //print bull
 
-		void Rubber(RectObstacle* bush); //erase bushes
-		void Rubber(CircleObstacle* circle); //erase circle
+		void rubber(RectObstacle* bush); //erase bushes
+		void rubber(CircleObstacle* circle); //erase circle
 
-		void Animation(RectObstacle* bush); //animate bush movement
-		void Animation(SpaceSheep* sheep, char dir); //animate sheep movement
-		void Animation(SpaceSheep* sheep, unsigned int x); //animate sheep movement
-		void Animation(SpaceBull* bull); //animate bull movement
+		void animation(RectObstacle* bush); //animate bush movement
+		void animation(SpaceSheep* sheep, char dir); //animate sheep movement
+		void animation(SpaceSheep* sheep, unsigned int x); //animate sheep movement
+		void animation(SpaceBull* bull); //animate bull movement
 
-		unsigned int get_GameW() { return M_GameW; }
-		unsigned int get_GameH() { return M_GameH; }
+		unsigned int get_gameW() { return m_gameW; }
+		unsigned int get_gameH() { return m_gameH; }
 
 	private:
-		unsigned int M_xDim, M_yDim; // size of the entire game table
-		unsigned int M_xOffset, M_yOffset;
-		unsigned int M_GameW, M_GameH; // size of internal playground
+		unsigned int m_xDim, m_yDim; // size of the entire game table
+		unsigned int m_xOffset, m_yOffset;
+		unsigned int m_gameW, m_gameH; // size of internal playground
 };
 
-#endif // _SKE_H_
+#endif // _SKETCHER_H_

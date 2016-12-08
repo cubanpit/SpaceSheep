@@ -44,7 +44,7 @@ class Engine
 		Engine(	unsigned int xDim = 100,
 				unsigned int yDim = 30,
 				unsigned int fatness = 2,
-				unsigned int bushes_prod = 14,
+				unsigned int bushes_prod = 15,
 				unsigned int dt_uint_bull = 150,
 				unsigned int dt_uint_bushes = 200);
 		~Engine();
