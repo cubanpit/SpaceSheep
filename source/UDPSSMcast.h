@@ -31,28 +31,31 @@
 #ifndef _UDPSSMCAST_H_
 #define _UDPSSMCAST_H_
 
-#include <typeinfo>
-#include <sys/poll.h>
+#include <sys/poll.h> // poll(), pollfd
 
 #include "obstacle.h"
 #include "UDPMcastSender.h"
 #include "UDPMcastReceiver.h"
 
-const unsigned short int _UDPSSMcast_h_DEFAULT_MSG_LEN = 5; //message lenght in byte
-const unsigned short int _UDPSSMcast_h_SOCK_N = 1; //number of sockets we listen
-const unsigned short int _UDPSSMcast_h_SOCK_TMOUT = 10; //socket timeout in ms
+//message lenght in byte
+const unsigned short int _UDPSSMcast_h_DEFAULT_MSG_LEN = 5;
+//number of sockets we listen
+const unsigned short int _UDPSSMcast_h_SOCK_N = 1;
+//socket timeout in ms
+const unsigned short int _UDPSSMcast_h_SOCK_TMOUT = 10;
 
 class UDPSSMcastSender : public UDPMcastSender
 {
 	public:
 		UDPSSMcastSender(const std::string source_if = "",
 			unsigned char ttl = _UDPMcastSender_h_DEFAULT_TTL,
-			const std::string &dest_address = std::string(_UDPMcastSender_h_DEFAULT_MCAST_ADDR),
+			const std::string &dest_address =
+							std::string(_UDPMcastSender_h_DEFAULT_MCAST_ADDR),
 			unsigned short dest_port = _UDPMcastSender_h_DEFAULT_PORT);
 
 		~UDPSSMcastSender();
 
-		bool send_msg(std::string msg);
+		bool send_msg(std::string msg) const;
 
 	private:
 		pollfd* m_psfd;
@@ -63,14 +66,15 @@ class UDPSSMcastReceiver : public UDPMcastReceiver
 {
 	public:
 		UDPSSMcastReceiver(const std::string &listen_interface = "",
-			const std::string &listen_address = std::string(_UDPMcastReceiver_h_DEFAULT_MCAST_ADDR),
+			const std::string &listen_address =
+							std::string(_UDPMcastReceiver_h_DEFAULT_MCAST_ADDR),
 			unsigned short listen_port = _UDPMcastReceiver_h_DEFAULT_PORT,
 			unsigned short stimeout = _UDPSSMcast_h_SOCK_TMOUT);
 
 		~UDPSSMcastReceiver();
 
 		bool recv_msg();
-		char* get_msg(){ return m_msg; };
+		const char* get_msg() const { return m_msg; };
 		void flush_socket();
 
 	private:

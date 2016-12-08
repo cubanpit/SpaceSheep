@@ -3,14 +3,14 @@ TODO LIST:
 - all: rivedere e ampliare i commenti (aggiornarli alla gestione delle eccezioni)
 - all: correggere periodicamente 'errori' riportati da 'gcc -Wall -Wextra'
 			possibile rimuovere l'avvertimento sulle funzioni di Hitbox?
-- all: verificare che tutti i membri ed i metodi privati siano contrassegnati
-- all: contrassegnare come const tutte le funzioni che non modificano i membri
-- Obstacle: controllare nomi funzioni movimento pecora
-- Obstacle: cambiare metodi contenenti 'fatness' sostituendoci 'radius'
-- Obstacle/HitBox: verificare nomi metodi, get_ref() o get_v()?
+- Engine: migliorare gestione variabili per caratteristiche del gioco
 - Engine: capire perché bull in run_evil() rallenta dopo che il gioco viene
 			bloccato in run_good()
 - Engine: gestione eccezioni recv(), giusto uccidere tutto?
+- Engine: aggiungere piccolo storico dei punteggi?
+- Engine/Rete: perché se al primo tentativo di fornire un indirizzo IP questo
+			è vuoto il gioco entra in un loop?
+- Sketcher: controllare nomi funzioni animazioni pecora
 - Rete: aggiungere gestione eccezioni ( timeout? )
 
 -- all: aggiungere global namespace prima delle funzioni definite globalmente?

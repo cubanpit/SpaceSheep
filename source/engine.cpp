@@ -150,11 +150,11 @@ bool Engine::run_local()
 		for (unsigned short int i=0; i<m_dt_uint_bushes and !dead; i+=m_dt_uint_sheep) {
 			ch = getch();
 			if ( ch == m_left_mov and  (((*m_sheep).get_ref()).x -
-						(int)(*m_sheep).get_fatness()) > 1 ) {
+						(int)(*m_sheep).get_radius()) > 1 ) {
 				m_artist.animation(m_sheep,'l');
 			}
 			else if ( ch == m_right_mov and (((*m_sheep).get_ref()).x +
-						(int)(*m_sheep).get_fatness()) <
+						(int)(*m_sheep).get_radius()) <
 						((int)m_artist.get_gameW() - 1) ) {
 				m_artist.animation(m_sheep,'r');
 			}
@@ -283,11 +283,11 @@ bool Engine::run_good()
 		for (unsigned short int i=0; i<m_dt_uint_bushes and !dead; i+=m_dt_uint_sheep) {
 			ch = getch();
 			if ( ch == m_left_mov and  (((*m_sheep).get_ref()).x -
-						(int)(*m_sheep).get_fatness()) > 1 ) {
+						(int)(*m_sheep).get_radius()) > 1 ) {
 				m_artist.animation(m_sheep,'l');
 			}
 			else if ( ch == m_right_mov and (((*m_sheep).get_ref()).x +
-						(int)(*m_sheep).get_fatness()) <
+						(int)(*m_sheep).get_radius()) <
 						((int)m_artist.get_gameW() - 1) ) {
 				m_artist.animation(m_sheep,'r');
 			}
@@ -449,7 +449,7 @@ bool Engine::run_evil()
 					m_sender->send_msg(compose_msg(m_bull));
 				}
 			}
-			else if ( ((int)(m_bull->get_ref()).y - (int)(m_bull->get_fatness()) - 1) > (int)m_artist.get_gameH() ) {
+			else if ( ((int)(m_bull->get_ref()).y - (int)(m_bull->get_radius()) - 1) > (int)m_artist.get_gameH() ) {
 				delete m_bull;
 				m_bull = nullptr;
 				got_bull = false;
@@ -521,17 +521,17 @@ void Engine :: add_obstacle_bushes ()
 			if ( (x + w) <= m_artist.get_gameW() ) ctrl = true;
 			if ( i > 0 ) {
 				if ( ctrl ) {
-					if ( (((int)x >= (((*(m_bushes.back())).get_ref()).x
+					if ( (((int)x >= (((*(m_bushes.back())).get_v()).x
 								+ (int)((*(m_bushes.back())).get_rec()).width))
-							and	((int)x - (((*(m_bushes.back())).get_ref()).x +
+							and	((int)x - (((*(m_bushes.back())).get_v()).x +
 								(int)((*(m_bushes.back())).get_rec()).width)) <
-								((int)(*m_sheep).get_fatness()*2+1+(int)m_bushes_w_d)) ) {
+								((int)(*m_sheep).get_radius()*2+1+(int)m_bushes_w_d)) ) {
 						ctrl = false;
 					}
-					if ( ((((int)x+(int)w) <= ((*(m_bushes.back())).get_ref()).x)
-							and	(((*(m_bushes.back())).get_ref()).x -
+					if ( ((((int)x+(int)w) <= ((*(m_bushes.back())).get_v()).x)
+							and	(((*(m_bushes.back())).get_v()).x -
 								((int)x + (int)w)) <
-								((int)(*m_sheep).get_fatness()*2+1+
+								((int)(*m_sheep).get_radius()*2+1+
 								(int)m_bushes_w_d)) ) {
 						ctrl = false;
 					}
@@ -563,7 +563,7 @@ void Engine :: add_obstacle_bushes ()
 
 		// Old obstacles need to be erased from the vector TMP
 		for (auto it = m_bushes.begin(); it != m_bushes.end(); it++) {
-			if ( ((*(*it)).get_ref()).y > (int)m_artist.get_gameH() ) {
+			if ( ((*(*it)).get_v()).y > (int)m_artist.get_gameH() ) {
 				delete *it;
 				m_bushes.erase(it);
 			}
@@ -571,14 +571,14 @@ void Engine :: add_obstacle_bushes ()
 	}
 }
 
-bool Engine :: check_bushes_parameters ()
+bool Engine :: check_bushes_parameters () const
 {
 	if ( !( (((int)m_bushes_w_m/2) + ((int)m_artist.get_gameW()/2) -
-				((int)(*m_sheep).get_fatness()*2+1+(int)m_bushes_w_d))
+				((int)(*m_sheep).get_radius()*2+1+(int)m_bushes_w_d))
 				>= (int)m_bushes_w_tot
 			and (((int)m_artist.get_gameW()/2) -
 				(((int)m_bushes_w_m+(int)m_bushes_w_r)/2) -
-				((int)(*m_sheep).get_fatness()*2+1+(int)m_bushes_w_d))
+				((int)(*m_sheep).get_radius()*2+1+(int)m_bushes_w_d))
 				>= (int)m_bushes_w_m ) ) {
 		return false;
 	}
@@ -643,7 +643,7 @@ bool Engine :: bull_creator_choice()
 }
 
 // pair opponents, both should be able to send and receive packages
-bool Engine::pair_with_good()
+bool Engine::pair_with_good() const
 {
 	std::vector<char> message;
 	bool paired = false;
@@ -667,7 +667,7 @@ bool Engine::pair_with_good()
 	return paired;
 }
 // pair opponents, both should be able to send and receive packages
-bool Engine::pair_with_evil()
+bool Engine::pair_with_evil() const
 {
 	std::vector<char> message;
 	bool paired = false;
@@ -747,7 +747,8 @@ void Engine :: set_bushes_properties (unsigned int bushes_w_d,
 	m_bushes_h_m = bushes_h_m;
 	m_bushes_h_r = bushes_h_r;
 	if ( !check_bushes_parameters() ) {
-		throw "Engine::set_bushes_properties() ERROR: bad parameters for bushes, the game risks a loop.";
+		throw "Engine::set_bushes_properties() ERROR: bad parameters for "
+				"bushes, the game risks a loop.";
 	}
 }
 

@@ -44,34 +44,37 @@ class Sketcher
 		Sketcher(unsigned int xDim, unsigned int yDim);
 		~Sketcher(){}
 
-		void game_table(); //print game table limits
-		char welcome_screen(); //print welcome screen and return user choice
-		bool pause_screen(); //print pause screen
+		void game_table() const; //print game table limits
+		char welcome_screen() const; //print welcome screen and return user choice
+		bool pause_screen() const; //print pause screen
 		//Receive owner's IP addr from user input, tell user which is the
 		// right port to open and print error if present
 		std::string addr_input_screen(	std::string owner,
 										unsigned int default_port,
-										std::string error = "");
-		bool pair_screen(); //print pair screen
-		bool exit_good_screen(unsigned int score); //print exit screen with score
-		bool exit_evil_screen(); //print exit screen
-		void score(unsigned int score); //print actual score on Game screen
-		void creator_choice(); //print bull creation keybinds
+										std::string error = "") const;
+		bool pair_screen() const; //print pair screen
+		bool exit_good_screen(unsigned int score) const;//exit screen with score
+		bool exit_evil_screen() const; //print exit screen
+		void score(unsigned int score) const;//print actual score on screen
+		void creator_choice() const; //print bull creation keybinds
 
-		void pencil(RectObstacle* bush); //print bushes
-		void pencil(SpaceSheep* sheep); //print sheep
-		void pencil(SpaceBull* bull); //print bull
+		// print obstacles
+		void pencil(RectObstacle* bush) const;
+		void pencil(SpaceSheep* sheep) const;
+		void pencil(SpaceBull* bull) const;
 
-		void rubber(RectObstacle* bush); //erase bushes
-		void rubber(CircleObstacle* circle); //erase circle
+		// erase obstacles
+		void rubber(RectObstacle* bush) const;
+		void rubber(CircleObstacle* circle) const;
 
-		void animation(RectObstacle* bush); //animate bush movement
-		void animation(SpaceSheep* sheep, char dir); //animate sheep movement
-		void animation(SpaceSheep* sheep, unsigned int x); //animate sheep movement
-		void animation(SpaceBull* bull); //animate bull movement
+		// function to animate obstacles in different ways
+		void animation(RectObstacle* bush) const; //drop bush
+		void animation(SpaceSheep* sheep, char dir) const; //move 'r' or 'l'
+		void animation(SpaceSheep* sheep, unsigned int x) const; //move to 'x'
+		void animation(SpaceBull* bull) const; //drop bull
 
-		unsigned int get_gameW() { return m_gameW; }
-		unsigned int get_gameH() { return m_gameH; }
+		unsigned int get_gameW() const { return m_gameW; }
+		unsigned int get_gameH() const { return m_gameH; }
 
 	private:
 		unsigned int m_xDim, m_yDim; // size of the entire game table

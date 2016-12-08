@@ -30,84 +30,70 @@
 #include "obstacle.h"
 
 RectObstacle :: RectObstacle(position v, rectangle rec):
-	Obstacle(v), m_hitbox(v, rec)
+	m_hitbox(v, rec), m_v(v), m_rec(rec)
 {
-	m_rec = rec;
 }
 
 RectObstacle :: RectObstacle
 (int x, int y, unsigned int width, unsigned int height):
-	Obstacle(x,y), m_hitbox(x,y,width,height)
+	m_hitbox(x,y,width,height)
 {
-	m_rec.width = width;
-	m_rec.height = height;
+	m_v = {x,y};
+	m_rec = {width,height};
 }
 
 void RectObstacle :: drop()
 {
-	position tmp_ref;
-	tmp_ref.x = get_ref().x;
-	tmp_ref.y = get_ref().y + 1 ;
-	set_ref(tmp_ref);
-	m_hitbox.set_v(tmp_ref);
+	++m_v.y;
+	m_hitbox.set_v(m_v);
 }
 
-CircleObstacle :: CircleObstacle(int x, int y, unsigned int fatness):
-	Obstacle(x,y), m_hitbox(x,y,fatness)
+CircleObstacle :: CircleObstacle(int x, int y, unsigned int radius):
+	m_hitbox(x,y,radius), m_radius(radius)
 {
-	m_fatness = fatness;
+	m_ref = {x,y};
 }
 
-CircleObstacle :: CircleObstacle(position ref, unsigned int fatness):
-	Obstacle(ref), m_hitbox(ref, fatness)
-{
-	m_fatness = fatness;
-}
-
-SpaceSheep :: SpaceSheep(int x, int y, unsigned int fatness):
-	CircleObstacle(x, y, fatness)
+CircleObstacle :: CircleObstacle(position ref, unsigned int radius):
+	m_hitbox(ref, radius), m_ref(ref), m_radius(radius)
 {
 }
 
-SpaceSheep :: SpaceSheep(position ref, unsigned int fatness):
-	CircleObstacle(ref, fatness)
+SpaceSheep :: SpaceSheep(int x, int y, unsigned int radius):
+	CircleObstacle(x, y, radius)
+{
+}
+
+SpaceSheep :: SpaceSheep(position ref, unsigned int radius):
+	CircleObstacle(ref, radius)
 {
 }
 
 void SpaceSheep :: move(char dir)
 {
-	position tmp_ref;
-	tmp_ref.y = get_ref().y;
-	if ( dir == 'r' ) tmp_ref.x = get_ref().x + 2 ;
-	else tmp_ref.x = get_ref().x - 2 ;
-	set_ref(tmp_ref);
-	m_hitbox.set_ref(tmp_ref);
+	if ( dir == 'r' ) m_ref.x += 2 ;
+	else m_ref.x -= 2 ;
+	m_hitbox.set_ref(m_ref);
 }
 
-void SpaceSheep :: move(unsigned int x)
+void SpaceSheep :: move_to(unsigned int x)
 {
-	position tmp_ref;
-	tmp_ref.y = get_ref().y;
-	tmp_ref.x = x;
-	set_ref(tmp_ref);
-	m_hitbox.set_ref(tmp_ref);
+	m_ref.x = x;
+	m_hitbox.set_ref(m_ref);
 }
 
-SpaceBull :: SpaceBull(int x, int y, unsigned int fatness):
-	CircleObstacle(x, y, fatness)
+SpaceBull :: SpaceBull(int x, int y, unsigned int radius):
+	CircleObstacle(x, y, radius)
 {
 }
 
-SpaceBull :: SpaceBull(position ref, unsigned int fatness):
-	CircleObstacle(ref, fatness)
+SpaceBull :: SpaceBull(position ref, unsigned int radius):
+	CircleObstacle(ref, radius)
 {
 }
 
 void SpaceBull :: drop()
 {
-	position tmp_ref;
-	tmp_ref.x = get_ref().x;
-	tmp_ref.y = get_ref().y + 1 ;
-	set_ref(tmp_ref);
-	m_hitbox.set_ref(tmp_ref);
+	++m_ref.y;
+	m_hitbox.set_ref(m_ref);
 }

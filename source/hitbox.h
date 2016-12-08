@@ -69,7 +69,6 @@ class HitBox
 		// These functions can't be const, because in their implementation they
 		//  have to call a function giving *this as argument.
 		virtual bool overlap(HitBox&) = 0;
-		bool overlap(HitBox& a, HitBox& b) { return a.overlap(b); }
 		virtual bool overlap(HitBoxRect&) = 0;
 		virtual bool overlap(HitBoxCircle&) = 0;
 
@@ -87,9 +86,9 @@ class HitBoxRect : public HitBox
 		HitBoxRect (int x, int y, unsigned int width, unsigned int height);
 		~HitBoxRect(){}
 
-		position get_v(){ return m_v; }
+		position get_v() const { return m_v; }
 		void set_v(position& new_v){ m_v = new_v; }
-		rectangle get_rec(){ return m_rec; }
+		rectangle get_rec() const { return m_rec; }
 
 		virtual bool overlap(HitBox& b) { return b.overlap(*this); }
 		// These function return through HitBox::overlap_XxYy(Xx,Yy)
@@ -108,9 +107,9 @@ class HitBoxCircle : public HitBox
 		HitBoxCircle(int x, int y, unsigned int radius);
 		~HitBoxCircle() { }
 
-		position get_ref(){ return m_ref; }
+		position get_ref() const { return m_ref; }
 		void set_ref(position& new_ref){ m_ref = new_ref; }
-		unsigned int get_radius(){ return m_radius; }
+		unsigned int get_radius() const { return m_radius; }
 
 		virtual bool overlap(HitBox& b) { return b.overlap(*this); }
 		// These function return through HitBox::overlap_XxYy(Xx,Yy)

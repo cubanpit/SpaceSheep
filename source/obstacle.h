@@ -33,21 +33,7 @@
 
 #include "hitbox.h"
 
-class Obstacle
-{
-	public:
-		Obstacle(position ref){ m_ref = ref; }
-		Obstacle(int x, int y){ m_ref.x = x; m_ref.y = y; }
-		~Obstacle(){}
-
-		position get_ref(){ return m_ref; }
-		void set_ref(position& new_ref){ m_ref = new_ref; }
-		
-	private:
-		position m_ref; //riferimento della figura
-};
-
-class RectObstacle : public Obstacle
+class RectObstacle
 {
 	public:
 		RectObstacle(int x, int y, unsigned int width, unsigned int height);
@@ -55,53 +41,56 @@ class RectObstacle : public Obstacle
 		~RectObstacle(){ }
 
 		HitBoxRect& get_hitbox(){ return m_hitbox; }
-		rectangle get_rec(){ return m_rec; }
+		position get_v() const { return m_v; }
+		rectangle get_rec() const { return m_rec; }
 		void set_hitbox(HitBoxRect& tmp_hitbox) { m_hitbox = tmp_hitbox; }
 		void drop();
 
 	private:
 		HitBoxRect m_hitbox;
+		position m_v;
 		rectangle m_rec;
 
 };
 
-// cause everything is more cool in space!
-class CircleObstacle : public Obstacle
+class CircleObstacle
 {
 	public:
-		CircleObstacle(int x, int y, unsigned int fatness = 1);
-		CircleObstacle(position ref, unsigned int fatness = 1);
+		CircleObstacle(int x, int y, unsigned int radius = 1);
+		CircleObstacle(position ref, unsigned int radius = 1);
 		~CircleObstacle(){ }
-		
+
 		HitBoxCircle& get_hitbox(){ return m_hitbox; }
-		void set_fatness(int fatness){ m_fatness = fatness; }
-		unsigned int get_fatness(){ return m_fatness; }
+		void set_radius(int radius){ m_radius = radius; }
+		position get_ref() const { return m_ref; }
+		unsigned int get_radius(){ return m_radius; }
 
 	protected:
 		HitBoxCircle m_hitbox;
-		unsigned int m_fatness;
+		position m_ref;
+		unsigned int m_radius;
 
 };
 
 class SpaceSheep : public CircleObstacle
 {
 	public:
-		SpaceSheep(int x, int y, unsigned int fatness);
-		SpaceSheep(position ref, unsigned int fatness);
+		SpaceSheep(int x, int y, unsigned int radius);
+		SpaceSheep(position ref, unsigned int radius);
 		~SpaceSheep(){ }
-	
-		void move(char dir); // move right if dir is 'r', move left if dir is 'l'.
-		void move(unsigned int x); // move to x.
+
+		void move(char dir); // move 'r' or 'l' for 2 columns
+		void move_to(unsigned int x); // move to 'x' column
 };
 
 class SpaceBull : public CircleObstacle
 {
 	public:
-		SpaceBull(int x, int y, unsigned int fatness);
-		SpaceBull(position ref, unsigned int fatness);
+		SpaceBull(int x, int y, unsigned int radius);
+		SpaceBull(position ref, unsigned int radius);
 		~SpaceBull(){ }
-		
-		void drop();
+
+		void drop(); //move to bottom for 1 line
 };
 
 #endif // _OBSTACLE_H_

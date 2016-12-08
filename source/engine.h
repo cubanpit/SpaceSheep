@@ -55,11 +55,11 @@ class Engine
 		bool run_evil(); //play as evil bull creator versus the good sheep
 
 		void add_obstacle_bushes(); //add a bush to existent bushes vector
-		bool check_bushes_parameters(); //check if bushes param. are legal
-		bool bull_creator_choice(); //receive input from creator to spawn a bull
-		bool pair_with_good(); //pair opponents through network
-		bool pair_with_evil(); //pair opponents through network
-		bool create_bull(std::vector<char>&); //create bull if param. are valid
+		bool check_bushes_parameters() const; //check if bushes param. are legal
+		bool bull_creator_choice(); //input from creator to spawn a bull
+		bool pair_with_good() const; //pair opponents through network
+		bool pair_with_evil() const; //pair opponents through network
+		bool create_bull(std::vector<char>& msg); //create bull checking msg
 
 		//change bushes size or density limit
 		void set_bushes_properties(	unsigned int bushes_w_d = 4,

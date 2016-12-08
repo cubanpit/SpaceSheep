@@ -41,7 +41,7 @@ UDPSSMcastSender :: ~UDPSSMcastSender()
 {
 }
 
-bool UDPSSMcastSender :: send_msg(std::string msg)
+bool UDPSSMcastSender :: send_msg(std::string msg) const
 {
 	//set 0 as flag and use send as write
 	if ( send(m_sfd, msg.c_str(), msg.size(), 0) == 0) return true;
@@ -77,18 +77,22 @@ bool UDPSSMcastReceiver :: recv_msg()
 	}
 	else {
 		if( m_psfd->revents & POLLIN ) {
-			if( ::recv(m_sfd, m_msg, (int)_UDPSSMcast_h_DEFAULT_MSG_LEN, 0) > 0) return true;
+			if( ::recv(m_sfd, m_msg, (int)_UDPSSMcast_h_DEFAULT_MSG_LEN, 0) > 0)
+				return true;
 			else return false;
 		}
 		else {
 			if( m_psfd->revents & POLLNVAL ) {
-				throw "UDPMcastReceiver::recv_data() ERROR: poll() found fd not open";
+				throw "UDPMcastReceiver::recv_data() ERROR: poll() found fd "
+						"not open";
 			}
 			if( m_psfd->revents & POLLHUP ) {
-				throw "UDPMcastReceiver::recv_data() ERROR: poll() returned hang up";
+				throw "UDPMcastReceiver::recv_data() ERROR: poll() returned "
+						"hang up";
 			}
 			if( m_psfd->revents & POLLERR ) {
-				throw "UDPMcastReceiver::recv_data() ERROR: poll() returned an error condition";
+				throw "UDPMcastReceiver::recv_data() ERROR: poll() returned "
+						"an error condition";
 			}
 			return false;
 		}
@@ -106,8 +110,9 @@ std::string compose_msg(CircleObstacle* circle)
 	 * We can convert int to char without troubles only because we are sure
 	 * that x position, width and height are less than 255 and non negative.
 	 */
-	std::string msg{'c', (char) (circle->get_ref()).x, (char) (circle->get_ref()).y,
-					(char) circle->get_fatness(), '0'};
+	std::string msg{'c', (char) (circle->get_ref()).x,
+					(char) (circle->get_ref()).y,
+					(char) circle->get_radius(), '0'};
 	return msg;
 }
 
@@ -117,8 +122,8 @@ std::string compose_msg(RectObstacle* rect)
 	 * We can convert int to char without troubles only because we are sure
 	 * that x position, width and height are less than 255 and non negative.
 	 */
-	std::string msg{'r', (char) (rect->get_ref()).x,
-					(char) (rect->get_ref()).y,
+	std::string msg{'r', (char) (rect->get_v()).x,
+					(char) (rect->get_v()).y,
 					(char) (rect->get_rec()).width,
 					(char) (rect->get_rec()).height};
 	return msg;
