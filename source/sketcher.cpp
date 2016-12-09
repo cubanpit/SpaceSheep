@@ -143,12 +143,79 @@ char Sketcher :: welcome_screen () const
 	return return_ch;
 }
 
+bool Sketcher :: exit_local_screen (unsigned int score) const
+{
+	timeout(-1); // getch() waits endlessly for input [ncurses]
+	curs_set(1); // show cursor position [ncurses]
+	echo(); // show user input [ncurses]
+	bool saved_score = false;
+	while ( !saved_score ) {
+		erase();
+		game_table();
+		attron(COLOR_PAIR(5));
+		mvprintw(m_yOffset+4,m_xOffset+(m_gameW/2)-19,"______________________________________");
+		attroff(COLOR_PAIR(5));
+		mvprintw(m_yOffset+5,m_xOffset+(m_gameW/2)-19,"__   __            _              _  ");
+		mvprintw(m_yOffset+6,m_xOffset+(m_gameW/2)-19,"\\ \\ / /__  _   _  | |    ___  ___| |_ ");
+		mvprintw(m_yOffset+7,m_xOffset+(m_gameW/2)-19," \\ V / _ \\| | | | | |   / _ \\/ __| __|");
+		mvprintw(m_yOffset+8,m_xOffset+(m_gameW/2)-19,"  | | (_) | |_| | | |__| (_) \\__ \\ |_ ");
+		mvprintw(m_yOffset+9,m_xOffset+(m_gameW/2)-19,"  |_|\\___/ \\__,_| |_____\\___/|___/\\__|");
+		attron(COLOR_PAIR(5));
+		mvprintw(m_yOffset+10,m_xOffset+(m_gameW/2)-19,"______________________________________");
+		attroff(COLOR_PAIR(5));
+
+		std::string msg = "Your score is "+std::to_string(score);
+		mvprintw(m_yOffset+14,m_xOffset+(m_gameW/2)-19,msg.c_str());
+		mvprintw(m_yOffset+17,m_xOffset+(m_gameW/2)-19,
+				"[Do not use '_' and '\\']");
+		mvprintw(m_yOffset+16,m_xOffset+(m_gameW/2)-19,"Enter your name: ");
+
+		refresh();
+		char input[20];
+		getstr(input);
+		std::string str_input(input);
+		saved_score = add_score(score,str_input);
+	}
+	curs_set(0); // show cursor position [ncurses]
+	noecho(); // show user input [ncurses]
+	erase();
+	game_table();
+
+	std::vector<std::string> score_list = get_score(10);
+	std::vector<std::string> score_value;
+	std::vector<std::string> score_name;
+	for (unsigned short int i=0; i<score_list.size(); ++i) {
+		std::size_t pos = score_list[i].find("_");
+		score_value.push_back(score_list[i].substr(0,pos));
+		score_name.push_back(score_list[i].substr(pos+1,std::string::npos));
+	}
+
+	mvprintw(m_yOffset+2,m_xOffset+(m_gameW/2)-19,"Score history:");
+	for (unsigned short int i=0; i<score_name.size(); ++i) {
+		mvprintw(m_yOffset+4+i,m_xOffset+(m_gameW/2)-13-score_value[i].length(),
+				score_value[i].c_str());
+		mvprintw(m_yOffset+4+i,m_xOffset+(m_gameW/2)-11,
+				score_name[i].c_str());
+	}
+	mvprintw(m_yOffset+18,m_xOffset+(m_gameW/2)-19,
+			"Press 'n' to start a new game, 'q' to exit.");
+
+	refresh();
+	char tmp_ch = '0';
+	while ( !(tmp_ch == 'q') and !(tmp_ch == 'n') ) {
+		tmp_ch = getch();
+	}
+	erase();
+	timeout(0);
+	if ( tmp_ch == 'n' ) return true;
+	else return false;
+}
+
 bool Sketcher :: exit_good_screen (unsigned int score) const
 {
 	timeout(-1); // getch() waits endlessly for input [ncurses]
 	erase();
 	game_table();
-
 	attron(COLOR_PAIR(5));
 	mvprintw(m_yOffset+4,m_xOffset+(m_gameW/2)-19,"______________________________________");
 	attroff(COLOR_PAIR(5));
@@ -162,8 +229,9 @@ bool Sketcher :: exit_good_screen (unsigned int score) const
 	attroff(COLOR_PAIR(5));
 
 	std::string msg = "Your score is "+std::to_string(score);
-	mvprintw(m_yOffset+14,m_xOffset+(m_gameW/2)-19,msg.c_str());
-	mvprintw(m_yOffset+16,m_xOffset+(m_gameW/2)-19,"Press 'n' to start a new game, 'q' to exit.");
+	mvprintw(m_yOffset+16,m_xOffset+(m_gameW/2)-19,msg.c_str());
+	mvprintw(m_yOffset+18,m_xOffset+(m_gameW/2)-19,
+			"Press 'n' to start a new game, 'q' to exit.");
 
 	refresh();
 	char tmp_ch = '0';

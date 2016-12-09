@@ -37,6 +37,7 @@
 #include <chrono> // std::chrono::system_clock
 #include <thread> // std::this_thread::sleep_until
 #include "obstacle.h"
+#include "prizegive.h"
 
 class Sketcher
 {
@@ -53,6 +54,7 @@ class Sketcher
 										unsigned int default_port,
 										std::string error = "") const;
 		bool pair_screen() const; //print pair screen
+		bool exit_local_screen(unsigned int score) const;//exit screen with score
 		bool exit_good_screen(unsigned int score) const;//exit screen with score
 		bool exit_evil_screen() const; //print exit screen
 		void score(unsigned int score) const;//print actual score on screen

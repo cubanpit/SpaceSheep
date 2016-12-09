@@ -35,7 +35,8 @@ VPATH=./source/
 OBJPATH=./obj/
 
 TARGET := game
-OBJ:= obstacle.o hitbox.o sketcher.o engine.o UDPMcastSender.o UDPMcastReceiver.o UDPSSMcast.o
+OBJ:= obstacle.o hitbox.o sketcher.o engine.o prizegive.o \
+		UDPMcastSender.o UDPMcastReceiver.o UDPSSMcast.o
 
 DEBUG := -g
 WARNING := -Wall -Wextra
