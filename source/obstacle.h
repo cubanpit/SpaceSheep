@@ -94,3 +94,28 @@ class SpaceBull : public CircleObstacle
 };
 
 #endif // _OBSTACLE_H_
+
+/*
+ *   This is a Rectangle:
+ *
+ *   V-------------*
+ *   |             |
+ *   |             |
+ *   *-------------*
+ *
+ *   V is always the top-left corner
+ *   In our coordinates system this point has the minimum of x and y value
+ *
+ *   This is a Circle:
+ *
+ *		C    | radius = height/2
+ *	   C#C   |
+ *    C#R#C  -
+ *     C#C   |
+ *      C    |
+ *    __|__
+ *    radius = width/2
+ *
+ *    radius = abs(C.x - R.x) + abs(C.y - R.y)
+ *    R = ref
+ */

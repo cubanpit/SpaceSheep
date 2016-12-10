@@ -49,3 +49,13 @@ const std::vector<std::string> get_score(unsigned short int nscore);
 bool compare_score (std::string strj,std::string strk);
 
 #endif //_PRIZEGIVE_H_
+
+/*
+ * SCORE FILE FORMAT:
+ * 
+ * 1234_MyName
+ * 987_HarryFoster
+ * 36789_SurName
+ * 51_mermaid-LOL
+ *
+ */

@@ -73,7 +73,7 @@ class HitBox
 		virtual bool overlap(HitBoxCircle&) = 0;
 
 	protected:
-		// These functions should not modify their member
+		// These functions can't modify their member
 		bool overlap_RectRect(HitBoxRect& a, HitBoxRect& b) const;
 		bool overlap_RectCircle(HitBoxRect& r, HitBoxCircle& c) const;
 		bool overlap_CircleCircle(HitBoxCircle& a, HitBoxCircle& b) const;
@@ -91,7 +91,8 @@ class HitBoxRect : public HitBox
 		rectangle get_rec() const { return m_rec; }
 
 		virtual bool overlap(HitBox& b) { return b.overlap(*this); }
-		// These function return through HitBox::overlap_XxYy(Xx,Yy)
+
+		// These functions return through HitBox::overlap_XxYy(Xx,Yy)
 		virtual bool overlap(HitBoxRect& b) { overlap_RectRect(*this,b); }
 		virtual bool overlap(HitBoxCircle& b) { overlap_RectCircle(*this,b); }
 
@@ -112,7 +113,8 @@ class HitBoxCircle : public HitBox
 		unsigned int get_radius() const { return m_radius; }
 
 		virtual bool overlap(HitBox& b) { return b.overlap(*this); }
-		// These function return through HitBox::overlap_XxYy(Xx,Yy)
+
+		// These functions return through HitBox::overlap_XxYy(Xx,Yy)
 		virtual bool overlap(HitBoxRect& b) { overlap_RectCircle(b,*this); }
 		virtual bool overlap(HitBoxCircle& b) { overlap_CircleCircle(*this,b); }
 
@@ -122,3 +124,28 @@ class HitBoxCircle : public HitBox
 };
 
 #endif // _HITBOX_H_
+
+/*
+ *   This is a Rectangle:
+ *
+ *   V-------------*
+ *   |             |
+ *   |             |
+ *   *-------------*
+ *
+ *   V is always the top-left corner
+ *   In our coordinates system this point has the minimum of x and y value
+ *
+ *   This is a Circle:
+ *
+ *		C    | radius = height/2
+ *	   C#C   |
+ *    C#R#C  -
+ *     C#C   |
+ *      C    |
+ *    __|__
+ *    radius = width/2
+ *
+ *    radius = abs(C.x - R.x) + abs(C.y - R.y)
+ *    R = ref
+ */

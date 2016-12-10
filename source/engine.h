@@ -50,25 +50,31 @@ class Engine
 		~Engine();
 
 		void start(); //start the game!
-		bool run_local(); //play local mode
-		bool run_good(); //play as good sheep versus the evil bull creator
-		bool run_evil(); //play as evil bull creator versus the good sheep
+		bool run_local(); //play offline
+		bool run_good(); //play online as good
+		bool run_evil(); //play online as evil
 
-		void add_obstacle_bushes(); //add a bush to existent bushes vector
-		bool check_bushes_parameters() const; //check if bushes param. are legal
-		bool bull_creator_choice(); //input from creator to spawn a bull
-		bool pair_with_good() const; //pair opponents through network
-		bool pair_with_evil() const; //pair opponents through network
-		bool create_bull(std::vector<char>& msg); //create bull checking msg
+		//Add bushes to m_bushes vector checking position and size
+		//If bushes paramteres are not checked, it can fall in a loop
+		void add_obstacle_bushes();
+		//check if bushes parameters can live together without troubles (loops)
+		bool check_bushes_parameters() const;
+		//receive input from user to create a bull in a given position
+		bool bull_creator_choice();
+		//pair opponents though network, return false if user wants to quit
+		bool pair_with_good() const;
+		bool pair_with_evil() const;
+		//create a bull reading a message:[-,posX,posY,radius,-]
+		bool create_bull(std::vector<char>& msg);
 
-		//change bushes size or density limit
+		//change bushes parameters: size or density limit
 		void set_bushes_properties(	unsigned int bushes_w_d = 4,
 									unsigned int bushes_w_tot = 50,
 									unsigned int bushes_w_m = 20,
 									unsigned int bushes_w_r = 20,
 									unsigned int bushes_h_m = 3,
 									unsigned int bushes_h_r = 4);
-		//change movement keys or speed
+		//Change movement keys or speed
 		void set_movement_properties(	unsigned int dt_uint_sheep = 10,
 										char left_mov = 'j',
 										char right_mov = 'l');
@@ -85,19 +91,30 @@ class Engine
 		std::string m_my_ip_addr;
 		std::string m_opp_ip_addr;
 
-		unsigned int m_fatness; //sheep fatness
-		unsigned int m_bushes_prod; //vertical space frequency (production) of obstacle
-		unsigned int m_dt_uint_bull; //time interval of bull movement (ms)
-		unsigned int m_dt_uint_bushes; //time interval of bushes movement (ms)
+		//sheep fatness (aka radius)
+		unsigned int m_fatness;
+		//vertical space frequency (production) of obstacle
+		unsigned int m_bushes_prod;
+		//time interval of bull movement (ms)
+		unsigned int m_dt_uint_bull;
+		//time interval of bushes movement (ms)
+		unsigned int m_dt_uint_bushes;
 
-		unsigned int m_bushes_w_d = 4; //margin between bushes distance and sheep width
-		unsigned int m_bushes_w_tot = 50; //minimal total width of bushes on the same row
-		unsigned int m_bushes_w_m = 20; //minimal width of bushes
-		unsigned int m_bushes_w_r = 20; //range of width, w_m+(w_r-1)=maximum width
-		unsigned int m_bushes_h_m = 3; //minimal height of bushes
-		unsigned int m_bushes_h_r = 4; //range of height
+		//margin between bushes distance and sheep width
+		unsigned int m_bushes_w_d = 4;
+		//minimal total width of bushes on the same row
+		unsigned int m_bushes_w_tot = 50;
+		//minimal width of bushes
+		unsigned int m_bushes_w_m = 20;
+		//range of width, w_m+(w_r-1)=maximum width
+		unsigned int m_bushes_w_r = 20;
+		//minimal height of bushes
+		unsigned int m_bushes_h_m = 3;
+		//range of height, h_m+(h_r-1)=maximum height
+		unsigned int m_bushes_h_r = 4;
 
-		unsigned int m_dt_uint_sheep = 10; //time interval of sheep movement (ms)
+		//time interval of sheep movement (ms)
+		unsigned int m_dt_uint_sheep = 10;
 		unsigned int m_score = 0;
 		char m_left_mov = 'j', m_right_mov = 'l';
 		char m_pause = 'p';

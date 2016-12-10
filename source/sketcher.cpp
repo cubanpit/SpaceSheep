@@ -119,10 +119,9 @@ char Sketcher :: welcome_screen () const
 
 	SpaceSheep *tmp = new SpaceSheep((m_gameW/2)-16,m_gameH-3,2);
 	pencil(tmp);
-	bool ctrl = false;
 	char return_ch, tmp_char;
 	unsigned int tmp_count = 0;
-	while (!ctrl) {
+	while (true) {
 		refresh();
 		t_tmp_sheep += dt_tmp_sheep;
 		std::this_thread::sleep_until(t_tmp_sheep);
@@ -140,14 +139,34 @@ char Sketcher :: welcome_screen () const
 			animation(tmp,'l');
 		}
 		++tmp_count;
-		if ( return_ch == 'n' ) ctrl = true;
-		else if ( return_ch == 'e' ) ctrl = true;
-		else if ( return_ch == 'g' ) ctrl = true;
-		else if ( return_ch == 'q' ) ctrl = true;
+		if ( return_ch == 'n' ) break;
+		else if ( return_ch == 'e' ) break;
+		else if ( return_ch == 'g' ) break;
+		else if ( return_ch == 'q' ) break;
 	}
 	delete tmp;
 	erase();
 	return return_ch;
+}
+
+bool Sketcher :: pause_screen () const
+{
+	timeout(-1); // getch() waits endlessly for input [ncurses]
+	erase();
+	game_table();
+	mvprintw(m_yOffset+15,m_xOffset+(m_gameW/2)-28,"The game is paused. "
+										"Meantime SpaceSheep is getting gas.");
+	mvprintw(m_yOffset+17,m_xOffset+(m_gameW/2)-28,"Press 'p' to continue, "
+													"'q' to exit the game.");
+	refresh();
+	char tmp_ch = '0';
+	while ( !(tmp_ch == 'p' or tmp_ch == 'q') ) {
+		tmp_ch = getch();
+	}
+	erase();
+	timeout(0);
+	if ( tmp_ch == 'q' ) return true;
+	else return false;
 }
 
 bool Sketcher :: exit_local_screen (unsigned int score) const
@@ -283,26 +302,6 @@ bool Sketcher :: exit_evil_screen () const
 	else return false;
 }
 
-bool Sketcher :: pause_screen () const
-{
-	timeout(-1); // getch() waits endlessly for input [ncurses]
-	erase();
-	game_table();
-	mvprintw(m_yOffset+15,m_xOffset+(m_gameW/2)-28,"The game is paused. "
-										"Meantime SpaceSheep is getting gas.");
-	mvprintw(m_yOffset+17,m_xOffset+(m_gameW/2)-28,"Press 'p' to continue, "
-													"'q' to exit the game.");
-	refresh();
-	char tmp_ch = '0';
-	while ( !(tmp_ch == 'p' or tmp_ch == 'q') ) {
-		tmp_ch = getch();
-	}
-	erase();
-	timeout(0);
-	if ( tmp_ch == 'q' ) return true;
-	else return false;
-}
-
 std::string Sketcher :: addr_input_screen (std::string owner,
 											unsigned int default_port,
 											std::string error) const
@@ -388,6 +387,8 @@ void Sketcher :: pencil (RectObstacle* bush) const
 
 	attron(COLOR_PAIR(2)); // enable bush color pair
 	if ( (unsigned int)abs((bush->get_v()).y) < (m_yDim-2) ) {
+		//These variables are used to limit the drawing process inside the
+		// game table, without overwriting borders
 		unsigned int i_stop_top = 1;
 		unsigned int i_stop_bottom = ((bush->get_rec()).height-1);
 		if ( ((bush->get_v()).y+(bush->get_rec()).height) >= (m_yDim-1) ) {
@@ -453,6 +454,8 @@ void Sketcher :: pencil (SpaceBull* bull) const
 {
 	attron(COLOR_PAIR(5)); // enable bull color pair
 	if ( (unsigned int)abs((bull->get_ref()).y-bull->get_radius()) < (m_yDim-2) ) {
+		//These variables are used to limit the drawing process inside the
+		// game table, without overwriting borders
 		unsigned int i_top_up = 0;
 		unsigned int i_top_down = bull->get_radius() + 1;
 		unsigned int i_bottom_up = bull->get_radius();
@@ -530,6 +533,8 @@ void Sketcher :: rubber (RectObstacle* bush) const
 void Sketcher :: rubber (CircleObstacle* circle) const
 {
 	if ( abs((circle->get_ref()).y-(int)circle->get_radius()) < (int)(m_yDim-2) ) {
+		//These variables are used to limit the drawing process inside the
+		// game table, without overwriting borders
 		unsigned int i_top_up = 0;
 		unsigned int i_top_down = circle->get_radius() + 1;
 		unsigned int i_bottom_up = circle->get_radius();

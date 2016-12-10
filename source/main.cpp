@@ -31,17 +31,12 @@
 
 int main (void)
 {
-	initscr(); // start the terminal world [ncurses] tmp
-	curs_set(0); // hide cursor position [ncurses] tmp
-	noecho(); // to hide input obtained with getch() [ncurses] tmp
-
 	try {
 		if ( has_colors() ) {
 			start_color(); // enable colors in this window [ncurses]
 		}
 		Engine game(100,30);
 		game.start();
-		endwin(); // end terminal world [ncurses] tmp
 	}
 	catch ( const char* msg ) {
 		endwin();

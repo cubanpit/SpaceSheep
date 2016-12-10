@@ -32,7 +32,8 @@
 #ifndef _SKETCHER_H_
 #define _SKETCHER_H_
 
-#include <ncurses.h>
+#include <ncurses.h> // initsrc, endwin, curs_set, echo/noecho, timeout,
+					// mvprintw, erase, getch, getstr, attron/attroff, init_pair
 #include <string> // std::string, std::to_string
 #include <chrono> // std::chrono::system_clock
 #include <thread> // std::this_thread::sleep_until
@@ -45,9 +46,15 @@ class Sketcher
 		Sketcher(unsigned int xDim, unsigned int yDim);
 		~Sketcher(){}
 
-		void game_table() const; //print game table borders
-		char welcome_screen() const; //welcome screen, return user choice
-		bool pause_screen() const; //print pause screen
+		//draw game table borders
+		void game_table() const;
+
+		//user can choice, welcome_screen() returns:
+		// 'q' to exit the game, 'n' to play offline
+		// 'g' to play online as good, 'e' to play online as evil
+		char welcome_screen() const;
+		//return 'false' if user wants to resume the game 
+		bool pause_screen() const;
 
 		//Receive owner's IP addr from user input, tell user which is the
 		// right port to open and print error if present
@@ -57,12 +64,13 @@ class Sketcher
 		//print simple pair screen
 		bool pair_screen() const;
 
-		// print exit screens for different game style
-		bool exit_local_screen(unsigned int score) const;//lose with score history
-		bool exit_good_screen(unsigned int score) const; //lose with score
-		bool exit_evil_screen() const; //wins without score
+		//Print exit screens for different game style, return 'false' if user
+		// wants to exit the game.
+		bool exit_local_screen(unsigned int score) const;
+		bool exit_good_screen(unsigned int score) const;
+		bool exit_evil_screen() const;
 
-		//print actual score on game table border
+		//update actual score on game table border
 		void update_score(unsigned int score) const;
 		//print bull creation keybinds on game table border
 		void creator_choice() const;

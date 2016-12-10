@@ -46,13 +46,13 @@ CXXFLAGS := $(CXXFLAGS) -std=c++11 -lncurses
 all: $(TARGET)
 
 game: main.o $(OBJ)
-	$(CXX) $(OBJPATH)*.o -o $@ $(CXXFLAGS) $(DEBUG) $(WARNING)
+	$(CXX) $(OBJPATH)*.o -o $@ $(CXXFLAGS)
 
 %.o: %.cpp
 ifeq ($(wildcard $(OBJPATH)*),) #search for obj path, create it if it doesn't exist
 	@mkdir -p $(OBJPATH)
 endif
-	$(CXX) -c $< -o $(OBJPATH)$@ $(CXXFLAGS) $(DEBUG) $(WARNING)
+	$(CXX) -c $< -o $(OBJPATH)$@ $(CXXFLAGS)
 
 .PHONY: run clean
 

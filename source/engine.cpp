@@ -50,21 +50,21 @@ Engine::~Engine()
 {
 	//the game is closing, let's clean everything
 	if ( m_bull != nullptr ) delete m_bull;
-	m_bull = nullptr;
 	if ( m_sheep != nullptr ) delete m_sheep;
-	m_sheep = nullptr;
 	for (auto it = m_bushes.begin(); it != m_bushes.end(); it++) {
 		delete *it;
 	}
 	m_bushes.clear();
 	if ( m_sender != nullptr ) delete m_sender;
-	m_sender = nullptr;
 	if ( m_recver != nullptr ) delete m_recver;
-	m_recver = nullptr;
 }
 
 void Engine::start()
 {
+	initscr(); // start the terminal world [ncurses]
+	curs_set(0); // hide cursor position [ncurses]
+	noecho(); // to hide input obtained with getch() [ncurses]
+
 	bool gimme_more = true;
 	while ( gimme_more ) {
 		//the game is starting, let's clean everything from any previous game
@@ -88,6 +88,7 @@ void Engine::start()
 		else if ( user_choice == 'g' ) gimme_more = run_good();
 		else if ( user_choice == 'q' ) gimme_more = false;
 	}
+	endwin(); // end terminal world [ncurses]
 }
 
 bool Engine::run_local()
@@ -659,6 +660,7 @@ bool Engine::pair_with_good() const
 	std::vector<char> message;
 	bool paired = false;
 	bool stop_pair = false;
+	//send, check the opponent answers
 	while( !paired and !stop_pair ) {
 		stop_pair = m_artist.pair_screen();
 		m_sender->send_msg("ping");
@@ -677,12 +679,14 @@ bool Engine::pair_with_good() const
 	erase();
 	return paired;
 }
+
 // pair opponents, both should be able to send and receive packages
 bool Engine::pair_with_evil() const
 {
 	std::vector<char> message;
 	bool paired = false;
 	bool stop_pair = false;
+	//checks he can receive, answers, then checks the opponent answered
 	while( !paired and !stop_pair ) {
 		stop_pair = m_artist.pair_screen();
 		if( m_recver->recv_msg() and !stop_pair ){
