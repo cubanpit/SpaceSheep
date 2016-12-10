@@ -36,11 +36,16 @@
 #include <fstream> // std::fstream
 #include <algorithm> // std::sort
 
+// default score file
 const std::string _prizigive_h_SCORE_FILE_ = ".score.dat";
 
+// add a score to file, with player name
 bool add_score(const unsigned int new_score, const std::string& player_name);
+
+// get a list of 'nscore' scores read from file
 const std::vector<std::string> get_score(unsigned short int nscore);
 
+// compare function to sort the score list
 bool compare_score (std::string strj,std::string strk);
 
 #endif //_PRIZEGIVE_H_

@@ -5,13 +5,11 @@ TODO LIST:
 			possibile rimuovere l'avvertimento sulle funzioni di Hitbox?
 - Engine: migliorare gestione variabili per caratteristiche del gioco
 - Engine: capire perché bull in run_evil() rallenta dopo che il gioco viene
-			bloccato in run_good()
+			bloccato in run_good(), probabilmente poll() non rispetta i tempi
+- Engine: stoppare run_evil() se non riceve più niente per un po' (good sparisce)?
 - Engine: gestione eccezioni recv(), giusto uccidere tutto?
-- Engine: aggiungere piccolo storico dei punteggi?
 - Engine/Rete: perché se al primo tentativo di fornire un indirizzo IP questo
 			è vuoto il gioco entra in un loop?
-- Sketcher: controllare nomi funzioni animazioni pecora
-- Rete: aggiungere gestione eccezioni ( timeout? )
 
 -- all: aggiungere global namespace prima delle funzioni definite globalmente?
 -- all: si potrebbero sostituire molti 'unsigned int' con 'unsigned short int',

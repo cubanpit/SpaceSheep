@@ -31,6 +31,7 @@
 
 bool add_score(const unsigned int new_score, const std::string& player_name)
 {
+	// check player name doesn't contain dangerous characters
 	if ( player_name.length() == 0
 			or player_name.find("_") != std::string::npos
 			or player_name.find("\\") != std::string::npos ) {
@@ -43,6 +44,8 @@ bool add_score(const unsigned int new_score, const std::string& player_name)
 	}
 	score_file << new_score << "_" << player_name << std::endl;
 	score_file.close();
+	if ( score_file.fail() ) return false;
+	else return true;
 }
 
 const std::vector<std::string> get_score(unsigned short int nscore)

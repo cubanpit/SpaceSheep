@@ -103,7 +103,7 @@ bool Engine::run_local()
 	m_artist.pencil(m_sheep);
 
 	// TIME STUFF
-	// WARNING: clocks goes on during execution.
+	// WARNING: clocks goes on during execution, including screens
 	// SOLUTION: reassign time_point before using it, if necessary.
 	std::chrono::system_clock::time_point t_track_sheep = std::chrono::system_clock::now();
 	std::chrono::duration<int,std::milli> dt_sheep(m_dt_uint_sheep);
@@ -176,14 +176,14 @@ bool Engine::run_local()
 					break;
 				}
 			}
-			m_artist.score(m_score);
+			m_artist.update_score(m_score);
 			refresh();
 			t_track_sheep += dt_sheep;
 			std::this_thread::sleep_until(t_track_sheep);
 		}
 		refresh();
 	}
-	return m_artist.exit_good_screen(m_score);
+	return m_artist.exit_local_screen(m_score);
 }
 
 bool Engine::run_good()
@@ -192,6 +192,7 @@ bool Engine::run_good()
 	erase();
 	m_bushes.clear(); //clear vector, if it's not empty
 
+	// continue to ask the IP address till is a valid one
 	std::string error_string = "";
 	while ( m_sender == nullptr ) {
 		if ( error_string.length() > 0 or m_opp_ip_addr.length() == 0 ) {
@@ -233,7 +234,7 @@ bool Engine::run_good()
 	m_artist.pencil(m_sheep);
 
 	// TIME STUFF
-	// WARNING: clocks goes on during execution.
+	// WARNING: clocks goes on during execution, including screens
 	// SOLUTION: reassign time_point before using it, if necessary.
 	std::chrono::system_clock::time_point t_track_sheep = std::chrono::system_clock::now();
 	std::chrono::duration<int,std::milli> dt_sheep(m_dt_uint_sheep);
@@ -328,7 +329,7 @@ bool Engine::run_good()
 				m_artist.pencil(*it);
 			}
 			if ( got_bull ) m_artist.pencil(m_bull);
-			m_artist.score(m_score);
+			m_artist.update_score(m_score);
 			refresh();
 
 			m_sender->send_msg(compose_msg(m_sheep));
@@ -344,10 +345,11 @@ bool Engine::run_good()
 
 bool Engine::run_evil()
 {
-	timeout(0);
+	timeout(0); // getch() does not wait for input [ncurses]
 	erase();
 	m_bushes.clear(); //clear vector, if it's not empty
 
+	// continue to ask the IP address till is a valid one
 	std::string error_string = "";
 	while ( m_sender == nullptr ) {
 		if ( error_string.length() > 0 or m_opp_ip_addr.length() == 0 ) {
@@ -415,7 +417,8 @@ bool Engine::run_evil()
 			std::cerr << msg << std::endl;
 		}
 		if ( received ) {
-			message.assign(m_recver->get_msg(), m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
+			message.assign(m_recver->get_msg(),
+					m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
 			if ( message[0] == 'c' ){
 				if ( !got_sheep ){
 					got_sheep = true;
@@ -433,7 +436,8 @@ bool Engine::run_evil()
 					}
 					got_sheep = false;
 				}
-				RectObstacle * tmp_bush = new RectObstacle(message[1], message[2], message[3], message[4]);
+				RectObstacle * tmp_bush = new RectObstacle(message[1],
+											message[2], message[3], message[4]);
 				m_bushes.push_back(tmp_bush);
 			}
 			else if ( message[0] == 'd' and message[1] == 'e' and
@@ -449,7 +453,8 @@ bool Engine::run_evil()
 					m_sender->send_msg(compose_msg(m_bull));
 				}
 			}
-			else if ( ((int)(m_bull->get_ref()).y - (int)(m_bull->get_radius()) - 1) > (int)m_artist.get_gameH() ) {
+			else if ( ((int)(m_bull->get_ref()).y - (int)(m_bull->get_radius()) - 1)
+												> (int)m_artist.get_gameH() ) {
 				delete m_bull;
 				m_bull = nullptr;
 				got_bull = false;
@@ -477,7 +482,6 @@ void Engine :: add_obstacle_bushes ()
 	/*
 	 * In the next 'while(!ctrl)' cycle we check different parameters to
 	 *  have a good game environment.
-	 * RectObstacle:
 	 * - size limits for x,y,h,w at creation time
 	 * - limits on (x+w) to have every obstacle inside Game Table
 	 * - minimum horizontal distance between obstacle, to be sure
@@ -485,21 +489,6 @@ void Engine :: add_obstacle_bushes ()
 	 * - minimum tot width of obstacle on same row, so it's always
 	 *    engaging (tot_w)
 	 * - check obstacle overlapping
-	 *
-	 * WARNING:
-	 * It's not so simple to respect all these rules.
-	 * Minimum width (m_w) and maximum width (M_w) values modify the
-	 *  solution to the problem.
-	 *
-	 * GameLimit           center              GameLimit
-	 * |                   |                   |
-	 * |                |obst |free|  obst     |
-	 * |                ,-----,----,-----------|
-	 * |                m_w   |    X           |
-	 *                        m_dist
-	 *
-	 * In this situation X must be m_w<=X<=M_w and w_min+X=tot_w
-	 * Idem with M_w instead of m_w in the scheme.
 	 */
 
 	// Random stuff
@@ -573,6 +562,28 @@ void Engine :: add_obstacle_bushes ()
 
 bool Engine :: check_bushes_parameters () const
 {
+	/*
+	 * As explained in add_obstacle_bushes(), there are many parameters used
+	 *  to check we have a friendly game, and not an impossible one.
+	 * This parameters need a control, otherwise they can generate an infinite
+	 *  when trying to generate obstacle fitting them.
+	 *
+	 * WARNING:
+	 * It's not so simple.
+	 * Minimum width (m_w) and maximum width (M_w) values modify the
+	 *  solution to the problem.
+	 *
+	 * GameLimit           center              GameLimit
+	 * |                   |                   |
+	 * |                |obst |free|  obst     |
+	 * |                ,-----,----,-----------|
+	 * |                m_w   |    X           |
+	 *                        m_dist
+	 *
+	 * In this situation X must be m_w<=X<=M_w and w_min+X=tot_w
+	 * Idem with M_w instead of m_w in the scheme.
+	 */
+
 	if ( !( (((int)m_bushes_w_m/2) + ((int)m_artist.get_gameW()/2) -
 				((int)(*m_sheep).get_radius()*2+1+(int)m_bushes_w_d))
 				>= (int)m_bushes_w_tot

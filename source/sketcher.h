@@ -45,20 +45,27 @@ class Sketcher
 		Sketcher(unsigned int xDim, unsigned int yDim);
 		~Sketcher(){}
 
-		void game_table() const; //print game table limits
-		char welcome_screen() const; //print welcome screen and return user choice
+		void game_table() const; //print game table borders
+		char welcome_screen() const; //welcome screen, return user choice
 		bool pause_screen() const; //print pause screen
+
 		//Receive owner's IP addr from user input, tell user which is the
 		// right port to open and print error if present
 		std::string addr_input_screen(	std::string owner,
 										unsigned int default_port,
 										std::string error = "") const;
-		bool pair_screen() const; //print pair screen
-		bool exit_local_screen(unsigned int score) const;//exit screen with score
-		bool exit_good_screen(unsigned int score) const;//exit screen with score
-		bool exit_evil_screen() const; //print exit screen
-		void score(unsigned int score) const;//print actual score on screen
-		void creator_choice() const; //print bull creation keybinds
+		//print simple pair screen
+		bool pair_screen() const;
+
+		// print exit screens for different game style
+		bool exit_local_screen(unsigned int score) const;//lose with score history
+		bool exit_good_screen(unsigned int score) const; //lose with score
+		bool exit_evil_screen() const; //wins without score
+
+		//print actual score on game table border
+		void update_score(unsigned int score) const;
+		//print bull creation keybinds on game table border
+		void creator_choice() const;
 
 		// print obstacles
 		void pencil(RectObstacle* bush) const;
@@ -69,7 +76,7 @@ class Sketcher
 		void rubber(RectObstacle* bush) const;
 		void rubber(CircleObstacle* circle) const;
 
-		// function to animate obstacles in different ways
+		// animate obstacles in different ways
 		void animation(RectObstacle* bush) const; //drop bush
 		void animation(SpaceSheep* sheep, char dir) const; //move 'r' or 'l'
 		void animation(SpaceSheep* sheep, unsigned int x) const; //move to 'x'
@@ -80,7 +87,7 @@ class Sketcher
 
 	private:
 		unsigned int m_xDim, m_yDim; // size of the entire game table
-		unsigned int m_xOffset, m_yOffset;
+		unsigned int m_xOffset, m_yOffset; // offset inside terminal window
 		unsigned int m_gameW, m_gameH; // size of internal playground
 };
 
