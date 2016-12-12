@@ -61,7 +61,6 @@ Engine::~Engine()
 
 void Engine::start()
 {
-	initscr(); // start the terminal world [ncurses]
 	curs_set(0); // hide cursor position [ncurses]
 	noecho(); // to hide input obtained with getch() [ncurses]
 
@@ -88,7 +87,6 @@ void Engine::start()
 		else if ( user_choice == 'g' ) gimme_more = run_good();
 		else if ( user_choice == 'q' ) gimme_more = false;
 	}
-	endwin(); // end terminal world [ncurses]
 }
 
 bool Engine::run_local()
@@ -109,6 +107,8 @@ bool Engine::run_local()
 	std::chrono::system_clock::time_point t_track_sheep = std::chrono::system_clock::now();
 	std::chrono::duration<int,std::milli> dt_sheep(m_dt_uint_sheep);
 
+	//temporary time interval we modify during the game
+	unsigned int tmp_dt_uint_bushes = m_dt_uint_bushes;
 	unsigned int count = 0;
 	bool dead = false;
 	char ch; //needed for sheep movement
@@ -134,9 +134,9 @@ bool Engine::run_local()
 		++count;
 		//compute score, different weight for different difficulty level
 		m_score = (float)count*(200/((float)m_bushes_prod+
-					((float)m_bushes_w_d*10)+((float)m_dt_uint_bushes/5)));
+					((float)m_bushes_w_d*10)+((float)tmp_dt_uint_bushes/5)));
 		//increase difficult level with time
-		if ( !(count%10) ) --m_dt_uint_bushes;
+		if ( !(count%10) ) --tmp_dt_uint_bushes;
 
 		for (auto it = m_bushes.begin(); it != m_bushes.end(); it++) {
 			m_artist.animation(*it);
@@ -148,7 +148,7 @@ bool Engine::run_local()
 			}
 		}
 
-		for (unsigned short int i=0; i<m_dt_uint_bushes and !dead; i+=m_dt_uint_sheep) {
+		for (unsigned short int i=0; i<tmp_dt_uint_bushes and !dead; i+=m_dt_uint_sheep) {
 			ch = getch();
 			if ( ch == m_left_mov and  (((*m_sheep).get_ref()).x -
 						(int)(*m_sheep).get_radius()) > 1 ) {

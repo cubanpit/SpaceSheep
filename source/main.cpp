@@ -31,6 +31,7 @@
 
 int main (void)
 {
+	initscr(); // start the terminal world [ncurses]
 	try {
 		if ( has_colors() ) {
 			start_color(); // enable colors in this window [ncurses]
@@ -54,6 +55,6 @@ int main (void)
 		std::cerr << "main() bad_alloc caught: " << ba.what() << std::endl;
 		exit (EXIT_FAILURE);
 	}
-
+	endwin(); // end terminal world [ncurses]
 	return (EXIT_SUCCESS);
 }
