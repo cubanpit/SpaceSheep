@@ -101,16 +101,16 @@ char Sketcher :: welcome_screen () const
 	mvprintw(m_yOffset+11,m_xOffset+(m_gameW/2)-28,
 			"Welcome in the Sheeps Galaxy!");
 	mvprintw(m_yOffset+13,m_xOffset+(m_gameW/2)-28,
-			"Help SpaceSheep to avoid space bushes using 'j' and 'l' key.");
+			"Help SpaceSheep to avoid space bushes using 'j','k' and 'l' key.");
 	mvprintw(m_yOffset+15,m_xOffset+(m_gameW/2)-28,"Press:");
 	mvprintw(m_yOffset+16,m_xOffset+(m_gameW/2)-28,
-			" 'p' during the game to take a break.");
+			" 'p' during the game to take a break. [only in local game]");
 	mvprintw(m_yOffset+17,m_xOffset+(m_gameW/2)-28,
 			" 'n' to start a local game. You against your computer!");
 	mvprintw(m_yOffset+18,m_xOffset+(m_gameW/2)-28,
-			" 'g' to start a 1v1 game, moving the sheep. Fear the bull!");
+			" 'g' to start a 1vs1 game, moving the sheep. Fear the bull!");
 	mvprintw(m_yOffset+19,m_xOffset+(m_gameW/2)-28,
-			" 'e' to start a 1v1 game, creating evil bulls. Hit the sheep!");
+			" 'e' to start a 1vs1 game, creating evil bulls. Hit the sheep!");
 	mvprintw(m_yOffset+20,m_xOffset+(m_gameW/2)-28,
 			" 'q' to quit the game now.");
 

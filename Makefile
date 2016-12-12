@@ -31,12 +31,14 @@ else ifeq ($(OS), Darwin)
 	export MAKEFLAGS="-j $(sysctl-n hw.ncpu)"
 endif
 
+# search in VPATH for source file
 VPATH=./source/
+# place object file in OBJPATH
 OBJPATH=./obj/
 
 TARGET := game
-OBJ:= obstacle.o hitbox.o sketcher.o engine.o prizegive.o \
-		UDPMcastSender.o UDPMcastReceiver.o UDPSSMcast.o
+OBJS := $(patsubst %.o,$(OBJPATH)%.o, obstacle.o hitbox.o sketcher.o engine.o \
+	prizegive.o	UDPMcastSender.o UDPMcastReceiver.o UDPSSMcast.o main.o)
 
 DEBUG := -g
 WARNING := -Wall -Wextra
@@ -45,14 +47,14 @@ CXXFLAGS := $(CXXFLAGS) -std=c++11 -lncurses
 
 all: $(TARGET)
 
-game: main.o $(OBJ)
-	$(CXX) $(OBJPATH)*.o -o $@ $(CXXFLAGS)
+game: $(OBJS)
+	$(CXX) -o $@ $(OBJS) $(CXXFLAGS)
 
-%.o: %.cpp
+$(OBJPATH)%.o: %.cpp
 ifeq ($(wildcard $(OBJPATH)*),) #search for obj path, create it if it doesn't exist
 	@mkdir -p $(OBJPATH)
 endif
-	$(CXX) -c $< -o $(OBJPATH)$@ $(CXXFLAGS)
+	$(CXX) -c $< -o $@ $(CXXFLAGS)
 
 .PHONY: run clean
 
@@ -60,5 +62,5 @@ run:
 	./$(TARGET)
 
 clean:
-	/bin/rm -f $(OBJPATH)*.o
+	/bin/rm -f $(OBJS)
 	/bin/rm -f $(TARGET)

@@ -111,7 +111,7 @@ bool Engine::run_local()
 	unsigned int tmp_dt_uint_bushes = m_dt_uint_bushes;
 	unsigned int count = 0;
 	bool dead = false;
-	char ch; //needed for sheep movement
+	char ch = m_stop_mov, tmp_ch; //needed for sheep movement
 
 	if ( !check_bushes_parameters() ) {
 		throw "Engine::run_local() ERROR: bad parameters for bushes, "
@@ -149,7 +149,19 @@ bool Engine::run_local()
 		}
 
 		for (unsigned short int i=0; i<tmp_dt_uint_bushes and !dead; i+=m_dt_uint_sheep) {
-			ch = getch();
+			tmp_ch = getch();
+			//If the key is pressed twice the sheep stops, the same if the user
+			// chooses to stop it.
+			if ( (int)tmp_ch != ERR ) {
+				if ( tmp_ch == ch and ch != m_stop_mov ) {
+					ch = m_stop_mov;
+				}
+				else if ( tmp_ch == m_left_mov or tmp_ch == m_right_mov
+							or tmp_ch == m_stop_mov or tmp_ch == m_pause ) {
+					ch = tmp_ch;
+				}
+			}
+			//the sheeps moves if it's inside the game borders
 			if ( ch == m_left_mov and  (((*m_sheep).get_ref()).x -
 						(int)(*m_sheep).get_radius()) > 1 ) {
 				m_artist.animation(m_sheep,'l');
@@ -244,7 +256,7 @@ bool Engine::run_good()
 	bool dead = false;
 	bool got_bull = false;
 	bool received = false;
-	char ch; //needed for sheep movement
+	char ch, tmp_ch; //needed for sheep movement
 	std::vector<char> message;
 
 	if ( !check_bushes_parameters() ) {
@@ -283,7 +295,19 @@ bool Engine::run_good()
 		}
 
 		for (unsigned short int i=0; i<m_dt_uint_bushes and !dead; i+=m_dt_uint_sheep) {
-			ch = getch();
+			tmp_ch = getch();
+			//If the key is pressed twice the sheep stops, the same if the user
+			// chooses to stop it.
+			if ( (int)tmp_ch != ERR ) {
+				if ( tmp_ch == ch and ch != m_stop_mov ) {
+					ch = m_stop_mov;
+				}
+				else if ( tmp_ch == m_left_mov or tmp_ch == m_right_mov
+							or tmp_ch == m_stop_mov ) {
+					ch = tmp_ch;
+				}
+			}
+			//the sheeps moves if it's inside the game borders
 			if ( ch == m_left_mov and  (((*m_sheep).get_ref()).x -
 						(int)(*m_sheep).get_radius()) > 1 ) {
 				m_artist.animation(m_sheep,'l');
@@ -404,6 +428,12 @@ bool Engine::run_evil()
 	}
 	m_recver->flush_socket();
 
+	// TIME STUFF
+	// WARNING: clocks goes on during execution, including screens
+	// SOLUTION: reassign time_point before using it, if necessary.
+	std::chrono::system_clock::time_point t_track_bull = std::chrono::system_clock::now();
+	std::chrono::duration<int,std::milli> dt_bull(m_dt_uint_bull);
+
 	bool got_bull = false;
 	bool victory = false;
 	bool received = false;
@@ -446,7 +476,7 @@ bool Engine::run_evil()
 				victory = true;
 			}
 		}
-		if ( count%(m_dt_uint_bull/m_dt_uint_sheep) == 0 and !victory ) {
+		if ( t_track_bull < std::chrono::system_clock::now() and !victory ) {
 			if( !got_bull ) {
 				got_bull = bull_creator_choice();
 				if ( got_bull ) {
@@ -464,6 +494,7 @@ bool Engine::run_evil()
 				m_artist.animation(m_bull);
 				m_sender->send_msg(compose_msg(m_bull));
 			}
+			t_track_bull += dt_bull;
 		}
 		// With this we are sure that the bull is over bushes, and they are
 		//  always in sync.
@@ -471,6 +502,7 @@ bool Engine::run_evil()
 			m_artist.pencil(*it);
 		}
 		if ( got_bull ) m_artist.pencil(m_bull);
+
 		refresh();
 		++count;
 	}

@@ -42,7 +42,7 @@ const unsigned short int _UDPSSMcast_h_DEFAULT_MSG_LEN = 5;
 //number of sockets we listen
 const unsigned short int _UDPSSMcast_h_SOCK_N = 1;
 //socket timeout in ms
-const unsigned short int _UDPSSMcast_h_SOCK_TMOUT = 5;
+const unsigned short int _UDPSSMcast_h_SOCK_TMOUT = 10;
 
 class UDPSSMcastSender : public UDPMcastSender
 {

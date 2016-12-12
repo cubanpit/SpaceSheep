@@ -45,8 +45,8 @@ class Engine
 				unsigned int yDim = 30,
 				unsigned int fatness = 2,
 				unsigned int bushes_prod = 15,
-				unsigned int dt_uint_bull = 150,
-				unsigned int dt_uint_bushes = 200);
+				unsigned int dt_uint_bull = 100,
+				unsigned int dt_uint_bushes = 175);
 		~Engine();
 
 		void start(); //start the game!
@@ -75,7 +75,7 @@ class Engine
 									unsigned int bushes_h_m = 3,
 									unsigned int bushes_h_r = 4);
 		//Change movement keys or speed
-		void set_movement_properties(	unsigned int dt_uint_sheep = 10,
+		void set_movement_properties(	unsigned int dt_uint_sheep = 25,
 										char left_mov = 'j',
 										char right_mov = 'l');
 
@@ -114,9 +114,9 @@ class Engine
 		unsigned int m_bushes_h_r = 4;
 
 		//time interval of sheep movement (ms)
-		unsigned int m_dt_uint_sheep = 10;
+		unsigned int m_dt_uint_sheep = 25;
 		unsigned int m_score = 0;
-		char m_left_mov = 'j', m_right_mov = 'l';
+		char m_left_mov = 'j', m_right_mov = 'l', m_stop_mov = 'k';
 		char m_pause = 'p';
 };
 
