@@ -56,10 +56,6 @@ class UDPSSMcastSender : public UDPMcastSender
 		~UDPSSMcastSender();
 
 		bool send_msg(std::string msg) const;
-
-	private:
-		pollfd* m_psfd;
-		unsigned short m_stimeout;
 };
 
 class UDPSSMcastReceiver : public UDPMcastReceiver
