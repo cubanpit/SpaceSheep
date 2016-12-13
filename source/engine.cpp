@@ -184,6 +184,7 @@ bool Engine::run_local()
 			}
 			m_artist.update_score(m_score);
 			refresh();
+			//add a period to previous time point, then wait the time point
 			t_track_sheep += dt_sheep;
 			std::this_thread::sleep_until(t_track_sheep);
 		}
@@ -201,10 +202,8 @@ bool Engine::run_good()
 	// continue to ask the IP address till is a valid one
 	std::string error_string = "";
 	while ( m_sender == nullptr ) {
-		if ( error_string.length() > 0 or m_opp_ip_addr.length() == 0 ) {
-			m_opp_ip_addr = m_artist.addr_input_screen("your opponent's",
-					_UDPMcastSender_h_DEFAULT_PORT, error_string);
-		}
+		m_opp_ip_addr = m_artist.addr_input_screen("your opponent's",
+				_UDPMcastSender_h_DEFAULT_PORT, error_string);
 		m_sender = new UDPSSMcastSender("",_UDPMcastSender_h_DEFAULT_TTL,
 				m_opp_ip_addr,_UDPMcastSender_h_DEFAULT_PORT); //open socket
 		if ( !m_sender->good() ) {
@@ -215,10 +214,8 @@ bool Engine::run_good()
 		else error_string = "";
 	}
 	while ( m_recver == nullptr ) {
-		if ( error_string.length() > 0 or m_my_ip_addr.length() == 0 ) {
-			m_my_ip_addr = m_artist.addr_input_screen("your own",
-					_UDPMcastSender_h_DEFAULT_PORT,	error_string);
-		}
+		m_my_ip_addr = m_artist.addr_input_screen("your own",
+				_UDPMcastSender_h_DEFAULT_PORT,	error_string);
 		m_recver = new UDPSSMcastReceiver("",m_my_ip_addr,
 				_UDPMcastSender_h_DEFAULT_PORT);
 		if ( !m_recver->good() ) {
@@ -336,6 +333,7 @@ bool Engine::run_good()
 			refresh();
 
 			m_sender->send_msg(compose_msg(m_sheep));
+			//add a period to previous time point, then wait the time point
 			t_track_sheep += dt_sheep;
 			std::this_thread::sleep_until(t_track_sheep);
 		}
@@ -355,10 +353,8 @@ bool Engine::run_evil()
 	// continue to ask the IP address till is a valid one
 	std::string error_string = "";
 	while ( m_sender == nullptr ) {
-		if ( error_string.length() > 0 or m_opp_ip_addr.length() == 0 ) {
-			m_opp_ip_addr = m_artist.addr_input_screen("your opponent's",
-					_UDPMcastSender_h_DEFAULT_PORT,error_string);
-		}
+		m_opp_ip_addr = m_artist.addr_input_screen("your opponent's",
+				_UDPMcastSender_h_DEFAULT_PORT,error_string);
 		m_sender = new UDPSSMcastSender("",_UDPMcastSender_h_DEFAULT_TTL,
 				m_opp_ip_addr,_UDPMcastSender_h_DEFAULT_PORT); //open socket
 		if ( !m_sender->good() ) {
@@ -369,10 +365,8 @@ bool Engine::run_evil()
 		else error_string = "";
 	}
 	while ( m_recver == nullptr ) {
-		if ( error_string.length() > 0 or m_my_ip_addr.length() == 0 ) {
-			m_my_ip_addr = m_artist.addr_input_screen("your own",
-					_UDPMcastSender_h_DEFAULT_PORT,error_string);
-		}
+		m_my_ip_addr = m_artist.addr_input_screen("your own",
+				_UDPMcastSender_h_DEFAULT_PORT,error_string);
 		m_recver = new UDPSSMcastReceiver("",m_my_ip_addr,_UDPMcastSender_h_DEFAULT_PORT);
 		if ( !m_recver->good() ) {
 			error_string = m_recver->get_error();
@@ -453,7 +447,9 @@ bool Engine::run_evil()
 				victory = true;
 			}
 		}
+		//if time point is passed
 		if ( t_track_bull < std::chrono::system_clock::now() and !victory ) {
+			//if there isn't a bull, create it
 			if( !got_bull ) {
 				got_bull = bull_creator_choice();
 				if ( got_bull ) {
@@ -461,16 +457,19 @@ bool Engine::run_evil()
 					m_sender->send_msg(compose_msg(m_bull));
 				}
 			}
+			//if bull is over game borders, delete it
 			else if ( ((int)(m_bull->get_ref()).y - (int)(m_bull->get_radius())
 						- 1) > (int)m_artist.get_gameH() ) {
 				delete m_bull;
 				m_bull = nullptr;
 				got_bull = false;
 			}
+			//if there is a valid bull, move it
 			else {
 				m_artist.animation(m_bull);
 				m_sender->send_msg(compose_msg(m_bull));
 			}
+			//add a period to previous time point
 			t_track_bull += dt_bull;
 		}
 		// With this we are sure that the bull is over bushes, and they are
@@ -506,7 +505,7 @@ void Engine :: add_obstacle_bushes ()
 	unsigned int seed = std::chrono::system_clock::now().time_since_epoch().count();
 	std::default_random_engine generator(seed);
 	std::uniform_int_distribution<unsigned int> distribution(0,
-														m_artist.get_gameW()-1);
+			m_artist.get_gameW()-1);
 
 	unsigned int x = 0, w = 1, h = 1;
 	int y = 0;
@@ -561,7 +560,7 @@ void Engine :: add_obstacle_bushes ()
 		ctrl = false; //reset control bool
 		m_bushes.push_back(tmp_bush); //only good obstacle are stored
 
-		// Old obstacles need to be erased from the vector TMP
+		// Old obstacles need to be erased from the vector
 		for (auto it = m_bushes.begin(); it != m_bushes.end(); it++) {
 			if ( ((*(*it)).get_v()).y > (int)m_artist.get_gameH() ) {
 				delete *it;
@@ -726,35 +725,39 @@ bool Engine::pair_with_evil() const
 
 bool Engine::create_bull(std::vector<char>& message)
 {
+	// message[0] = identifier
 	// message[1] = X position
 	// message[2] = Y position
 	// message[3] = fatness
+
+	//if there isn't a previous bull, create the bull
 	if( m_bull == nullptr ){
 		if( ((int)message[2] - (int)message[3])
 				> (int)m_artist.get_gameH()
-			or (int)message[3] > (int)_Engine_h_MAX_FATNESS
-			or (int)message[1] > (int)m_artist.get_gameW() ) {
+				or (int)message[3] > (int)_Engine_h_MAX_FATNESS
+				or (int)message[1] > (int)m_artist.get_gameW()
+				or message[0] != 'c' ) {
 			return false;
 		}
 		else {
-			m_bull = new SpaceBull(message[1] ,message[2],
-												message[3]);
+			m_bull = new SpaceBull(message[1],message[2],message[3]);
 			return true;
 		}
 	}
+	//if there is a previous bull, delete it and create a new one
 	else {
 		m_artist.rubber(m_bull);
 		delete m_bull;
 		m_bull = nullptr;
 		if( ((int)message[2] - (int)message[3])
 				> (int)m_artist.get_gameH()
-			or (int)message[3] > (int)_Engine_h_MAX_FATNESS
-			or (int)message[1] > (int)m_artist.get_gameW() ) {
+				or (int)message[3] > (int)_Engine_h_MAX_FATNESS
+				or (int)message[1] > (int)m_artist.get_gameW()
+				or message[0] != 'c' ) {
 			return false;
 		}
 		else {
-			m_bull = new SpaceBull(message[1] ,message[2],
-												message[3]);
+			m_bull = new SpaceBull(message[1],message[2],message[3]);
 			return true;
 		}
 	}
@@ -773,7 +776,7 @@ void Engine :: set_bushes_properties (unsigned int bushes_w_d,
 	m_bushes_h_r = bushes_h_r;
 	if ( !check_bushes_parameters() ) {
 		throw "Engine::set_bushes_properties() ERROR: bad parameters for "
-				"bushes, the game risks a loop.";
+			"bushes, the game risks a loop.";
 	}
 }
 

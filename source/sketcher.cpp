@@ -31,7 +31,7 @@
 
 Sketcher :: Sketcher (unsigned int xDim, unsigned int yDim)
 {
-	if ( yDim > _Sketcher_h_MIN_HEIGHT_ 
+	if ( yDim > _Sketcher_h_MIN_HEIGHT_
 			and xDim > _Sketcher_h_MIN_WIDTH_ ) {
 		m_xDim = xDim;
 		m_yDim = yDim;
@@ -39,7 +39,8 @@ Sketcher :: Sketcher (unsigned int xDim, unsigned int yDim)
 		m_gameH = yDim - 2;
 	}
 	else {
-		std::string error = "Sketcher::Sketcher() ERROR: chosen game table size"			" isn't supported, minimum height is "
+		std::string error = "Sketcher::Sketcher() ERROR: chosen game table size"
+			" isn't supported, minimum height is "
 			+std::to_string(_Sketcher_h_MIN_HEIGHT_)+
 			" and minimum width is "
 			+std::to_string(_Sketcher_h_MIN_WIDTH_);
@@ -319,30 +320,40 @@ std::string Sketcher :: addr_input_screen (std::string owner,
 	timeout(-1); // getch() waits endlessly for input [ncurses]
 	curs_set(1); // show cursor position [ncurses]
 	echo(); // show user input [ncurses]
-	erase();
-	game_table();
-	if ( error.length() > 0 ) {
-		attron(COLOR_PAIR(5)); // enable red color
-		mvprintw(m_yOffset+10,m_xOffset+1,error.c_str());
-		attroff(COLOR_PAIR(5)); // disable red color
-		mvprintw(m_yOffset+11,m_xOffset+1,"Please double check the IP address "
-				"and retry.");
-	}
-	mvprintw(m_yOffset+15,m_xOffset+(m_gameW/2)-28,
+	std::string str_input;
+	bool ctrl = false;
+	while ( !ctrl ) {
+		erase();
+		game_table();
+		if ( error.length() > 0 ) {
+			attron(COLOR_PAIR(5)); // enable red color
+			mvprintw(m_yOffset+10,m_xOffset+1,error.c_str());
+			attroff(COLOR_PAIR(5)); // disable red color
+			mvprintw(m_yOffset+11,m_xOffset+1,"Please double check the IP "
+					"address and retry.");
+		}
+		mvprintw(m_yOffset+15,m_xOffset+(m_gameW/2)-28,
 			"You've chosen to play against an opponent through network.");
-	std::string port_str = std::to_string(default_port);
-	mvprintw(m_yOffset+16,m_xOffset+(m_gameW/2)-28,
+		std::string port_str = std::to_string(default_port);
+		mvprintw(m_yOffset+16,m_xOffset+(m_gameW/2)-28,
 			"The default port used to connect, that should be open, is UDP/");
-	printw(port_str.c_str());
-	unsigned short int owner_space = owner.length();
-	mvprintw(m_yOffset+17,m_xOffset+(m_gameW/2)-28,"Give me ");
-	printw(owner.c_str());
-	mvprintw(m_yOffset+17,m_xOffset+(m_gameW/2)-20+owner_space,
-			" IPv4 address: ");
-	refresh();
-	char input[20];
-	getstr(input);
-	std::string str_input(input);
+		printw(port_str.c_str());
+		unsigned short int owner_space = owner.length();
+		mvprintw(m_yOffset+17,m_xOffset+(m_gameW/2)-28,"Give me ");
+		printw(owner.c_str());
+		mvprintw(m_yOffset+17,m_xOffset+(m_gameW/2)-20+owner_space,
+				" IPv4 address: ");
+		refresh();
+		char input[20];
+		int get_result = getnstr(input,15);
+		str_input = input;
+		//remove whitespaces
+		str_input.erase(remove_if(str_input.begin(),
+					str_input.end(), isspace), str_input.end());
+		//check getnstr() was OK and the address isn't empty
+		if ( str_input.length() > 0
+				and get_result == OK ) ctrl = true;
+	}
 	erase();
 	timeout(0); // getch() doesn't wait for input
 	curs_set(0); // doesn't show cursor
