@@ -38,7 +38,7 @@ OBJPATH=./obj/
 
 TARGET := game
 OBJS := $(patsubst %.o,$(OBJPATH)%.o, obstacle.o hitbox.o sketcher.o engine.o \
-	prizegive.o	UDPMcastSender.o UDPMcastReceiver.o UDPSSMcast.o main.o)
+	prizegive.o	UDPMcastSender.o UDPMcastReceiver.o UDPSSMcast.o)
 
 DEBUG := -g
 WARNING := -Wall -Wextra
@@ -47,16 +47,13 @@ CXXFLAGS := $(CXXFLAGS) -std=c++11 -lncurses
 
 all: $(TARGET)
 
-game: $(OBJS)
-	$(CXX) -o $@ $(OBJS) $(CXXFLAGS)
+game: $(OBJS) $(OBJPATH)main.o
+	$(CXX) -o $@ $(OBJS) $(OBJPATH)main.o $(CXXFLAGS)
 
-$(OBJPATH)%.o: %.cpp %.h
-ifeq ($(wildcard $(OBJPATH)*),) #search for obj path, create it if it doesn't exist
-	@mkdir -p $(OBJPATH)
-endif
+$(OBJPATH)main.o: main.cpp $(OBJS)
 	$(CXX) -c $< -o $@ $(CXXFLAGS)
 
-$(OBJPATH)%.o: %.cpp
+$(OBJPATH)%.o: %.cpp %.h
 ifeq ($(wildcard $(OBJPATH)*),) #search for obj path, create it if it doesn't exist
 	@mkdir -p $(OBJPATH)
 endif
@@ -68,5 +65,5 @@ run:
 	./$(TARGET)
 
 clean:
-	/bin/rm -f $(OBJS)
+	/bin/rm -f $(OBJPATH)*.o
 	/bin/rm -f $(TARGET)
