@@ -41,8 +41,8 @@ const unsigned short int _Engine_h_MAX_FATNESS = 5;
 class Engine
 {
 	public:
-		Engine(	unsigned int xDim = 100,
-				unsigned int yDim = 30,
+		Engine(	unsigned int xDim = 110,
+				unsigned int yDim = 34,
 				unsigned int fatness = 2,
 				unsigned int bushes_prod = 15,
 				unsigned int dt_uint_bull = 100,
@@ -69,13 +69,13 @@ class Engine
 
 		//change bushes parameters: size or density limit
 		void set_bushes_properties(	unsigned int bushes_w_d = 4,
-									unsigned int bushes_w_tot = 50,
+									unsigned int bushes_w_tot = 55,
 									unsigned int bushes_w_m = 20,
 									unsigned int bushes_w_r = 20,
 									unsigned int bushes_h_m = 3,
 									unsigned int bushes_h_r = 4);
 		//Change movement keys or speed
-		void set_movement_properties(	unsigned int dt_uint_sheep = 25,
+		void set_movement_properties(	unsigned int dt_uint_sheep = 5,
 										char left_mov = 'j',
 										char right_mov = 'l');
 
@@ -92,18 +92,18 @@ class Engine
 		std::string m_opp_ip_addr;
 
 		//sheep fatness (aka radius)
-		unsigned int m_fatness;
+		unsigned int m_fatness = 2;
 		//vertical space frequency (production) of obstacle
-		unsigned int m_bushes_prod;
+		unsigned int m_bushes_prod = 15;
 		//time interval of bull movement (ms)
-		unsigned int m_dt_uint_bull;
+		unsigned int m_dt_uint_bull = 100;
 		//time interval of bushes movement (ms)
-		unsigned int m_dt_uint_bushes;
+		unsigned int m_dt_uint_bushes = 175;
 
 		//margin between bushes distance and sheep width
 		unsigned int m_bushes_w_d = 4;
 		//minimal total width of bushes on the same row
-		unsigned int m_bushes_w_tot = 50;
+		unsigned int m_bushes_w_tot = 55;
 		//minimal width of bushes
 		unsigned int m_bushes_w_m = 20;
 		//range of width, w_m+(w_r-1)=maximum width
@@ -114,9 +114,9 @@ class Engine
 		unsigned int m_bushes_h_r = 4;
 
 		//time interval of sheep movement (ms)
-		unsigned int m_dt_uint_sheep = 25;
+		unsigned int m_dt_uint_sheep = 5;
 		unsigned int m_score = 0;
-		char m_left_mov = 'j', m_right_mov = 'l', m_stop_mov = 'k';
+		char m_left_mov = 'j', m_right_mov = 'l';
 		char m_pause = 'p';
 };
 

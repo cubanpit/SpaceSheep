@@ -40,6 +40,10 @@
 #include "obstacle.h"
 #include "prizegive.h"
 
+// Under these values some screens are ugly
+const unsigned short int _Sketcher_h_MIN_HEIGHT_ = 28;
+const unsigned short int _Sketcher_h_MIN_WIDTH_ = 80;
+
 class Sketcher
 {
 	public:
@@ -53,7 +57,7 @@ class Sketcher
 		// 'q' to exit the game, 'n' to play offline
 		// 'g' to play online as good, 'e' to play online as evil
 		char welcome_screen() const;
-		//return 'false' if user wants to resume the game 
+		//return 'false' if user wants to resume the game
 		bool pause_screen() const;
 
 		//Receive owner's IP addr from user input, tell user which is the

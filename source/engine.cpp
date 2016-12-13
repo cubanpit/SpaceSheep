@@ -30,9 +30,10 @@
 #include "engine.h"
 
 Engine::Engine(unsigned int xDim, unsigned int yDim, unsigned int fatness,
-		unsigned int bushes_prod, unsigned int dt_uint_bull, unsigned int dt_uint_bushes):
-	m_artist(xDim,yDim), m_fatness(fatness),
-	m_bushes_prod(bushes_prod), m_dt_uint_bull(dt_uint_bull), m_dt_uint_bushes(dt_uint_bushes)
+		unsigned int bushes_prod, unsigned int dt_uint_bull,
+		unsigned int dt_uint_bushes):
+	m_artist(xDim,yDim), m_fatness(fatness), m_bushes_prod(bushes_prod),
+	m_dt_uint_bull(dt_uint_bull), m_dt_uint_bushes(dt_uint_bushes)
 {
 	if ( fatness > _Engine_h_MAX_FATNESS ) {
 		throw "Engine::Engine() ERROR: Sheep is too fat!";
@@ -111,7 +112,7 @@ bool Engine::run_local()
 	unsigned int tmp_dt_uint_bushes = m_dt_uint_bushes;
 	unsigned int count = 0;
 	bool dead = false;
-	char ch = m_stop_mov, tmp_ch; //needed for sheep movement
+	char ch; //needed for sheep movement
 
 	if ( !check_bushes_parameters() ) {
 		throw "Engine::run_local() ERROR: bad parameters for bushes, "
@@ -149,37 +150,29 @@ bool Engine::run_local()
 		}
 
 		for (unsigned short int i=0; i<tmp_dt_uint_bushes and !dead; i+=m_dt_uint_sheep) {
-			tmp_ch = getch();
-			//If the key is pressed twice the sheep stops, the same if the user
-			// chooses to stop it.
-			if ( (int)tmp_ch != ERR ) {
-				if ( tmp_ch == ch and ch != m_stop_mov ) {
-					ch = m_stop_mov;
+			ch = getch();
+			//only if a key is pressed
+			if ( (int)ch != ERR ) {
+				//the sheeps moves if it's inside the game borders
+				if ( ch == m_left_mov and  (((*m_sheep).get_ref()).x -
+							(int)(*m_sheep).get_radius()) > 1 ) {
+					m_artist.animation(m_sheep,'l');
 				}
-				else if ( tmp_ch == m_left_mov or tmp_ch == m_right_mov
-							or tmp_ch == m_stop_mov or tmp_ch == m_pause ) {
-					ch = tmp_ch;
+				else if ( ch == m_right_mov and (((*m_sheep).get_ref()).x +
+							(int)(*m_sheep).get_radius()) <
+							((int)m_artist.get_gameW() - 1) ) {
+					m_artist.animation(m_sheep,'r');
 				}
-			}
-			//the sheeps moves if it's inside the game borders
-			if ( ch == m_left_mov and  (((*m_sheep).get_ref()).x -
-						(int)(*m_sheep).get_radius()) > 1 ) {
-				m_artist.animation(m_sheep,'l');
-			}
-			else if ( ch == m_right_mov and (((*m_sheep).get_ref()).x +
-						(int)(*m_sheep).get_radius()) <
-						((int)m_artist.get_gameW() - 1) ) {
-				m_artist.animation(m_sheep,'r');
-			}
-			else if ( ch == m_pause ) {
-				dead = m_artist.pause_screen();
-				if ( !dead ) {
-					t_track_sheep = std::chrono::system_clock::now();
-					m_artist.game_table();
-					for (auto it = m_bushes.begin(); it != m_bushes.end(); it++) {
-						m_artist.pencil(*it);
+				else if ( ch == m_pause ) {
+					dead = m_artist.pause_screen();
+					if ( !dead ) {
+						t_track_sheep = std::chrono::system_clock::now();
+						m_artist.game_table();
+						for (auto it = m_bushes.begin(); it != m_bushes.end(); it++) {
+							m_artist.pencil(*it);
+						}
+						m_artist.pencil(m_sheep);
 					}
-					m_artist.pencil(m_sheep);
 				}
 			}
 
@@ -256,7 +249,7 @@ bool Engine::run_good()
 	bool dead = false;
 	bool got_bull = false;
 	bool received = false;
-	char ch, tmp_ch; //needed for sheep movement
+	char ch; //needed for sheep movement
 	std::vector<char> message;
 
 	if ( !check_bushes_parameters() ) {
@@ -295,29 +288,20 @@ bool Engine::run_good()
 		}
 
 		for (unsigned short int i=0; i<m_dt_uint_bushes and !dead; i+=m_dt_uint_sheep) {
-			tmp_ch = getch();
-			//If the key is pressed twice the sheep stops, the same if the user
-			// chooses to stop it.
-			if ( (int)tmp_ch != ERR ) {
-				if ( tmp_ch == ch and ch != m_stop_mov ) {
-					ch = m_stop_mov;
+			ch = getch();
+			//only if a key is pressed
+			if ( (int)ch != ERR ) {
+				//the sheeps moves if it's inside the game borders
+				if ( ch == m_left_mov and  (((*m_sheep).get_ref()).x -
+							(int)(*m_sheep).get_radius()) > 1 ) {
+					m_artist.animation(m_sheep,'l');
 				}
-				else if ( tmp_ch == m_left_mov or tmp_ch == m_right_mov
-							or tmp_ch == m_stop_mov ) {
-					ch = tmp_ch;
+				else if ( ch == m_right_mov and (((*m_sheep).get_ref()).x +
+							(int)(*m_sheep).get_radius()) <
+							((int)m_artist.get_gameW() - 1) ) {
+					m_artist.animation(m_sheep,'r');
 				}
 			}
-			//the sheeps moves if it's inside the game borders
-			if ( ch == m_left_mov and  (((*m_sheep).get_ref()).x -
-						(int)(*m_sheep).get_radius()) > 1 ) {
-				m_artist.animation(m_sheep,'l');
-			}
-			else if ( ch == m_right_mov and (((*m_sheep).get_ref()).x +
-						(int)(*m_sheep).get_radius()) <
-						((int)m_artist.get_gameW() - 1) ) {
-				m_artist.animation(m_sheep,'r');
-			}
-
 			for (auto it = m_bushes.begin(); it != m_bushes.end(); it++) {
 				if ( ((*(*it)).get_hitbox()).overlap((*m_sheep).get_hitbox()) ) {
 					dead = true;
@@ -329,14 +313,7 @@ bool Engine::run_good()
 				break;
 			}
 
-			try {
-				received = m_recver->recv_msg();
-			}
-			catch ( const char* msg ) {
-				endwin();
-				std::cerr << msg << std::endl;
-			}
-			if( received ) {
+			if( m_recver->recv_msg() ) {
 				message.assign(m_recver->get_msg(),
 						m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
 				got_bull = create_bull(message);
@@ -411,19 +388,21 @@ bool Engine::run_evil()
 
 	std::vector<char> message;
 	bool got_sheep = false;
+	// we receive the first sheep to set got_sheep=true
 	while( !got_sheep and !exit_to_menu ){
-		m_recver->recv_msg();
-		message.assign(m_recver->get_msg(), m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
+		if ( m_recver->recv_msg() ) {
+			message.assign(m_recver->get_msg(),
+					m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
+			if( message[0] == 'c' ) {
+				position tmp_ref;
+				tmp_ref.x = message[1];
+				tmp_ref.y = m_artist.get_gameH()-1-message[3];
 
-		if( message[0] == 'c' ) {
-			position tmp_ref;
-			tmp_ref.x = message[1];
-			tmp_ref.y = m_artist.get_gameH()-1-message[3];
-
-			if ( m_sheep != nullptr ) delete m_sheep;
-			m_sheep = new SpaceSheep(tmp_ref,(unsigned int)message[3]);
-			m_artist.pencil(m_sheep);
-			got_sheep = true;
+				if ( m_sheep != nullptr ) delete m_sheep;
+				m_sheep = new SpaceSheep(tmp_ref,(unsigned int)message[3]);
+				m_artist.pencil(m_sheep);
+				got_sheep = true;
+			}
 		}
 	}
 	m_recver->flush_socket();
@@ -440,23 +419,20 @@ bool Engine::run_evil()
 
 	unsigned int count = 0;
 	while ( !victory and !exit_to_menu ){
-		try {
-			received = m_recver->recv_msg();
-		}
-		catch ( const char* msg ) {
-			endwin();
-			std::cerr << msg << std::endl;
-		}
-		if ( received ) {
+		if ( m_recver->recv_msg() ) {
 			message.assign(m_recver->get_msg(),
 					m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
 			if ( message[0] == 'c' ){
+				//if it's the first sheep after a group of bushes (see below)
 				if ( !got_sheep ){
 					got_sheep = true;
 				}
 				m_artist.animation(m_sheep, (unsigned int) message[1]);
 			}
 			else if ( message[0] == 'r' ){
+				//If it's the first bush we should receive all the bushes
+				// so we clear the vector and wait to fill till we receive
+				// the next sheep.
 				if( got_sheep ){
 					if( m_bushes.size() > 0 ){
 						for (auto it = m_bushes.begin(); it != m_bushes.end(); it++) {
@@ -484,8 +460,8 @@ bool Engine::run_evil()
 					m_sender->send_msg(compose_msg(m_bull));
 				}
 			}
-			else if ( ((int)(m_bull->get_ref()).y - (int)(m_bull->get_radius()) - 1)
-												> (int)m_artist.get_gameH() ) {
+			else if ( ((int)(m_bull->get_ref()).y - (int)(m_bull->get_radius())
+						- 1) > (int)m_artist.get_gameH() ) {
 				delete m_bull;
 				m_bull = nullptr;
 				got_bull = false;
@@ -497,8 +473,9 @@ bool Engine::run_evil()
 			t_track_bull += dt_bull;
 		}
 		// With this we are sure that the bull is over bushes, and they are
-		//  always in sync.
-		for (auto it = m_bushes.begin(); it != m_bushes.end(); it++) {
+		//  always in sync, we draw bushes only if the vector is not
+		//  "half empty" (got_sheep=false)
+		for (auto it = m_bushes.begin(); got_sheep and it != m_bushes.end(); it++) {
 			m_artist.pencil(*it);
 		}
 		if ( got_bull ) m_artist.pencil(m_bull);

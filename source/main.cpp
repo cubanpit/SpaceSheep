@@ -29,15 +29,28 @@
 
 #include "engine.h"
 
-int main (void)
+int main (int argc, char* argv[])
 {
+	if ( argc != 1 and argc != 3 ) {
+		std::cerr << "Usage: '" << argv[0] << "' or '" << argv[0]
+				<< " (int)xDim (int)yDim'" << std::endl;
+		exit (EXIT_FAILURE);
+	}
 	initscr(); // start the terminal world [ncurses]
 	try {
 		if ( has_colors() ) {
 			start_color(); // enable colors in this window [ncurses]
 		}
-		Engine game(100,30);
-		game.start();
+		if ( argc == 3 ) {
+			std::string xDim(argv[1]);
+			std::string yDim(argv[2]);
+			Engine game(stoul(xDim),stoul(yDim));
+			game.start();
+		}
+		else {
+			Engine game{};
+			game.start();
+		}
 	}
 	catch ( const char* msg ) {
 		endwin();

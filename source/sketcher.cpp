@@ -31,10 +31,20 @@
 
 Sketcher :: Sketcher (unsigned int xDim, unsigned int yDim)
 {
-	m_xDim = xDim;
-	m_yDim = yDim;
-	m_gameW = xDim - 2;
-	m_gameH = yDim - 2;
+	if ( yDim > _Sketcher_h_MIN_HEIGHT_ 
+			and xDim > _Sketcher_h_MIN_WIDTH_ ) {
+		m_xDim = xDim;
+		m_yDim = yDim;
+		m_gameW = xDim - 2;
+		m_gameH = yDim - 2;
+	}
+	else {
+		std::string error = "Sketcher::Sketcher() ERROR: chosen game table size"			" isn't supported, minimum height is "
+			+std::to_string(_Sketcher_h_MIN_HEIGHT_)+
+			" and minimum width is "
+			+std::to_string(_Sketcher_h_MIN_WIDTH_);
+		throw error;
+	}
 	if (COLS >= (int)m_xDim and LINES >= (int)m_yDim) {
 		// (Offset+1) because we want all body drawn without overlapping
 		//  the game table
@@ -101,7 +111,7 @@ char Sketcher :: welcome_screen () const
 	mvprintw(m_yOffset+11,m_xOffset+(m_gameW/2)-28,
 			"Welcome in the Sheeps Galaxy!");
 	mvprintw(m_yOffset+13,m_xOffset+(m_gameW/2)-28,
-			"Help SpaceSheep to avoid space bushes using 'j','k' and 'l' key.");
+			"Help SpaceSheep to avoid space bushes using 'j' and 'l' key.");
 	mvprintw(m_yOffset+15,m_xOffset+(m_gameW/2)-28,"Press:");
 	mvprintw(m_yOffset+16,m_xOffset+(m_gameW/2)-28,
 			" 'p' during the game to take a break. [only in local game]");
