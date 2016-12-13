@@ -203,10 +203,10 @@ bool Engine::run_good()
 	while ( m_sender == nullptr ) {
 		if ( error_string.length() > 0 or m_opp_ip_addr.length() == 0 ) {
 			m_opp_ip_addr = m_artist.addr_input_screen("your opponent's",
-								_UDPMcastSender_h_DEFAULT_PORT,	error_string);
+					_UDPMcastSender_h_DEFAULT_PORT, error_string);
 		}
 		m_sender = new UDPSSMcastSender("",_UDPMcastSender_h_DEFAULT_TTL,
-										m_opp_ip_addr,3264); //open socket
+				m_opp_ip_addr,_UDPMcastSender_h_DEFAULT_PORT); //open socket
 		if ( !m_sender->good() ) {
 			error_string = m_sender->get_error();
 			delete m_sender;
@@ -217,9 +217,10 @@ bool Engine::run_good()
 	while ( m_recver == nullptr ) {
 		if ( error_string.length() > 0 or m_my_ip_addr.length() == 0 ) {
 			m_my_ip_addr = m_artist.addr_input_screen("your own",
-								_UDPMcastSender_h_DEFAULT_PORT,	error_string);
+					_UDPMcastSender_h_DEFAULT_PORT,	error_string);
 		}
-		m_recver = new UDPSSMcastReceiver("",m_my_ip_addr,3263);
+		m_recver = new UDPSSMcastReceiver("",m_my_ip_addr,
+				_UDPMcastSender_h_DEFAULT_PORT);
 		if ( !m_recver->good() ) {
 			error_string = m_recver->get_error();
 			delete m_recver;
@@ -356,10 +357,10 @@ bool Engine::run_evil()
 	while ( m_sender == nullptr ) {
 		if ( error_string.length() > 0 or m_opp_ip_addr.length() == 0 ) {
 			m_opp_ip_addr = m_artist.addr_input_screen("your opponent's",
-								_UDPMcastSender_h_DEFAULT_PORT,error_string);
+					_UDPMcastSender_h_DEFAULT_PORT,error_string);
 		}
 		m_sender = new UDPSSMcastSender("",_UDPMcastSender_h_DEFAULT_TTL,
-											m_opp_ip_addr,3263); //open socket
+				m_opp_ip_addr,_UDPMcastSender_h_DEFAULT_PORT); //open socket
 		if ( !m_sender->good() ) {
 			error_string = m_sender->get_error();
 			delete m_sender;
@@ -370,9 +371,9 @@ bool Engine::run_evil()
 	while ( m_recver == nullptr ) {
 		if ( error_string.length() > 0 or m_my_ip_addr.length() == 0 ) {
 			m_my_ip_addr = m_artist.addr_input_screen("your own",
-								_UDPMcastSender_h_DEFAULT_PORT,error_string);
+					_UDPMcastSender_h_DEFAULT_PORT,error_string);
 		}
-		m_recver = new UDPSSMcastReceiver("",m_my_ip_addr,3264);
+		m_recver = new UDPSSMcastReceiver("",m_my_ip_addr,_UDPMcastSender_h_DEFAULT_PORT);
 		if ( !m_recver->good() ) {
 			error_string = m_recver->get_error();
 			delete m_recver;

@@ -50,6 +50,12 @@ all: $(TARGET)
 game: $(OBJS)
 	$(CXX) -o $@ $(OBJS) $(CXXFLAGS)
 
+$(OBJPATH)%.o: %.cpp %.h
+ifeq ($(wildcard $(OBJPATH)*),) #search for obj path, create it if it doesn't exist
+	@mkdir -p $(OBJPATH)
+endif
+	$(CXX) -c $< -o $@ $(CXXFLAGS)
+
 $(OBJPATH)%.o: %.cpp
 ifeq ($(wildcard $(OBJPATH)*),) #search for obj path, create it if it doesn't exist
 	@mkdir -p $(OBJPATH)
