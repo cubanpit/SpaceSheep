@@ -237,6 +237,7 @@ bool Sketcher :: pair_screen () const
 	mvprintw(m_yOffset+17,m_xOffset+(m_gameW/2)-28,"Press 'q' to cancel.");
 	refresh();
 	char tmp_ch = getch();
+	erase();
 	if ( tmp_ch == 'q' ) return true;
 	else return false;
 }
@@ -572,8 +573,8 @@ void Sketcher :: rubber (RectObstacle* bush) const
 void Sketcher :: rubber (CircleObstacle* circle) const
 {
 	if ( abs((circle->get_ref()).y-(int)circle->get_radius()) < (int)(m_yDim-2) ) {
-		//These variables are used to limit the drawing process inside the
-		// game table, without overwriting borders
+		//These variables are used to limit the erasing process inside the
+		// game table, without erasing borders
 		unsigned int i_top_up = 0;
 		unsigned int i_top_down = circle->get_radius() + 1;
 		unsigned int i_bottom_up = circle->get_radius();

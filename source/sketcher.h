@@ -78,7 +78,7 @@ class Sketcher
 
 		//update actual score on game table border
 		void update_score(unsigned int score) const;
-		//print bull creation keybinds on game table border
+		//print bull creation keybindings on game table border
 		void creator_choice() const;
 
 		// print obstacles

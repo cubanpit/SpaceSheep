@@ -493,7 +493,7 @@ bool Engine::run_evil()
 			//add a period to previous time point
 			t_track_bull += dt_bull;
 		}
-		//if wait time is passed, good is probably disconnnected
+		//if wait time is passed, good is probably disconnected
 		if ( t_track_wait < std::chrono::system_clock::now() ) {
 			exit_to_menu = m_artist.exit_lost_connection();
 		}
