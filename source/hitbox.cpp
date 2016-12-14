@@ -29,7 +29,7 @@
 
 #include "hitbox.h"
 
-bool HitBox :: overlap_RectRect(HitBoxRect& a, HitBoxRect& b) const
+bool HitBox :: overlap_RectRect(HitBoxRect& a, HitBoxRect& b)
 {
 	int a_x = (a.get_v()).x;
 	int a_y = (a.get_v()).y;
@@ -75,7 +75,7 @@ bool HitBox :: overlap_RectRect(HitBoxRect& a, HitBoxRect& b) const
 	}
 }
 
-bool HitBox :: overlap_RectCircle(HitBoxRect& r, HitBoxCircle& c) const
+bool HitBox :: overlap_RectCircle(HitBoxRect& r, HitBoxCircle& c)
 {
 	int r_x = (r.get_v()).x;
 	int r_y = (r.get_v()).y;
@@ -131,7 +131,7 @@ bool HitBox :: overlap_RectCircle(HitBoxRect& r, HitBoxCircle& c) const
 	}
 }
 
-bool HitBox :: overlap_CircleCircle(HitBoxCircle& a, HitBoxCircle& b) const
+bool HitBox :: overlap_CircleCircle(HitBoxCircle& a, HitBoxCircle& b)
 {
 	int a_x = (a.get_ref()).x;
 	int a_y = (a.get_ref()).y;

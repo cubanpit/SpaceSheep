@@ -73,10 +73,11 @@ class HitBox
 		virtual bool overlap(HitBoxCircle&) = 0;
 
 	protected:
-		// These functions can't modify their member
-		bool overlap_RectRect(HitBoxRect& a, HitBoxRect& b) const;
-		bool overlap_RectCircle(HitBoxRect& r, HitBoxCircle& c) const;
-		bool overlap_CircleCircle(HitBoxCircle& a, HitBoxCircle& b) const;
+		// These functions can be static, this class does not even have
+		//  non-static member either.
+		static bool overlap_RectRect(HitBoxRect& a, HitBoxRect& b);
+		static bool overlap_RectCircle(HitBoxRect& r, HitBoxCircle& c);
+		static bool overlap_CircleCircle(HitBoxCircle& a, HitBoxCircle& b);
 };
 
 class HitBoxRect : public HitBox

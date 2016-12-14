@@ -47,9 +47,9 @@ const unsigned short int _UDPSSMcast_h_SOCK_TMOUT = 5;
 class UDPSSMcastSender : public UDPMcastSender
 {
 	public:
-		UDPSSMcastSender(const std::string source_if = "",
+		UDPSSMcastSender(const std::string& source_if = "",
 			unsigned char ttl = _UDPMcastSender_h_DEFAULT_TTL,
-			const std::string &dest_address =
+			const std::string& dest_address =
 				std::string(_UDPMcastSender_h_DEFAULT_MCAST_ADDR),
 			unsigned short dest_port = _UDPMcastSender_h_DEFAULT_PORT);
 
@@ -61,8 +61,8 @@ class UDPSSMcastSender : public UDPMcastSender
 class UDPSSMcastReceiver : public UDPMcastReceiver
 {
 	public:
-		UDPSSMcastReceiver(const std::string &listen_interface = "",
-			const std::string &listen_address =
+		UDPSSMcastReceiver(const std::string& listen_interface = "",
+			const std::string& listen_address =
 				std::string(_UDPMcastReceiver_h_DEFAULT_MCAST_ADDR),
 			unsigned short listen_port = _UDPMcastReceiver_h_DEFAULT_PORT,
 			unsigned short stimeout = _UDPSSMcast_h_SOCK_TMOUT);
@@ -74,9 +74,9 @@ class UDPSSMcastReceiver : public UDPMcastReceiver
 		void flush_socket();
 
 	private:
-		char m_msg[_UDPSSMcast_h_DEFAULT_MSG_LEN];
-		pollfd* m_psfd;
 		unsigned short m_stimeout;
+		pollfd m_psfd[_UDPSSMcast_h_SOCK_N];
+		char m_msg[_UDPSSMcast_h_DEFAULT_MSG_LEN];
 };
 
 //compose message for SpaceSheep obstacle types

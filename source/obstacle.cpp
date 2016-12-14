@@ -36,10 +36,8 @@ RectObstacle :: RectObstacle(position v, rectangle rec):
 
 RectObstacle :: RectObstacle
 (int x, int y, unsigned int width, unsigned int height):
-	m_hitbox(x,y,width,height)
+	m_hitbox(x,y,width,height), m_v{x,y}, m_rec{width,height}
 {
-	m_v = {x,y};
-	m_rec = {width,height};
 }
 
 void RectObstacle :: drop()
@@ -49,9 +47,8 @@ void RectObstacle :: drop()
 }
 
 CircleObstacle :: CircleObstacle(int x, int y, unsigned int radius):
-	m_hitbox(x,y,radius), m_radius(radius)
+	m_hitbox(x,y,radius), m_ref{x,y}, m_radius(radius)
 {
-	m_ref = {x,y};
 }
 
 CircleObstacle :: CircleObstacle(position ref, unsigned int radius):

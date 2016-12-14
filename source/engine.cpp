@@ -237,8 +237,7 @@ bool Engine::run_good()
 		else error_string = "";
 	}
 
-	bool exit_to_menu = false;
-	exit_to_menu = !(pair_with_evil());
+	bool exit_to_menu = !(pair_with_evil());
 	m_artist.game_table();
 	refresh();
 
@@ -397,8 +396,7 @@ bool Engine::run_evil()
 		else error_string = "";
 	}
 
-	bool exit_to_menu = false;
-	exit_to_menu = !(pair_with_good());
+	bool exit_to_menu = !(pair_with_good());
 	m_artist.game_table();
 	m_artist.creator_choice();
 
@@ -636,8 +634,7 @@ bool Engine :: check_bushes_parameters () const
 
 bool Engine :: bull_creator_choice()
 {
-	char user_choice = '0';
-	char tmp_char = '0';
+	char user_choice, tmp_char;
 	unsigned short int count_input = 0;
 	// This loop eats the queue on stdin, remains only 1 char.
 	while ( true ) {

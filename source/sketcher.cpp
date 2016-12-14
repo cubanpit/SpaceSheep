@@ -146,7 +146,7 @@ char Sketcher :: welcome_screen () const
 		if ( tmp_count%32 < 16 ) {
 			animation(tmp,'r');
 		}
-		else if ( tmp_count%32 >= 16 ) {
+		else {
 			animation(tmp,'l');
 		}
 		++tmp_count;
@@ -236,8 +236,7 @@ bool Sketcher :: pair_screen () const
 	mvprintw(m_yOffset+15,m_xOffset+(m_gameW/2)-28,"Waiting for connection...");
 	mvprintw(m_yOffset+17,m_xOffset+(m_gameW/2)-28,"Press 'q' to cancel.");
 	refresh();
-	char tmp_ch = '0';
-	tmp_ch = getch();
+	char tmp_ch = getch();
 	if ( tmp_ch == 'q' ) return true;
 	else return false;
 }

@@ -29,9 +29,9 @@
 
 #include "UDPSSMcast.h"
 
-UDPSSMcastSender :: UDPSSMcastSender(const std::string source_if,
+UDPSSMcastSender :: UDPSSMcastSender(const std::string& source_if,
 									unsigned char ttl,
-									const std::string &dest_address,
+									const std::string& dest_address,
 									unsigned short dest_port):
 				UDPMcastSender(source_if, ttl, dest_address, dest_port)
 {
@@ -48,15 +48,15 @@ bool UDPSSMcastSender :: send_msg(std::string msg) const
 	else return false;
 }
 
-UDPSSMcastReceiver :: UDPSSMcastReceiver(const std::string &listen_interface,
-										const std::string &listen_address,
+UDPSSMcastReceiver :: UDPSSMcastReceiver(const std::string& listen_interface,
+										const std::string& listen_address,
 										unsigned short listen_port,
 										unsigned short stimeout):
-				UDPMcastReceiver(listen_interface, listen_address, listen_port)
+				UDPMcastReceiver(listen_interface, listen_address, listen_port),
+				m_stimeout(stimeout)
 {
-	m_stimeout = stimeout;
-	//there is a third element in struct, it's set by poll() call
-	m_psfd = new pollfd{m_sfd, POLLIN};
+	m_psfd[0].fd = m_sfd;
+	m_psfd[0].events = POLLIN;
 }
 
 UDPSSMcastReceiver :: ~UDPSSMcastReceiver()

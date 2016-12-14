@@ -44,7 +44,7 @@ int main (void)
 		std::cerr << msg << std::endl;
 		exit (EXIT_FAILURE);
 	}
-	catch ( std::string msg ) {
+	catch ( std::string& msg ) {
 		endwin();
 		std::cerr << msg << std::endl;
 		exit (EXIT_FAILURE);
