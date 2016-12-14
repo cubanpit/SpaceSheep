@@ -37,6 +37,7 @@
 #include <string> // std::string, std::to_string
 #include <chrono> // std::chrono::system_clock
 #include <thread> // std::this_thread::sleep_until
+
 #include "obstacle.h"
 #include "prizegive.h"
 
@@ -65,7 +66,7 @@ class Sketcher
 		std::string addr_input_screen(	std::string owner,
 										unsigned int default_port,
 										std::string error = "") const;
-		//print simple pair screen
+		//print simple pair screen, return true if user choose to cancel
 		bool pair_screen() const;
 
 		//Print exit screens for different game style, return 'false' if user

@@ -39,7 +39,7 @@
 
 //message lenght in byte
 const unsigned short int _UDPSSMcast_h_DEFAULT_MSG_LEN = 5;
-//number of sockets we listen
+//number of sockets are listened
 const unsigned short int _UDPSSMcast_h_SOCK_N = 1;
 //socket timeout in ms
 const unsigned short int _UDPSSMcast_h_SOCK_TMOUT = 5;
@@ -50,7 +50,7 @@ class UDPSSMcastSender : public UDPMcastSender
 		UDPSSMcastSender(const std::string source_if = "",
 			unsigned char ttl = _UDPMcastSender_h_DEFAULT_TTL,
 			const std::string &dest_address =
-							std::string(_UDPMcastSender_h_DEFAULT_MCAST_ADDR),
+				std::string(_UDPMcastSender_h_DEFAULT_MCAST_ADDR),
 			unsigned short dest_port = _UDPMcastSender_h_DEFAULT_PORT);
 
 		~UDPSSMcastSender();
@@ -63,7 +63,7 @@ class UDPSSMcastReceiver : public UDPMcastReceiver
 	public:
 		UDPSSMcastReceiver(const std::string &listen_interface = "",
 			const std::string &listen_address =
-							std::string(_UDPMcastReceiver_h_DEFAULT_MCAST_ADDR),
+				std::string(_UDPMcastReceiver_h_DEFAULT_MCAST_ADDR),
 			unsigned short listen_port = _UDPMcastReceiver_h_DEFAULT_PORT,
 			unsigned short stimeout = _UDPSSMcast_h_SOCK_TMOUT);
 
@@ -79,6 +79,7 @@ class UDPSSMcastReceiver : public UDPMcastReceiver
 		unsigned short m_stimeout;
 };
 
+//compose message for SpaceSheep obstacle types
 std::string compose_msg(CircleObstacle* circle);
 std::string compose_msg(RectObstacle* rect);
 

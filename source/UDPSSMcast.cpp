@@ -43,7 +43,7 @@ UDPSSMcastSender :: ~UDPSSMcastSender()
 
 bool UDPSSMcastSender :: send_msg(std::string msg) const
 {
-	//set 0 as flag and use send as write
+	//set 0 as flag and use send() as write()
 	if ( send(m_sfd, msg.c_str(), msg.size(), 0) == 0) return true;
 	else return false;
 }
@@ -55,8 +55,8 @@ UDPSSMcastReceiver :: UDPSSMcastReceiver(const std::string &listen_interface,
 				UDPMcastReceiver(listen_interface, listen_address, listen_port)
 {
 	m_stimeout = stimeout;
-	//there is a third element in struct, implicitly set to 0 (returns warning)
-	m_psfd = new pollfd{ m_sfd, POLLIN };
+	//there is a third element in struct, it's set by poll() call
+	m_psfd = new pollfd{m_sfd, POLLIN};
 }
 
 UDPSSMcastReceiver :: ~UDPSSMcastReceiver()

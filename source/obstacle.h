@@ -40,11 +40,10 @@ class RectObstacle
 		RectObstacle(position v, rectangle rec);
 		~RectObstacle(){ }
 
-		HitBoxRect& get_hitbox(){ return m_hitbox; }
-		position get_v() const { return m_v; }
-		rectangle get_rec() const { return m_rec; }
-		void set_hitbox(HitBoxRect& tmp_hitbox) { m_hitbox = tmp_hitbox; }
-		void drop();
+		HitBoxRect& get_hitbox() { return m_hitbox; }
+		const position& get_v() const { return m_v; }
+		const rectangle& get_rec() const { return m_rec; }
+		void drop(); // move to bottom for 1 line
 
 	private:
 		HitBoxRect m_hitbox;
@@ -60,10 +59,9 @@ class CircleObstacle
 		CircleObstacle(position ref, unsigned int radius = 1);
 		~CircleObstacle(){ }
 
-		HitBoxCircle& get_hitbox(){ return m_hitbox; }
-		void set_radius(int radius){ m_radius = radius; }
-		position get_ref() const { return m_ref; }
-		unsigned int get_radius(){ return m_radius; }
+		HitBoxCircle& get_hitbox() { return m_hitbox; }
+		const position& get_ref() const { return m_ref; }
+		unsigned int get_radius() const { return m_radius; }
 
 	protected:
 		HitBoxCircle m_hitbox;
@@ -108,8 +106,8 @@ class SpaceBull : public CircleObstacle
  *
  *   This is a Circle:
  *
- *		C    | radius = height/2
- *	   C#C   |
+ *      C    | radius = height/2
+ *     C#C   |
  *    C#R#C  -
  *     C#C   |
  *      C    |

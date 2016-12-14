@@ -43,7 +43,7 @@ OBJS := $(patsubst %.o,$(OBJPATH)%.o, obstacle.o hitbox.o sketcher.o engine.o \
 DEBUG := -g
 WARNING := -Wall -Wextra
 
-CXXFLAGS := $(CXXFLAGS) -std=c++11 -lncurses
+CXXFLAGS := $(CXXFLAGS) -std=c++11 -lncurses $(WARNING)
 
 all: $(TARGET)
 

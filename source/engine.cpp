@@ -160,7 +160,7 @@ bool Engine::run_local()
 				}
 				else if ( ch == m_right_mov and (((*m_sheep).get_ref()).x +
 							(int)(*m_sheep).get_radius()) <
-							((int)m_artist.get_gameW() - 1) ) {
+							((int)m_artist.get_gameW() - 2) ) {
 					m_artist.animation(m_sheep,'r');
 				}
 				else if ( ch == m_pause ) {
@@ -257,7 +257,6 @@ bool Engine::run_good()
 	unsigned int count = 0;
 	bool dead = false;
 	bool got_bull = false;
-	bool received = false;
 	char ch; //needed for sheep movement
 	std::vector<char> message;
 
@@ -307,7 +306,7 @@ bool Engine::run_good()
 				}
 				else if ( ch == m_right_mov and (((*m_sheep).get_ref()).x +
 							(int)(*m_sheep).get_radius()) <
-							((int)m_artist.get_gameW() - 1) ) {
+							((int)m_artist.get_gameW() - 2) ) {
 					m_artist.animation(m_sheep,'r');
 				}
 			}
@@ -434,7 +433,6 @@ bool Engine::run_evil()
 
 	bool got_bull = false;
 	bool victory = false;
-	bool received = false;
 
 	unsigned int count = 0;
 	while ( !victory and !exit_to_menu ){

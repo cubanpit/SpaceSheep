@@ -32,7 +32,7 @@
 #ifndef _HITBOX_H_
 #define _HITBOX_H_
 
-#include <cmath> // abs
+#include <cstdlib> // abs
 
 struct position
 {
@@ -43,7 +43,7 @@ struct position
 		y = p.y;
 		return *this;
 	}
-	bool operator== (const position& p) {
+	bool operator== (const position& p) const {
 		if ( x == p.x and y == p.y ) return true;
 		else return false;
 	}
@@ -86,15 +86,13 @@ class HitBoxRect : public HitBox
 		HitBoxRect (int x, int y, unsigned int width, unsigned int height);
 		~HitBoxRect(){}
 
-		position get_v() const { return m_v; }
+		const position& get_v() const { return m_v; }
 		void set_v(position& new_v){ m_v = new_v; }
-		rectangle get_rec() const { return m_rec; }
+		const rectangle& get_rec() const { return m_rec; }
 
 		virtual bool overlap(HitBox& b) { return b.overlap(*this); }
-
-		// These functions return through HitBox::overlap_XxYy(Xx,Yy)
-		virtual bool overlap(HitBoxRect& b) { overlap_RectRect(*this,b); }
-		virtual bool overlap(HitBoxCircle& b) { overlap_RectCircle(*this,b); }
+		virtual bool overlap(HitBoxRect& b) { return overlap_RectRect(*this,b); }
+		virtual bool overlap(HitBoxCircle& b) { return overlap_RectCircle(*this,b); }
 
 	private:
 		position m_v;
@@ -108,19 +106,17 @@ class HitBoxCircle : public HitBox
 		HitBoxCircle(int x, int y, unsigned int radius);
 		~HitBoxCircle() { }
 
-		position get_ref() const { return m_ref; }
+		const position& get_ref() const { return m_ref; }
 		void set_ref(position& new_ref){ m_ref = new_ref; }
 		unsigned int get_radius() const { return m_radius; }
 
 		virtual bool overlap(HitBox& b) { return b.overlap(*this); }
-
-		// These functions return through HitBox::overlap_XxYy(Xx,Yy)
-		virtual bool overlap(HitBoxRect& b) { overlap_RectCircle(b,*this); }
-		virtual bool overlap(HitBoxCircle& b) { overlap_CircleCircle(*this,b); }
+		virtual bool overlap(HitBoxRect& b) { return overlap_RectCircle(b,*this); }
+		virtual bool overlap(HitBoxCircle& b) { return overlap_CircleCircle(*this,b); }
 
 	private:
-		unsigned int m_radius;
 		position m_ref;
+		unsigned int m_radius;
 };
 
 #endif // _HITBOX_H_
@@ -138,8 +134,8 @@ class HitBoxCircle : public HitBox
  *
  *   This is a Circle:
  *
- *		C    | radius = height/2
- *	   C#C   |
+ *      C    | radius = height/2
+ *     C#C   |
  *    C#R#C  -
  *     C#C   |
  *      C    |
