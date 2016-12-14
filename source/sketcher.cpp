@@ -180,6 +180,68 @@ bool Sketcher :: pause_screen () const
 	else return false;
 }
 
+std::string Sketcher :: addr_input_screen (std::string owner,
+											unsigned int default_port,
+											std::string error) const
+{
+	timeout(-1); // getch() waits endlessly for input [ncurses]
+	curs_set(1); // show cursor position [ncurses]
+	echo(); // show user input [ncurses]
+	std::string str_input;
+	bool ctrl = false;
+	while ( !ctrl ) {
+		erase();
+		game_table();
+		if ( error.length() > 0 ) {
+			attron(COLOR_PAIR(5)); // enable red color
+			mvprintw(m_yOffset+10,m_xOffset+1,error.c_str());
+			attroff(COLOR_PAIR(5)); // disable red color
+			mvprintw(m_yOffset+11,m_xOffset+1,"Please double check the IP "
+					"address and retry.");
+		}
+		mvprintw(m_yOffset+15,m_xOffset+(m_gameW/2)-28,
+			"You've chosen to play against an opponent through network.");
+		std::string port_str = std::to_string(default_port);
+		mvprintw(m_yOffset+16,m_xOffset+(m_gameW/2)-28,
+			"The default port used to connect, that should be open, is UDP/");
+		printw(port_str.c_str());
+		unsigned short int owner_space = owner.length();
+		mvprintw(m_yOffset+17,m_xOffset+(m_gameW/2)-28,"Give me ");
+		printw(owner.c_str());
+		mvprintw(m_yOffset+17,m_xOffset+(m_gameW/2)-20+owner_space,
+				" IPv4 address: ");
+		refresh();
+		char input[20];
+		int get_result = getnstr(input,15);
+		str_input = input;
+		//remove whitespaces
+		str_input.erase(remove_if(str_input.begin(),
+					str_input.end(), isspace), str_input.end());
+		//check getnstr() was OK and the address isn't empty
+		if ( str_input.length() > 0
+				and get_result == OK ) ctrl = true;
+	}
+	erase();
+	timeout(0); // getch() doesn't wait for input
+	curs_set(0); // doesn't show cursor
+	noecho(); // hide user input
+	return str_input;
+}
+
+bool Sketcher :: pair_screen () const
+{
+	timeout(0);
+	erase();
+	game_table();
+	mvprintw(m_yOffset+15,m_xOffset+(m_gameW/2)-28,"Waiting for connection...");
+	mvprintw(m_yOffset+17,m_xOffset+(m_gameW/2)-28,"Press 'q' to cancel.");
+	refresh();
+	char tmp_ch = '0';
+	tmp_ch = getch();
+	if ( tmp_ch == 'q' ) return true;
+	else return false;
+}
+
 bool Sketcher :: exit_local_screen (unsigned int score) const
 {
 	timeout(-1); // getch() waits endlessly for input [ncurses]
@@ -313,66 +375,23 @@ bool Sketcher :: exit_evil_screen () const
 	else return false;
 }
 
-std::string Sketcher :: addr_input_screen (std::string owner,
-											unsigned int default_port,
-											std::string error) const
+bool Sketcher :: exit_lost_connection () const
 {
 	timeout(-1); // getch() waits endlessly for input [ncurses]
-	curs_set(1); // show cursor position [ncurses]
-	echo(); // show user input [ncurses]
-	std::string str_input;
-	bool ctrl = false;
-	while ( !ctrl ) {
-		erase();
-		game_table();
-		if ( error.length() > 0 ) {
-			attron(COLOR_PAIR(5)); // enable red color
-			mvprintw(m_yOffset+10,m_xOffset+1,error.c_str());
-			attroff(COLOR_PAIR(5)); // disable red color
-			mvprintw(m_yOffset+11,m_xOffset+1,"Please double check the IP "
-					"address and retry.");
-		}
-		mvprintw(m_yOffset+15,m_xOffset+(m_gameW/2)-28,
-			"You've chosen to play against an opponent through network.");
-		std::string port_str = std::to_string(default_port);
-		mvprintw(m_yOffset+16,m_xOffset+(m_gameW/2)-28,
-			"The default port used to connect, that should be open, is UDP/");
-		printw(port_str.c_str());
-		unsigned short int owner_space = owner.length();
-		mvprintw(m_yOffset+17,m_xOffset+(m_gameW/2)-28,"Give me ");
-		printw(owner.c_str());
-		mvprintw(m_yOffset+17,m_xOffset+(m_gameW/2)-20+owner_space,
-				" IPv4 address: ");
-		refresh();
-		char input[20];
-		int get_result = getnstr(input,15);
-		str_input = input;
-		//remove whitespaces
-		str_input.erase(remove_if(str_input.begin(),
-					str_input.end(), isspace), str_input.end());
-		//check getnstr() was OK and the address isn't empty
-		if ( str_input.length() > 0
-				and get_result == OK ) ctrl = true;
-	}
-	erase();
-	timeout(0); // getch() doesn't wait for input
-	curs_set(0); // doesn't show cursor
-	noecho(); // hide user input
-	return str_input;
-}
-
-bool Sketcher :: pair_screen () const
-{
-	timeout(0);
 	erase();
 	game_table();
-	mvprintw(m_yOffset+15,m_xOffset+(m_gameW/2)-28,"Waiting for connection...");
-	mvprintw(m_yOffset+17,m_xOffset+(m_gameW/2)-28,"Press 'q' to cancel.");
+	mvprintw(m_yOffset+14,m_xOffset+(m_gameW/2)-19,
+			"Your opponent has lost connection.");
+	mvprintw(m_yOffset+16,m_xOffset+(m_gameW/2)-19,
+			"Press 'n' to start a new game.");
 	refresh();
 	char tmp_ch = '0';
-	tmp_ch = getch();
-	if ( tmp_ch == 'q' ) return true;
-	else return false;
+	while ( !(tmp_ch == 'n' ) ) {
+		tmp_ch = getch();
+	}
+	erase();
+	timeout(0);
+	return true;
 }
 
 void Sketcher :: update_score (unsigned int score) const

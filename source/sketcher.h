@@ -73,6 +73,7 @@ class Sketcher
 		bool exit_local_screen(unsigned int score) const;
 		bool exit_good_screen(unsigned int score) const;
 		bool exit_evil_screen() const;
+		bool exit_lost_connection() const;
 
 		//update actual score on game table border
 		void update_score(unsigned int score) const;

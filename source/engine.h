@@ -36,6 +36,9 @@
 #include "sketcher.h"
 #include "UDPSSMcast.h"
 
+//max time the online game waits for a message from the opponent in ms
+const unsigned short int _Engine_h_MAX_WAIT = 1000;
+//max radius/fatness for bull and sheep
 const unsigned short int _Engine_h_MAX_FATNESS = 5;
 
 class Engine

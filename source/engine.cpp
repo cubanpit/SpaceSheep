@@ -407,6 +407,8 @@ bool Engine::run_evil()
 	// SOLUTION: reassign time_point before using it, if necessary.
 	std::chrono::system_clock::time_point t_track_bull = std::chrono::system_clock::now();
 	std::chrono::duration<int,std::milli> dt_bull(m_dt_uint_bull);
+	std::chrono::system_clock::time_point t_track_wait = std::chrono::system_clock::now();
+	std::chrono::duration<int,std::milli> dt_wait(_Engine_h_MAX_WAIT);
 
 	bool got_bull = false;
 	bool victory = false;
@@ -446,6 +448,7 @@ bool Engine::run_evil()
 						message[2] == 'a' and message[3] == 'd') {
 				victory = true;
 			}
+			t_track_wait = std::chrono::system_clock::now() + dt_wait;
 		}
 		//if time point is passed
 		if ( t_track_bull < std::chrono::system_clock::now() and !victory ) {
@@ -471,6 +474,10 @@ bool Engine::run_evil()
 			}
 			//add a period to previous time point
 			t_track_bull += dt_bull;
+		}
+		//if wait time is passed, good is probably disconnnected
+		if ( t_track_wait < std::chrono::system_clock::now() ) {
+			exit_to_menu = m_artist.exit_lost_connection();
 		}
 		// With this we are sure that the bull is over bushes, and they are
 		//  always in sync, we draw bushes only if the vector is not
