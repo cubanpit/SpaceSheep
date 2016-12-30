@@ -32,6 +32,11 @@
 #ifndef _SKETCHER_H_
 #define _SKETCHER_H_
 
+// neeeded for compilation on old system (tolab)
+#ifndef _GLIBCXX_USE_NANOSLEEP
+#define _GLIBCXX_USE_NANOSLEEP
+#endif
+
 #include <ncurses.h> // initsrc, endwin, curs_set, echo/noecho, timeout,
 					// mvprintw, erase, getch, getstr, attron/attroff, init_pair
 #include <string> // std::string, std::to_string

@@ -24,6 +24,7 @@
 #
 ################################################################################
 
+# configure multithreaded compilation
 OS := $(shell uname)
 ifeq ($(OS), Linux)
 	export MAKEFLAGS="-j $(grep -c ^processor /proc/cpuinfo)"
@@ -36,6 +37,12 @@ VPATH=./source/
 # place object file in OBJPATH
 OBJPATH=./obj/
 
+GCC47_BINDIR :=
+# configure compilator path in tolab
+#GCC47_BINDIR := /opt/centos/devtoolset-1.1/root/usr/bin/
+
+CXX := $(GCC47_BINDIR)$(CXX)
+
 TARGET := game
 OBJS := $(patsubst %.o,$(OBJPATH)%.o, obstacle.o hitbox.o sketcher.o engine.o \
 	prizegive.o	UDPMcastSender.o UDPMcastReceiver.o UDPSSMcast.o)
@@ -43,12 +50,15 @@ OBJS := $(patsubst %.o,$(OBJPATH)%.o, obstacle.o hitbox.o sketcher.o engine.o \
 DEBUG := -g
 WARNING := -Wall -Wextra
 
-CXXFLAGS := $(CXXFLAGS) -std=c++11 -lncurses $(WARNING)
+CXXFLAGS := $(CXXFLAGS) -std=c++11
+LDFLAGS := -lncurses -lpthread
+# libraries for compilation on old system (tolab)
+#LDFLAGS := -lncurses -ltinfo -lrt -lpthread
 
 all: $(TARGET)
 
 game: $(OBJS) $(OBJPATH)main.o
-	$(CXX) -o $@ $(OBJS) $(OBJPATH)main.o $(CXXFLAGS)
+	$(CXX) -o $@ $(OBJS) $(OBJPATH)main.o $(CXXFLAGS) $(LDFLAGS)
 
 $(OBJPATH)main.o: main.cpp $(OBJS)
 	$(CXX) -c $< -o $@ $(CXXFLAGS)

@@ -216,11 +216,11 @@ bool Engine::run_good()
 			error_string = m_sender->get_error();
 			delete m_sender;
 			m_sender = nullptr;
-			if ( ::dup(0) < 0 ) {
-				//restore previous backup
-				::dup2(stdin_backup,0);
-				::close(stdin_backup);
-			}
+	//		if ( ::dup(0) < 0 ) {
+	//			//restore previous backup
+	//			::dup2(stdin_backup,0);
+	//			::close(stdin_backup);
+	//		}
 		}
 		else error_string = "";
 	}

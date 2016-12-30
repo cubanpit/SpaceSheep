@@ -90,7 +90,6 @@ UDPMcastSender::m_setup_and_bind_socket()
   if (::getaddrinfo(m_dest_address.c_str(), dest_portstr.str().c_str(),
       &ai_req, &ai_ans) < 0)
    {
-    ::close(m_sfd);
     m_sfd = -1;
     std::ostringstream message;
     message << "Error converting address string '" <<  m_dest_address
