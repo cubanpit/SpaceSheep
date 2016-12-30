@@ -9,28 +9,29 @@ TODO LIST:
 			più intelligenti di fare le stesse cose senza puntatori, o almeno
 			utilizzando degli smart_pointer, utilizzare la 'heap' NON è più
 			performante che utilizzare la 'stack'!
+-!Engine: nell'implementazione ci sono ancora dei rimasugli del workaround
+			utilizzato in precedenza a causa del bug nella gestione delle socket
 
-- all: rivedere e ampliare i commenti (aggiornarli alla gestione delle eccezioni)
+- all: rivedere e ampliare i commenti
 - all: correggere periodicamente 'errori' riportati da 'gcc -Wall -Wextra'
-			possibile rimuovere l'avvertimento sulle funzioni di Hitbox?
 - Engine: verificare che 'front()' e 'back()' siano usati su vettori di
 			dimensione non nulla, altrimenti comportamento indefinito, anche se
 			risulta corretto l'utilizzo è necessario un commento esplicativo
 - Engine: migliorare gestione variabili per caratteristiche del gioco
 - Engine: capire perché bull in run_evil() rallenta dopo che il gioco viene
 			bloccato in run_good(), probabilmente poll() non rispetta i tempi
-- Engine: stoppare run_evil() se non riceve più niente per un po' (good sparisce)?
+- Engine: stoppare run_evil() se non riceve più niente per un po'? forse fatto
+			anche il contrario?
 - Engine: gestione eccezioni recv(), giusto uccidere tutto?
-- Engine/Rete: perché se al primo tentativo di fornire un indirizzo IP questo
-			è vuoto il gioco entra in un loop? workaround in Engine, ma non è
-			una soluzione
+- Engine: aggiungere comunicazione punteggio nella modalità online?
+- Engine/Rete: rilevare in automatico il proprio indirizzo IP?
+			facile secondo Prelz, ma con BASH o con C++?
 
 -- all: aggiungere global namespace prima delle funzioni definite globalmente?
 -- all: si potrebbero sostituire molti 'unsigned int' con 'unsigned short int',
 			ma probabilmente non ne vale la pena
 -- HitBox: in alcune situazioni (all'interno di un grosso rettangolo) la pecora
 			non è sovrapposta
--- Obstacle: m_hitbox and m_ref as pointers could enhance performance?
 -- Engine: aggiungere posizione laterale tori?
 -- Engine: alcune variabili possono essere messe static (seed, chrono, random)?
 -- Engine: bushes, da sostituire vector con list, OutOfTheBox non funziona
