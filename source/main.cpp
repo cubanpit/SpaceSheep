@@ -49,8 +49,7 @@ int main (void)
 		std::cerr << msg << std::endl;
 		exit (EXIT_FAILURE);
 	}
-	catch (std::bad_alloc& ba)
-	{
+	catch (std::bad_alloc& ba) {
 		endwin();
 		std::cerr << "main() bad_alloc caught: " << ba.what() << std::endl;
 		exit (EXIT_FAILURE);

@@ -31,48 +31,39 @@
 
 bool HitBox :: overlap_RectRect(HitBoxRect& a, HitBoxRect& b)
 {
-	int a_x = (a.get_v()).x;
-	int a_y = (a.get_v()).y;
-	int b_x = (b.get_v()).x;
-	int b_y = (b.get_v()).y;
-
 	//we have to substract 1 from height and width, so (x_ref+width)
 	// is inside the hitbox
 	//we have to cast width and height in 'int' for better math
-	int a_w = (int)(a.get_rec()).width - 1 ;
-	int a_h = (int)(a.get_rec()).height - 1 ;
-	int b_w = (int)(b.get_rec()).width - 1 ;
-	int b_h = (int)(b.get_rec()).height - 1 ;
-	if ( a_w <= 0 or b_w <= 0 or a_h <= 0 or b_h <= 0 ) {
-		throw "HitBox::overlapRectRect() ERROR: width or height <= 0";
-	}
 
-	//if the position it's the same they're always overlaped
-	if ( a.get_v() == b.get_v() ) return true;
+	position a_pos[4];
+	a_pos[0] = a.get_v();
+	a_pos[1] = {(a.get_v()).x+(int)(a.get_rec()).width-1,(a.get_v()).y};
+	a_pos[2] = {(a.get_v()).x+(int)(a.get_rec()).width-1,
+		(a.get_v()).y+(int)(a.get_rec()).height-1};
+	a_pos[3] = {(a.get_v()).x,(a.get_v()).y+(int)(a.get_rec()).height-1};
 
-	if ( a_x <= b_x ) {
-		if ( a_y <= b_y ) {
-			if ( (a_x+a_w) >= b_x and (a_y+a_h) >= b_y ) return true;
-			else return false;
+	position b_pos[4];
+	b_pos[0] = b.get_v();
+	b_pos[1] = {(b.get_v()).x+(int)(b.get_rec()).width-1,(b.get_v()).y};
+	b_pos[2] = {(b.get_v()).x+(int)(b.get_rec()).width-1,
+		(b.get_v()).y+(int)(b.get_rec()).height-1};
+	b_pos[3] = {(b.get_v()).x,(b.get_v()).y+(int)(b.get_rec()).height-1};
+
+	for (int i=0; i<4; ++i) {
+		// check if 'a' is inside 'b'
+		if (!(a_pos[i].x < b_pos[0].x) != !(a_pos[i].x <= b_pos[2].x)) {
+			if (!(a_pos[i].y < b_pos[0].y) != !(a_pos[i].y <= b_pos[2].y)) {
+				return true;
+			}
 		}
-		// if ( a_y > b_y )
-		else {
-			if ( (a_x+a_w) >= b_x and a_y <= (b_y+b_h) ) return true;
-			else return false;
-		}
-	}
-	// if ( a_x > b_x )
-	else {
-		if ( a_y >= b_y ) {
-			if ( (b_x+b_w) >= a_x and (b_y+b_h) >= a_y ) return true;
-			else return false;
-		}
-		// if ( a_y < b_y )
-		else {
-			if ( (b_x+b_w) >= a_x and b_y <= (a_y+a_h) ) return true;
-			else return false;
+		// check if 'b' is inside 'a'
+		if (!(b_pos[i].x < a_pos[0].x) != !(b_pos[i].x <= a_pos[2].x)) {
+			if (!(b_pos[i].y < a_pos[0].y) != !(b_pos[i].y <= a_pos[2].y)) {
+				return true;
+			}
 		}
 	}
+	return false;
 }
 
 bool HitBox :: overlap_RectCircle(HitBoxRect& r, HitBoxCircle& c)

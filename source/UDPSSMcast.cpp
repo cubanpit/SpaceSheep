@@ -108,7 +108,7 @@ std::string compose_msg(CircleObstacle* circle)
 {
 	/*
 	 * We can convert int to char without troubles only because we are sure
-	 * that positions, width and height are less than 255 and non negative.
+	 * that positions, width and height are between -127 and 128.
 	 */
 	std::string msg{'c', (char) (circle->get_ref()).x,
 					(char) (circle->get_ref()).y,
@@ -120,7 +120,7 @@ std::string compose_msg(RectObstacle* rect)
 {
 	/*
 	 * We can convert int to char without troubles only because we are sure
-	 * that positions, width and height are less than 255 and non negative.
+	 * that positions, width and height are between -127 and 128.
 	 */
 	std::string msg{'r', (char) (rect->get_v()).x,
 					(char) (rect->get_v()).y,

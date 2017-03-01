@@ -31,8 +31,8 @@
 
 Sketcher :: Sketcher (unsigned int xDim, unsigned int yDim)
 {
-	if ( yDim > _Sketcher_h_MIN_HEIGHT_
-			and xDim > _Sketcher_h_MIN_WIDTH_ ) {
+	if ( (yDim > _Sketcher_h_MIN_HEIGHT_ and yDim < _Sketcher_h_MAX_HEIGHT_)
+			and (xDim > _Sketcher_h_MIN_WIDTH_ and xDim < _Sketcher_h_MAX_WIDTH_) ) {
 		m_xDim = xDim;
 		m_yDim = yDim;
 		m_gameW = xDim - 2;
@@ -40,12 +40,15 @@ Sketcher :: Sketcher (unsigned int xDim, unsigned int yDim)
 	}
 	else {
 		std::string error = "Sketcher::Sketcher() ERROR: chosen game table size"
-			" isn't supported, minimum height is "
-			+std::to_string(_Sketcher_h_MIN_HEIGHT_)+
-			" and minimum width is "
-			+std::to_string(_Sketcher_h_MIN_WIDTH_);
+			" isn't supported, minimum and maximum height are "
+			+std::to_string(_Sketcher_h_MIN_HEIGHT_+1)+", "+std::to_string(_Sketcher_h_MAX_HEIGHT_-1)+
+			" and minimum and maximum width are "
+			+std::to_string(_Sketcher_h_MIN_WIDTH_+1)+", "+std::to_string(_Sketcher_h_MAX_WIDTH_-1);
 		throw error;
 	}
+		// COLS and LINES are keywords of ncurses that are
+		// filled by initscr with the size of the screen.
+		// the size of the screen
 	if (COLS >= (int)m_xDim and LINES >= (int)m_yDim) {
 		// (Offset+1) because we want all body drawn without overlapping
 		//  the game table
@@ -211,7 +214,7 @@ std::string Sketcher :: addr_input_screen (std::string owner,
 		mvprintw(m_yOffset+17,m_xOffset+(m_gameW/2)-20+owner_space,
 				" IPv4 address: ");
 		refresh();
-		char input[20];
+		char input[15];
 		int get_result = getnstr(input,15);
 		str_input = input;
 		//remove whitespaces
@@ -271,7 +274,7 @@ bool Sketcher :: exit_local_screen (unsigned int score) const
 
 		refresh();
 		char input[20];
-		getstr(input);
+		getnstr(input, 20);
 		std::string str_input(input);
 		saved_score = add_score(score,str_input);
 	}

@@ -199,12 +199,6 @@ bool Engine::run_good()
 	erase();
 	m_bushes.clear(); //clear vector, if it's not empty
 
-	// backup stdin, cause sometimes UDPSSMcastSender error close it
-	int stdin_backup = ::dup(0);
-	if ( stdin_backup < 0 ) {
-		std::string err(::strerror(errno));
-		throw "Engine::run_good() ERROR: stdin is not backupable - " + err;
-	}
 	// continue to ask the IP address till is a valid one
 	std::string error_string = "";
 	while ( m_sender == nullptr ) {
@@ -216,11 +210,6 @@ bool Engine::run_good()
 			error_string = m_sender->get_error();
 			delete m_sender;
 			m_sender = nullptr;
-	//		if ( ::dup(0) < 0 ) {
-	//			//restore previous backup
-	//			::dup2(stdin_backup,0);
-	//			::close(stdin_backup);
-	//		}
 		}
 		else error_string = "";
 	}
@@ -359,12 +348,6 @@ bool Engine::run_evil()
 	erase();
 	m_bushes.clear(); //clear vector, if it's not empty
 
-	// backup stdin, cause sometimes UDPSSMcastSender error close it
-	int stdin_backup = ::dup(0);
-	if ( stdin_backup < 0 ) {
-		std::string err(::strerror(errno));
-		throw "Engine::run_evil() ERROR: stdin is not backupable - " + err;
-	}
 	// continue to ask the IP address till is a valid one
 	std::string error_string = "";
 	while ( m_sender == nullptr ) {
@@ -376,11 +359,6 @@ bool Engine::run_evil()
 			error_string = m_sender->get_error();
 			delete m_sender;
 			m_sender = nullptr;
-			if ( ::dup(0) < 0 ) {
-				//restore previous backup
-				::dup2(stdin_backup,0);
-				::close(stdin_backup);
-			}
 		}
 		else error_string = "";
 	}

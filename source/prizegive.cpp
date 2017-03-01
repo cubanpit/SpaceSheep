@@ -38,7 +38,7 @@ bool add_score(const unsigned int new_score, const std::string& player_name)
 		return false;
 	}
 	std::fstream score_file;
-	score_file.open(_prizigive_h_SCORE_FILE_,std::ios_base::app);
+	score_file.open(_prizigive_h_SCORE_FILE_,std::ios_base::app|std::fstream::out);
 	if ( score_file.fail() ) {
 		throw "ERROR: Impossible to open score file "+_prizigive_h_SCORE_FILE_;
 	}
@@ -91,5 +91,5 @@ bool compare_score (std::string strj,std::string strk)
 {
 	std::size_t posj = strj.find("_");
 	std::size_t posk = strk.find("_");
-	return (std::stoi(strj.substr(0,posj)) > stoi(strk.substr(0,posk)));
+	return (std::stoi(strj.substr(0,posj)) > std::stoi(strk.substr(0,posk)));
 }
