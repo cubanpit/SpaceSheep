@@ -57,3 +57,5 @@ int main (void)
 	endwin(); // end terminal world [ncurses]
 	return (EXIT_SUCCESS);
 }
+
+// vim: set noexpandtab:

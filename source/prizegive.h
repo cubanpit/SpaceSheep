@@ -59,3 +59,5 @@ bool compare_score (std::string strj,std::string strk);
  * 51_mermaid-LOL
  *
  */
+
+// vim: set noexpandtab:

@@ -84,3 +84,5 @@ std::string compose_msg(CircleObstacle* circle);
 std::string compose_msg(RectObstacle* rect);
 
 #endif // _UDPSSMCAST_H_
+
+// vim: set noexpandtab:

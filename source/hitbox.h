@@ -63,24 +63,11 @@ struct rectangle
 class HitBoxRect;
 class HitBoxCircle;
 
-class HitBox
-{
-	public:
-		// These functions can't be const, because in their implementation they
-		//  have to call a function giving *this as argument.
-		virtual bool overlap(HitBox&) = 0;
-		virtual bool overlap(HitBoxRect&) = 0;
-		virtual bool overlap(HitBoxCircle&) = 0;
+bool overlap_RectRect(HitBoxRect& a, HitBoxRect& b);
+bool overlap_RectCircle(HitBoxRect& r, HitBoxCircle& c);
+bool overlap_CircleCircle(HitBoxCircle& a, HitBoxCircle& b);
 
-	protected:
-		// These functions can be static, this class does not even have
-		//  non-static member either.
-		static bool overlap_RectRect(HitBoxRect& a, HitBoxRect& b);
-		static bool overlap_RectCircle(HitBoxRect& r, HitBoxCircle& c);
-		static bool overlap_CircleCircle(HitBoxCircle& a, HitBoxCircle& b);
-};
-
-class HitBoxRect : public HitBox
+class HitBoxRect
 {
 	public:
 		HitBoxRect(position v, rectangle rec);
@@ -91,16 +78,15 @@ class HitBoxRect : public HitBox
 		void set_v(position& new_v){ m_v = new_v; }
 		const rectangle& get_rec() const { return m_rec; }
 
-		virtual bool overlap(HitBox& b) { return b.overlap(*this); }
-		virtual bool overlap(HitBoxRect& b) { return overlap_RectRect(*this,b); }
-		virtual bool overlap(HitBoxCircle& b) { return overlap_RectCircle(*this,b); }
+		bool overlap(HitBoxRect& b) { return overlap_RectRect(*this,b); }
+		bool overlap(HitBoxCircle& b) { return overlap_RectCircle(*this,b); }
 
 	private:
 		position m_v;
 		rectangle m_rec;
 };
 
-class HitBoxCircle : public HitBox
+class HitBoxCircle
 {
 	public:
 		HitBoxCircle(position ref, unsigned int radius);
@@ -111,9 +97,8 @@ class HitBoxCircle : public HitBox
 		void set_ref(position& new_ref){ m_ref = new_ref; }
 		unsigned int get_radius() const { return m_radius; }
 
-		virtual bool overlap(HitBox& b) { return b.overlap(*this); }
-		virtual bool overlap(HitBoxRect& b) { return overlap_RectCircle(b,*this); }
-		virtual bool overlap(HitBoxCircle& b) { return overlap_CircleCircle(*this,b); }
+		bool overlap(HitBoxRect& b) { return overlap_RectCircle(b,*this); }
+		bool overlap(HitBoxCircle& b) { return overlap_CircleCircle(*this,b); }
 
 	private:
 		position m_ref;
@@ -146,3 +131,5 @@ class HitBoxCircle : public HitBox
  *    radius = abs(C.x - R.x) + abs(C.y - R.y)
  *    R = ref
  */
+
+// vim: set noexpandtab:

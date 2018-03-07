@@ -113,3 +113,5 @@ class Sketcher
 };
 
 #endif // _SKETCHER_H_
+
+// vim: set noexpandtab:

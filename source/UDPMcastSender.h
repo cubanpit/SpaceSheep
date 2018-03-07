@@ -94,3 +94,5 @@ class UDPMcastSender
 };
 
 #endif /* defined _UDPMcastSender_h_included */
+
+// vim: set noexpandtab:

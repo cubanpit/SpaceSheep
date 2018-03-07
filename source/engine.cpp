@@ -83,7 +83,7 @@ void Engine::start()
 
 		char user_choice;
 		user_choice = m_artist.welcome_screen();
-	    if ( user_choice == 'n' ) gimme_more = run_local();
+	  if ( user_choice == 'n' ) gimme_more = run_local();
 		else if ( user_choice == 'e' ) gimme_more = run_evil();
 		else if ( user_choice == 'g' ) gimme_more = run_good();
 		else if ( user_choice == 'q' ) gimme_more = false;
@@ -789,3 +789,5 @@ void Engine :: set_movement_properties (unsigned int dt_uint_sheep,
 	m_left_mov = left_mov;
 	m_right_mov = right_mov;
 }
+
+// vim: set noexpandtab:

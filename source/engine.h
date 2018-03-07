@@ -125,3 +125,5 @@ class Engine
 };
 
 #endif // _ENGINE_H_
+
+// vim: set noexpandtab:

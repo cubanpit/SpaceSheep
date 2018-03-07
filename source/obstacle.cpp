@@ -69,7 +69,7 @@ SpaceSheep :: SpaceSheep(position ref, unsigned int radius):
 void SpaceSheep :: move(char dir)
 {
 	if ( dir == 'r' ) m_ref.x += 2 ;
-	else m_ref.x -= 2 ;
+	else if ( dir == 'l' ) m_ref.x -= 2 ;
 	m_hitbox.set_ref(m_ref);
 }
 
@@ -94,3 +94,5 @@ void SpaceBull :: drop()
 	++m_ref.y;
 	m_hitbox.set_ref(m_ref);
 }
+
+// vim: set noexpandtab:

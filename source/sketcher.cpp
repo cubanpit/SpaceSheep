@@ -641,3 +641,4 @@ void Sketcher :: animation (SpaceBull* bull) const
 	pencil(bull);
 }
 
+// vim: set noexpandtab:

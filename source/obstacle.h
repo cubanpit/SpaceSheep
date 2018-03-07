@@ -49,7 +49,6 @@ class RectObstacle
 		HitBoxRect m_hitbox;
 		position m_v;
 		rectangle m_rec;
-
 };
 
 class CircleObstacle
@@ -67,7 +66,6 @@ class CircleObstacle
 		HitBoxCircle m_hitbox;
 		position m_ref;
 		unsigned int m_radius;
-
 };
 
 class SpaceSheep : public CircleObstacle
@@ -117,3 +115,5 @@ class SpaceBull : public CircleObstacle
  *    radius = abs(C.x - R.x) + abs(C.y - R.y)
  *    R = ref
  */
+
+// vim: set noexpandtab:

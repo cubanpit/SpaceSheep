@@ -29,73 +29,72 @@
 
 #include "hitbox.h"
 
-bool HitBox :: overlap_RectRect(HitBoxRect& a, HitBoxRect& b)
+bool overlap_RectRect(HitBoxRect& a, HitBoxRect& b)
 {
 	//we have to cast width and height in 'int' for better math
 
-  position a_v = a.get_v();
-  position b_v = b.get_v();
-  rectangle a_rec = a.get_rec();
-  rectangle b_rec = b.get_rec();
+	position a_v = a.get_v();
+	position b_v = b.get_v();
+	rectangle a_rec = a.get_rec();
+	rectangle b_rec = b.get_rec();
 
-  if (a_v.x < b_v.x + (int)b_rec.width
-      and b_v.x < a_v.x + (int)a_rec.width
-      and a_v.y < b_v.y + (int)b_rec.height
-      and b_v.y < a_v.y + (int)a_rec.height) {
-    return true;
-  } else {
-    return false;
-  }
+	if (a_v.x < b_v.x + (int)b_rec.width
+			and b_v.x < a_v.x + (int)a_rec.width
+			and a_v.y < b_v.y + (int)b_rec.height
+			and b_v.y < a_v.y + (int)a_rec.height) {
+		return true;
+	} else {
+		return false;
+	}
 }
 
-bool HitBox :: overlap_RectCircle(HitBoxRect& r, HitBoxCircle& c)
+bool overlap_RectCircle(HitBoxRect& r, HitBoxCircle& c)
 {
 	//We have to substract 1 from height and width, so (x_ref+width)
 	// is inside the hitbox.
-	
-  //we have to cast width and height in 'int' for better math
 
-  position r_v = r.get_v();
-	int r_w = (int)(r.get_rec()).width;
-	int r_h = (int)(r.get_rec()).height;
+	//we have to cast width and height in 'int' for better math
 
+	position r_v = r.get_v();
+	int r_w = (int)(r.get_rec()).width - 1;
+	int r_h = (int)(r.get_rec()).height - 1;
 	position r_pos[4];
-  r_pos[0] = r_v;
-  r_pos[1] = {r_v.y, r_v.x + r_w};
-  r_pos[2] = {r_v.y + r_h, r_v.x + r_w};
-  r_pos[3] = {r_v.y + r_h, r_v.x};
+	r_pos[0] = r_v;
+	r_pos[1] = {r_v.x + r_w, r_v.y};
+	r_pos[2] = {r_v.x + r_w, r_v.y + r_h};
+	r_pos[3] = {r_v.x, r_v.y + r_h};
 
-  position c_c = c.get_ref();
-  int c_r = (int)c.get_radius();
-  position c_pos[4];
-  c_pos[0] = {c_c.x, c_c.y + c_r};
-  c_pos[1] = {c_c.x + c_r, c_c.y};
-  c_pos[2] = {c_c.x, c_c.y - c_r};
-  c_pos[3] = {c_c.x - c_r, c_c.y};
+	position c_c = c.get_ref();
+	int c_r = (int)c.get_radius();
+	position c_pos[4];
+	c_pos[0] = {c_c.x, c_c.y - c_r};
+	c_pos[1] = {c_c.x + c_r, c_c.y};
+	c_pos[2] = {c_c.x, c_c.y + c_r};
+	c_pos[3] = {c_c.x - c_r, c_c.y};
 
 	if ( r_w <= 0 or r_h <= 0 or c_r <= 0 ) {
 		throw "HitBox::overlapRectCircle() ERROR: width, height or radius <= 0";
 	}
 
-  // one of 'circle vertices' is inside the rectangle
-  for (short unsigned int i=0; i<4; ++i) {
-    if (r_pos[0].x < c_pos[i].x and c_pos[i].x < r_pos[1].x
-        and r_pos[0].y < c_pos[i].y and c_pos[i].y < r_pos[3].y) {
-      return true;
-    }
-  }
+	// one of 'circle vertices' is inside the rectangle
+	for (short unsigned int i=0; i<4; ++i) {
+		if (r_pos[0].x <= c_pos[i].x and c_pos[i].x <= r_pos[1].x
+				and r_pos[0].y <= c_pos[i].y and c_pos[i].y <= r_pos[3].y) {
+			return true;
+		}
+	}
 
-  // one of the rectangle vertices is inside the circle
-  for (short unsigned int i=0; i<4; ++i) {
-    if (abs(c_c.x - r_pos[i].x) + abs(c_c.y - r_pos[i].y) <= c_r) {
-      return true;
-    }
-  }
+	// one of the rectangle vertices is inside the circle
+	for (short unsigned int i=0; i<4; ++i) {
+		if (abs(c_c.x - r_pos[i].x) + abs(c_c.y - r_pos[i].y) <= c_r) {
+			return true;
+		}
+	}
 
-  return false;
+	return false;
 }
 
-bool HitBox :: overlap_CircleCircle(HitBoxCircle& a, HitBoxCircle& b)
+bool overlap_CircleCircle(HitBoxCircle& a, HitBoxCircle& b)
 {
 	position a_pos = a.get_ref();
 	position b_pos = b.get_ref();
@@ -108,11 +107,11 @@ bool HitBox :: overlap_CircleCircle(HitBoxCircle& a, HitBoxCircle& b)
 	}
 
 	if ( abs(a_pos.x - b_pos.x) + abs(a_pos.y - b_pos.y) <= (a_r+b_r) ) {
-    return true;
-  }
+		return true;
+	}
 	else {
-    return false;
-  }
+		return false;
+	}
 }
 
 HitBoxRect :: HitBoxRect (int x, int y, unsigned int width, unsigned int height)
@@ -153,3 +152,5 @@ HitBoxCircle :: HitBoxCircle (position ref, unsigned int radius)
 	m_radius = radius;
 	m_ref = ref;
 }
+
+// vim: set noexpandtab:

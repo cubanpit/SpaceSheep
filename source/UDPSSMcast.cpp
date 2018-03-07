@@ -128,3 +128,5 @@ std::string compose_msg(RectObstacle* rect)
 					(char) (rect->get_rec()).height};
 	return msg;
 }
+
+// vim: set noexpandtab:

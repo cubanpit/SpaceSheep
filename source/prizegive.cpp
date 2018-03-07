@@ -93,3 +93,5 @@ bool compare_score (std::string strj,std::string strk)
 	std::size_t posk = strk.find("_");
 	return (std::stoi(strj.substr(0,posj)) > std::stoi(strk.substr(0,posk)));
 }
+
+// vim: set noexpandtab:
