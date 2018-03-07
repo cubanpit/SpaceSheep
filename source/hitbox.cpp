@@ -31,14 +31,17 @@
 
 bool HitBox :: overlap_RectRect(HitBoxRect& a, HitBoxRect& b)
 {
-	//we have to substract 1 from height and width, so (x_ref+width)
-	// is inside the hitbox
 	//we have to cast width and height in 'int' for better math
 
-  if ((a.get_v()).x < (b.get_v()).x+(int)(b.get_rec()).width
-      and (b.get_v()).x < (a.get_v()).x+(int)(a.get_rec()).width
-      and (a.get_v()).y < (b.get_v()).y+(int)(b.get_rec()).height
-      and (b.get_v()).y < (a.get_v()).y+(int)(a.get_rec()).height) {
+  position a_v = a.get_v();
+  position b_v = b.get_v();
+  rectangle a_rec = a.get_rec();
+  rectangle b_rec = b.get_rec();
+
+  if (a_v.x < b_v.x + (int)b_rec.width
+      and b_v.x < a_v.x + (int)a_rec.width
+      and a_v.y < b_v.y + (int)b_rec.height
+      and b_v.y < a_v.y + (int)a_rec.height) {
     return true;
   } else {
     return false;
@@ -47,66 +50,55 @@ bool HitBox :: overlap_RectRect(HitBoxRect& a, HitBoxRect& b)
 
 bool HitBox :: overlap_RectCircle(HitBoxRect& r, HitBoxCircle& c)
 {
-	int r_x = (r.get_v()).x;
-	int r_y = (r.get_v()).y;
-	int c_x = (c.get_ref()).x;
-	int c_y = (c.get_ref()).y;
-
 	//We have to substract 1 from height and width, so (x_ref+width)
 	// is inside the hitbox.
-	int r_w = (int)(r.get_rec()).width - 1 ;
-	int r_h = (int)(r.get_rec()).height - 1 ;
-	int c_r = (int)c.get_radius();
+	
+  //we have to cast width and height in 'int' for better math
+
+  position r_v = r.get_v();
+	int r_w = (int)(r.get_rec()).width;
+	int r_h = (int)(r.get_rec()).height;
+
+	position r_pos[4];
+  r_pos[0] = r_v;
+  r_pos[1] = {r_v.y, r_v.x + r_w};
+  r_pos[2] = {r_v.y + r_h, r_v.x + r_w};
+  r_pos[3] = {r_v.y + r_h, r_v.x};
+
+  position c_c = c.get_ref();
+  int c_r = (int)c.get_radius();
+  position c_pos[4];
+  c_pos[0] = {c_c.x, c_c.y + c_r};
+  c_pos[1] = {c_c.x + c_r, c_c.y};
+  c_pos[2] = {c_c.x, c_c.y - c_r};
+  c_pos[3] = {c_c.x - c_r, c_c.y};
 
 	if ( r_w <= 0 or r_h <= 0 or c_r <= 0 ) {
 		throw "HitBox::overlapRectCircle() ERROR: width, height or radius <= 0";
 	}
 
-	if ( r_x >= c_x ) {
-		if ( r_y >= c_y ) {
-			if ( ((r_y-c_y)+(r_x-c_x)) <= c_r ) return true;
-			else return false;
-		}
-		else if ( r_y < c_y and c_y < (r_y+r_h) ) {
-			if ( (r_x-c_x) <= c_r ) return true;
-			else return false;
-		}
-		// if ( c_y >= (r_y+r_h) )
-		else {
-			if ( ((c_y-(r_y+r_h))+(r_x-c_x)) <= c_r ) return true;
-			else return false;
-		}
-	}
-	else if ( r_x < c_x and c_x < (r_x+r_w) ) {
-		if ( c_y < r_y and (r_y - c_y) <= c_r ) return true;
-		else if ( c_y > (r_y+r_h) and (c_y - (r_y+r_h)) <= c_r ) return true;
-		else if ( c_y > r_y and c_y < (r_y+r_h) ) return true;
-		else return false;
-	}
-	// if ( c_x > (r_x+r_w) )
-	else {
-		if ( r_y >= c_y ) {
-			if ( ((r_y-c_y)+(c_x-(r_x+r_w))) <= c_r ) return true;
-			else return false;
-		}
-		else if ( r_y < c_y and c_y < (r_y+r_h) ) {
-			if ( (c_x-(r_x+r_w)) <= c_r ) return true;
-			else return false;
-		}
-		// if ( c_y >= (r_y+r_h) )
-		else {
-			if ( ((c_y-(r_y+r_h))+(c_x-(r_x+r_w))) <= c_r ) return true;
-			else return false;
-		}
-	}
+  // one of 'circle vertices' is inside the rectangle
+  for (short unsigned int i=0; i<4; ++i) {
+    if (r_pos[0].x < c_pos[i].x and c_pos[i].x < r_pos[1].x
+        and r_pos[0].y < c_pos[i].y and c_pos[i].y < r_pos[3].y) {
+      return true;
+    }
+  }
+
+  // one of the rectangle vertices is inside the circle
+  for (short unsigned int i=0; i<4; ++i) {
+    if (abs(c_c.x - r_pos[i].x) + abs(c_c.y - r_pos[i].y) <= c_r) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 bool HitBox :: overlap_CircleCircle(HitBoxCircle& a, HitBoxCircle& b)
 {
-	int a_x = (a.get_ref()).x;
-	int a_y = (a.get_ref()).y;
-	int b_x = (b.get_ref()).x;
-	int b_y = (b.get_ref()).y;
+	position a_pos = a.get_ref();
+	position b_pos = b.get_ref();
 
 	int a_r = (int)a.get_radius();
 	int b_r = (int)b.get_radius();
@@ -115,8 +107,12 @@ bool HitBox :: overlap_CircleCircle(HitBoxCircle& a, HitBoxCircle& b)
 		throw "HitBox::overlap_CircleCircle() ERROR: radius <= 0";
 	}
 
-	if ( abs(a_x-b_x) + abs(a_y-b_y) <= (a_r+b_r) ) return true;
-	else return false;
+	if ( abs(a_pos.x - b_pos.x) + abs(a_pos.y - b_pos.y) <= (a_r+b_r) ) {
+    return true;
+  }
+	else {
+    return false;
+  }
 }
 
 HitBoxRect :: HitBoxRect (int x, int y, unsigned int width, unsigned int height)
