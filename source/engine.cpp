@@ -440,8 +440,7 @@ bool Engine::run_evil()
 											message[2], message[3], message[4]);
 				m_bushes.push_back(tmp_bush);
 			}
-			else if ( message[0] == 'd' and message[1] == 'e' and
-						message[2] == 'a' and message[3] == 'd') {
+			else if ( message == "dead" ) {
 				victory = true;
 			}
 			t_track_wait = std::chrono::system_clock::now() + dt_wait;
