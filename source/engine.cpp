@@ -83,7 +83,7 @@ void Engine::start()
 
 		char user_choice;
 		user_choice = m_artist.welcome_screen();
-	  if ( user_choice == 'n' ) gimme_more = run_local();
+		if ( user_choice == 'n' ) gimme_more = run_local();
 		else if ( user_choice == 'e' ) gimme_more = run_evil();
 		else if ( user_choice == 'g' ) gimme_more = run_good();
 		else if ( user_choice == 'q' ) gimme_more = false;
@@ -246,7 +246,7 @@ bool Engine::run_good()
 	bool dead = false;
 	bool got_bull = false;
 	char ch; //needed for sheep movement
-	std::vector<char> message;
+	std::string message;
 
 	if ( !check_bushes_parameters() ) {
 		throw "Engine::run_local() ERROR: bad parameters for bushes, the game "
@@ -378,7 +378,7 @@ bool Engine::run_evil()
 	m_artist.game_table();
 	m_artist.creator_choice();
 
-	std::vector<char> message;
+	std::string message;
 	bool got_sheep = false;
 	// we receive the first sheep to set got_sheep=true
 	while( !got_sheep and !exit_to_menu ){
@@ -493,16 +493,16 @@ bool Engine::run_evil()
 void Engine :: add_obstacle_bushes ()
 {
 	/*
-	 * In the next 'while(!ctrl)' cycle we check different parameters to
-	 *  have a good game environment.
-	 * - size limits for x,y,h,w at creation time
-	 * - limits on (x+w) to have every obstacle inside Game Table
-	 * - minimum horizontal distance between obstacle, to be sure
-	 *    the SpaceSheep can pass (m_dist)
-	 * - minimum tot width of obstacle on same row, so it's always
-	 *    engaging (tot_w)
-	 * - check obstacle overlapping
-	 */
+	* In the next 'while(!ctrl)' cycle we check different parameters to
+	*  have a good game environment.
+	* - size limits for x,y,h,w at creation time
+	* - limits on (x+w) to have every obstacle inside Game Table
+	* - minimum horizontal distance between obstacle, to be sure
+	*    the SpaceSheep can pass (m_dist)
+	* - minimum tot width of obstacle on same row, so it's always
+	*    engaging (tot_w)
+	* - check obstacle overlapping
+	*/
 
 	// Random stuff
 	unsigned int seed = std::chrono::system_clock::now().time_since_epoch().count();
@@ -576,26 +576,26 @@ void Engine :: add_obstacle_bushes ()
 bool Engine :: check_bushes_parameters () const
 {
 	/*
-	 * As explained in add_obstacle_bushes(), there are many parameters used
-	 *  to check we have a friendly game, and not an impossible one.
-	 * This parameters need a control, otherwise they can generate an infinite
-	 *  when trying to generate obstacle fitting them.
-	 *
-	 * WARNING:
-	 * It's not so simple.
-	 * Minimum width (m_w) and maximum width (M_w) values modify the
-	 *  solution to the problem.
-	 *
-	 * GameLimit           center              GameLimit
-	 * |                   |                   |
-	 * |                |obst |free|  obst     |
-	 * |                ,-----,----,-----------|
-	 * |                m_w   |    X           |
-	 *                        m_dist
-	 *
-	 * In this situation X must be m_w<=X<=M_w and w_min+X=tot_w
-	 * Idem with M_w instead of m_w in the scheme.
-	 */
+	* As explained in add_obstacle_bushes(), there are many parameters used
+	*  to check we have a friendly game, and not an impossible one.
+	* This parameters need a control, otherwise they can generate an infinite
+	*  when trying to generate obstacle fitting them.
+	*
+	* WARNING:
+	* It's not so simple.
+	* Minimum width (m_w) and maximum width (M_w) values modify the
+	*  solution to the problem.
+	*
+	* GameLimit           center              GameLimit
+	* |                   |                   |
+	* |                |obst |free|  obst     |
+	* |                ,-----,----,-----------|
+	* |                m_w   |    X           |
+	*                        m_dist
+	*
+	* In this situation X must be m_w<=X<=M_w and w_min+X=tot_w
+	* Idem with M_w instead of m_w in the scheme.
+	*/
 
 	if ( !( (((int)m_bushes_w_m/2) + ((int)m_artist.get_gameW()/2) -
 				((int)(*m_sheep).get_radius()*2+1+(int)m_bushes_w_d))
@@ -668,7 +668,7 @@ bool Engine :: bull_creator_choice()
 // pair opponents, both should be able to send and receive packages
 bool Engine::pair_with_good() const
 {
-	std::vector<char> message;
+	std::string message;
 	bool paired = false;
 	bool stop_pair = false;
 	//send, check the opponent answers
@@ -678,8 +678,7 @@ bool Engine::pair_with_good() const
 		if( m_recver->recv_msg() and !stop_pair ){
 			message.assign(m_recver->get_msg(),
 				m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
-			if( message[0] == 'p' and message[1] == 'o'
-				and	message[2] == 'n' and message[3] == 'g' ) {
+			if( message == "pong" ) {
 				m_sender->send_msg("pong");
 				paired = true;
 			}
@@ -694,7 +693,7 @@ bool Engine::pair_with_good() const
 // pair opponents, both should be able to send and receive packages
 bool Engine::pair_with_evil() const
 {
-	std::vector<char> message;
+	std::string message;
 	bool paired = false;
 	bool stop_pair = false;
 	//checks he can receive, answers, then checks the opponent answered
@@ -703,16 +702,14 @@ bool Engine::pair_with_evil() const
 		if( m_recver->recv_msg() and !stop_pair ){
 			message.assign(m_recver->get_msg(),
 				m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
-			if( message[0] == 'p' and message[1] == 'i'
-				and	message[2] == 'n' and message[3] == 'g' ) {
+			if( message == "ping" ) {
 				m_sender->send_msg("pong");
 				for(int i=0; i<100 and !paired and !stop_pair; ++i) {
 					stop_pair = m_artist.pair_screen();
 					if( m_recver->recv_msg() and !stop_pair ){
 						message.assign(m_recver->get_msg(),
 							m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
-						if( message[0] == 'p' and message[1] == 'o'
-							and	message[2] == 'n' and message[3] == 'g' ) {
+						if( message == "pong" ) {
 							paired = true;
 						}
 					}
@@ -725,7 +722,7 @@ bool Engine::pair_with_evil() const
 	return paired;
 }
 
-bool Engine::create_bull(std::vector<char>& message)
+bool Engine::create_bull(std::string& message)
 {
 	// message[0] = identifier
 	// message[1] = X position

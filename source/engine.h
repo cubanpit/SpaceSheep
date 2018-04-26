@@ -69,7 +69,7 @@ class Engine
 		bool pair_with_good() const;
 		bool pair_with_evil() const;
 		//create a bull reading a message:[-,posX,posY,radius,-]
-		bool create_bull(std::vector<char>& msg);
+		bool create_bull(std::string& msg);
 
 		//change bushes parameters: size or density limit
 		void set_bushes_properties(	unsigned int bushes_w_d = 4,
