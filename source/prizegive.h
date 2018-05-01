@@ -7,8 +7,8 @@
  * The judge always says the truth.
  *
  * Authors:
- *	Martina Crippa 				<martina.crippa2@studenti.unimi.it>
- *	Pietro Francesco Fontana 	<pietrofrancesco.fontana@studenti.unimi.it>
+ *  Martina Crippa 				<martina.crippa2@studenti.unimi.it>
+ *  Pietro Francesco Fontana 	<pietrofrancesco.fontana@studenti.unimi.it>
  *
  *******************************************************************************
  *
@@ -60,4 +60,4 @@ bool compare_score (std::string strj,std::string strk);
  *
  */
 
-// vim: set noexpandtab:
+// vim: set expandtab ts=2 sw=2:

@@ -52,19 +52,21 @@ class UDPMcastSender
 
     // Constructor.
     UDPMcastSender(unsigned char ttl = _UDPMcastSender_h_DEFAULT_TTL);
-    UDPMcastSender(const std::string &source_interface = "",
-                   unsigned char ttl = _UDPMcastSender_h_DEFAULT_TTL,
-                   const std::string &dest_address = _UDPMcastSender_h_DEFAULT_MCAST_ADDR,
-                   unsigned short dest_port = _UDPMcastSender_h_DEFAULT_PORT);
+    UDPMcastSender(
+        const std::string &source_interface = "",
+        unsigned char ttl = _UDPMcastSender_h_DEFAULT_TTL,
+        const std::string &dest_address = _UDPMcastSender_h_DEFAULT_MCAST_ADDR,
+        unsigned short dest_port = _UDPMcastSender_h_DEFAULT_PORT);
 
     // Destructor.
     virtual ~UDPMcastSender();
 
     bool good() const;
 
-    bool set_address_port(const std::string &source_interface = "",
-                          const std::string &dest_address = _UDPMcastSender_h_DEFAULT_MCAST_ADDR,
-                          unsigned short dest_port = _UDPMcastSender_h_DEFAULT_PORT);
+    bool set_address_port(
+        const std::string &source_interface = "",
+        const std::string &dest_address = _UDPMcastSender_h_DEFAULT_MCAST_ADDR,
+        unsigned short dest_port = _UDPMcastSender_h_DEFAULT_PORT);
 
     unsigned char get_ttl() const;
     bool set_ttl(unsigned char ttl);
@@ -95,4 +97,4 @@ class UDPMcastSender
 
 #endif /* defined _UDPMcastSender_h_included */
 
-// vim: set noexpandtab:
+// vim: set expandtab ts=2 sw=2:

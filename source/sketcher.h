@@ -8,8 +8,8 @@
  *  the other screens of the game.
  *
  * Authors:
- *	Martina Crippa 				<martina.crippa2@studenti.unimi.it>
- *	Pietro Francesco Fontana 	<pietrofrancesco.fontana@studenti.unimi.it>
+ *  Martina Crippa 				<martina.crippa2@studenti.unimi.it>
+ *  Pietro Francesco Fontana 	<pietrofrancesco.fontana@studenti.unimi.it>
  *
  *******************************************************************************
  *
@@ -38,7 +38,7 @@
 #endif
 
 #include <ncurses.h> // initsrc, endwin, curs_set, echo/noecho, timeout,
-					// mvprintw, erase, getch, getstr, attron/attroff, init_pair
+  				// mvprintw, erase, getch, getstr, attron/attroff, init_pair
 #include <string> // std::string, std::to_string
 #include <chrono> // std::chrono::system_clock
 #include <thread> // std::this_thread::sleep_until
@@ -54,64 +54,64 @@ const unsigned short int _Sketcher_h_MAX_WIDTH_ = 123;
 
 class Sketcher
 {
-	public:
-		Sketcher(unsigned int xDim, unsigned int yDim);
-		~Sketcher(){}
+  public:
+  	Sketcher(unsigned int xDim, unsigned int yDim);
+  	~Sketcher(){}
 
-		//draw game table borders
-		void game_table() const;
+  	//draw game table borders
+  	void game_table() const;
 
-		//user can choice, welcome_screen() returns:
-		// 'q' to exit the game, 'n' to play offline
-		// 'g' to play online as good, 'e' to play online as evil
-		char welcome_screen() const;
-		//return 'false' if user wants to resume the game
-		bool pause_screen() const;
+  	//user can choice, welcome_screen() returns:
+  	// 'q' to exit the game, 'n' to play offline
+  	// 'g' to play online as good, 'e' to play online as evil
+  	char welcome_screen() const;
+  	//return 'false' if user wants to resume the game
+  	bool pause_screen() const;
 
-		//Receive owner's IP addr from user input, tell user which is the
-		// right port to open and print error if present
-		std::string addr_input_screen(	std::string owner,
-										unsigned int default_port,
-										std::string error = "") const;
-		//print simple pair screen, return true if user choose to cancel
-		bool pair_screen() const;
+  	//Receive owner's IP addr from user input, tell user which is the
+  	// right port to open and print error if present
+  	std::string addr_input_screen(
+        std::string owner, unsigned int default_port,
+        std::string error = "") const;
+  	//print simple pair screen, return true if user choose to cancel
+  	bool pair_screen() const;
 
-		//Print exit screens for different game style, return 'false' if user
-		// wants to exit the game.
-		bool exit_local_screen(unsigned int score) const;
-		bool exit_good_screen(unsigned int score) const;
-		bool exit_evil_screen() const;
-		bool exit_lost_connection() const;
+  	//Print exit screens for different game style, return 'false' if user
+  	// wants to exit the game.
+  	bool exit_local_screen(unsigned int score) const;
+  	bool exit_good_screen(unsigned int score) const;
+  	bool exit_evil_screen() const;
+  	bool exit_lost_connection() const;
 
-		//update actual score on game table border
-		void update_score(unsigned int score) const;
-		//print bull creation keybindings on game table border
-		void creator_choice() const;
+  	//update actual score on game table border
+  	void update_score(unsigned int score) const;
+  	//print bull creation keybindings on game table border
+  	void creator_choice() const;
 
-		// print obstacles
-		void pencil(RectObstacle* bush) const;
-		void pencil(SpaceSheep* sheep) const;
-		void pencil(SpaceBull* bull) const;
+  	// print obstacles
+  	void pencil(RectObstacle* bush) const;
+  	void pencil(SpaceSheep* sheep) const;
+  	void pencil(SpaceBull* bull) const;
 
-		// erase obstacles
-		void rubber(RectObstacle* bush) const;
-		void rubber(CircleObstacle* circle) const;
+  	// erase obstacles
+  	void rubber(RectObstacle* bush) const;
+  	void rubber(CircleObstacle* circle) const;
 
-		// animate obstacles in different ways
-		void animation(RectObstacle* bush) const; //drop bush
-		void animation(SpaceSheep* sheep, char dir) const; //move 'r' or 'l'
-		void animation(SpaceSheep* sheep, unsigned int x) const; //move to 'x'
-		void animation(SpaceBull* bull) const; //drop bull
+  	// animate obstacles in different ways
+  	void animation(RectObstacle* bush) const; //drop bush
+  	void animation(SpaceSheep* sheep, char dir) const; //move 'r' or 'l'
+  	void animation(SpaceSheep* sheep, unsigned int x) const; //move to 'x'
+  	void animation(SpaceBull* bull) const; //drop bull
 
-		unsigned int get_gameW() const { return m_gameW; }
-		unsigned int get_gameH() const { return m_gameH; }
+  	unsigned int get_gameW() const { return m_gameW; }
+  	unsigned int get_gameH() const { return m_gameH; }
 
-	private:
-		unsigned int m_xDim, m_yDim; // size of the entire game table
-		unsigned int m_xOffset, m_yOffset; // offset inside terminal window
-		unsigned int m_gameW, m_gameH; // size of internal playground
+  private:
+  	unsigned int m_xDim, m_yDim; // size of the entire game table
+  	unsigned int m_xOffset, m_yOffset; // offset inside terminal window
+  	unsigned int m_gameW, m_gameH; // size of internal playground
 };
 
 #endif // _SKETCHER_H_
 
-// vim: set noexpandtab:
+// vim: set expandtab ts=2 sw=2:

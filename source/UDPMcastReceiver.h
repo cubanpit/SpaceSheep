@@ -61,9 +61,10 @@ class UDPMcastReceiver
 
     // Constructor.
     UDPMcastReceiver();
-    UDPMcastReceiver(const std::string &listen_interface = "",
-                     const std::string &listen_address = std::string(_UDPMcastReceiver_h_DEFAULT_MCAST_ADDR),
-                     unsigned short listen_port = _UDPMcastReceiver_h_DEFAULT_PORT);
+    UDPMcastReceiver(
+        const std::string &listen_interface = "",
+        const std::string &listen_address = std::string(_UDPMcastReceiver_h_DEFAULT_MCAST_ADDR),
+        unsigned short listen_port = _UDPMcastReceiver_h_DEFAULT_PORT);
 
     // Destructor.
     virtual ~UDPMcastReceiver();
@@ -71,9 +72,10 @@ class UDPMcastReceiver
     bool good() const;
     bool got_data() const;
 
-    bool set_address_port(const std::string &listen_interface = "",
-                          const std::string &listen_address = _UDPMcastReceiver_h_DEFAULT_MCAST_ADDR,
-                          unsigned short listen_port = _UDPMcastReceiver_h_DEFAULT_PORT);
+    bool set_address_port(
+        const std::string &listen_interface = "",
+        const std::string &listen_address = _UDPMcastReceiver_h_DEFAULT_MCAST_ADDR,
+        unsigned short listen_port = _UDPMcastReceiver_h_DEFAULT_PORT);
 
     const std::string &get_listen_address() const;
     unsigned short get_listen_port() const;
@@ -102,9 +104,8 @@ class UDPMcastReceiver
     bool m_is_multicast;
 
     bool m_setup_socket_and_listen();
-
 };
 
 #endif /* defined _UDPMcastReceiver_h_included */
 
-// vim: set noexpandtab:
+// vim: set expandtab ts=2 sw=2:

@@ -23,11 +23,12 @@ UDPMcastSender::UDPMcastSender(unsigned char ttl) : m_sfd(-1), m_ttl(ttl)
   ::clock_gettime(CLOCK_REALTIME,&m_creation_time);
 }
 
-UDPMcastSender::UDPMcastSender(const std::string &source_interface,
-                               unsigned char ttl,
-                               const std::string &dest_address,
-                               unsigned short dest_port) :
-   m_ttl(ttl), m_dest_address(dest_address), m_dest_port(dest_port)
+UDPMcastSender::UDPMcastSender(
+    const std::string &source_interface,
+    unsigned char ttl,
+    const std::string &dest_address,
+    unsigned short dest_port) :
+  m_ttl(ttl), m_dest_address(dest_address), m_dest_port(dest_port)
 {
   m_good = false;
   m_is_multicast = false;
@@ -49,9 +50,10 @@ UDPMcastSender::~UDPMcastSender()
 }
 
 bool
-UDPMcastSender::set_address_port(const std::string &source_interface,
-                                 const std::string &dest_address,
-                                 unsigned short dest_port)
+UDPMcastSender::set_address_port(
+    const std::string &source_interface,
+    const std::string &dest_address,
+    unsigned short dest_port)
 {
   if (m_sfd >= 0) ::close(m_sfd);
   m_good = false;
@@ -240,7 +242,8 @@ UDPMcastSender::m_setup_and_bind_socket()
   return true;
 }
 
-bool UDPMcastSender::good() const
+bool
+UDPMcastSender::good() const
 {
   return m_good;
 }
@@ -322,4 +325,4 @@ UDPMcastSender::get_source_interface() const
   return std::string(iname);
 }
 
-// vim: set noexpandtab:
+// vim: set expandtab ts=2 sw=2:

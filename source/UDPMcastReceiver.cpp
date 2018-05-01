@@ -21,10 +21,11 @@ UDPMcastReceiver::UDPMcastReceiver() : m_sfd(-1)
   ::clock_gettime(CLOCK_REALTIME,&m_creation_time);
 }
 
-UDPMcastReceiver::UDPMcastReceiver(const std::string &listen_interface,
-                                   const std::string &listen_address,
-                                   unsigned short listen_port):
-   m_lst_address(listen_address), m_lst_port(listen_port)
+UDPMcastReceiver::UDPMcastReceiver(
+    const std::string &listen_interface,
+    const std::string &listen_address,
+    unsigned short listen_port):
+  m_lst_address(listen_address), m_lst_port(listen_port)
 {
   m_good = false;
   m_is_multicast = false;
@@ -41,9 +42,10 @@ UDPMcastReceiver::UDPMcastReceiver(const std::string &listen_interface,
 }
 
 bool
-UDPMcastReceiver::set_address_port(const std::string &listen_interface,
-                                   const std::string &listen_address,
-                                   unsigned short listen_port)
+UDPMcastReceiver::set_address_port(
+    const std::string &listen_interface,
+    const std::string &listen_address,
+    unsigned short listen_port)
 {
   if (m_sfd >= 0) ::close(m_sfd);
   m_good = false;
@@ -288,4 +290,4 @@ UDPMcastReceiver::m_unlisten()
    }
 }
 
-// vim: set noexpandtab:
+// vim: set expandtab ts=2 sw=2:
