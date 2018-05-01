@@ -50,48 +50,57 @@ bool overlap_RectRect(HitBoxRect& a, HitBoxRect& b)
 
 bool overlap_RectCircle(HitBoxRect& r, HitBoxCircle& c)
 {
-  //We have to substract 1 from height and width, so (x_ref+width)
-  // is inside the hitbox.
+	//We have to substract 1 from height and width, so (x_ref+width)
+	// is inside the hitbox.
 
-  //we have to cast width and height in 'int' for better math
+	//we have to cast width and height in 'int' for better math
 
-  position r_v = r.get_v();
-  int r_w = (int)(r.get_rec()).width - 1;
-  int r_h = (int)(r.get_rec()).height - 1;
-  position r_pos[4];
-  r_pos[0] = r_v;
-  r_pos[1] = {r_v.x + r_w, r_v.y};
-  r_pos[2] = {r_v.x + r_w, r_v.y + r_h};
-  r_pos[3] = {r_v.x, r_v.y + r_h};
+	position r_v = r.get_v();
+	int r_w = (int)(r.get_rec()).width - 1;
+	int r_h = (int)(r.get_rec()).height - 1;
 
-  position c_c = c.get_ref();
-  int c_r = (int)c.get_radius();
-  position c_pos[4];
-  c_pos[0] = {c_c.x, c_c.y - c_r};
-  c_pos[1] = {c_c.x + c_r, c_c.y};
-  c_pos[2] = {c_c.x, c_c.y + c_r};
-  c_pos[3] = {c_c.x - c_r, c_c.y};
+	position c_c = c.get_ref();
+	int c_r = (int)c.get_radius();
 
-  if ( r_w <= 0 or r_h <= 0 or c_r <= 0 ) {
-  	throw "HitBox::overlapRectCircle() ERROR: width, height or radius <= 0";
-  }
+	if ( r_w <= 0 or r_h <= 0 or c_r <= 0 ) {
+		throw "HitBox::overlapRectCircle() ERROR: width, height or radius <= 0";
+	}
 
-  // one of 'circle vertices' is inside the rectangle
-  for (short unsigned int i=0; i<4; ++i) {
-  	if (r_pos[0].x <= c_pos[i].x and c_pos[i].x <= r_pos[1].x
-  			and r_pos[0].y <= c_pos[i].y and c_pos[i].y <= r_pos[3].y) {
-  		return true;
-  	}
-  }
+	// if they are too far away do not check further
+	// (this can be done in a more useful way probably)
+	if (abs(2*r_v.x + r_w - 2*c_c.x) + abs(2*r_v.y + r_h - 2*c_c.y)
+			> 2*c_r + r_w + r_h) {
+		return false;
+	}
 
-  // one of the rectangle vertices is inside the circle
-  for (short unsigned int i=0; i<4; ++i) {
-  	if (abs(c_c.x - r_pos[i].x) + abs(c_c.y - r_pos[i].y) <= c_r) {
-  		return true;
-  	}
-  }
+	position r_pos[4];
+	r_pos[0] = r_v;
+	r_pos[1] = {r_v.x + r_w, r_v.y};
+	r_pos[2] = {r_v.x + r_w, r_v.y + r_h};
+	r_pos[3] = {r_v.x, r_v.y + r_h};
 
-  return false;
+	position c_pos[4];
+	c_pos[0] = {c_c.x, c_c.y - c_r};
+	c_pos[1] = {c_c.x + c_r, c_c.y};
+	c_pos[2] = {c_c.x, c_c.y + c_r};
+	c_pos[3] = {c_c.x - c_r, c_c.y};
+
+	// one of 'circle vertices' is inside the rectangle
+	for (short unsigned int i=0; i<4; ++i) {
+		if (r_pos[0].x <= c_pos[i].x and c_pos[i].x <= r_pos[1].x
+				and r_pos[0].y <= c_pos[i].y and c_pos[i].y <= r_pos[3].y) {
+			return true;
+		}
+	}
+
+	// one of the rectangle vertices is inside the circle
+	for (short unsigned int i=0; i<4; ++i) {
+		if (abs(c_c.x - r_pos[i].x) + abs(c_c.y - r_pos[i].y) <= c_r) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 bool overlap_CircleCircle(HitBoxCircle& a, HitBoxCircle& b)

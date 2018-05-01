@@ -63,6 +63,7 @@ Engine::~Engine()
 
 void Engine::start()
 {
+
   curs_set(0); // hide cursor position [ncurses]
   noecho(); // to hide input obtained with getch() [ncurses]
 
@@ -242,15 +243,14 @@ bool Engine::run_good()
   // TIME STUFF
   // WARNING: clocks goes on during execution, including screens
   // SOLUTION: reassign time_point before using it, if necessary.
-  std::chrono::system_clock::time_point t_track_sheep =
-    std::chrono::system_clock::now();
+  std::chrono::system_clock::time_point t_track_sheep = std::chrono::system_clock::now();
   std::chrono::duration<int,std::milli> dt_sheep(m_dt_uint_sheep);
 
   unsigned int count = 0;
   bool dead = false;
   bool got_bull = false;
   char ch; //needed for sheep movement
-  std::vector<char> message;
+  std::string message;
 
   if ( !check_bushes_parameters() ) {
     throw "Engine::run_local() ERROR: bad parameters for bushes, the game "
@@ -287,8 +287,7 @@ bool Engine::run_good()
       }
     }
 
-    for (unsigned short int i=0; i<m_dt_uint_bushes and !dead;
-        i+=m_dt_uint_sheep) {
+    for (unsigned short int i=0; i<m_dt_uint_bushes and !dead; i+=m_dt_uint_sheep) {
       ch = getch();
       //only if a key is pressed
       if ( (int)ch != ERR ) {
@@ -309,8 +308,7 @@ bool Engine::run_good()
           break;
         }
       }
-      if( got_bull and
-          ((*m_bull).get_hitbox()).overlap((*m_sheep).get_hitbox()) ) {
+      if( got_bull and ((*m_bull).get_hitbox()).overlap((*m_sheep).get_hitbox()) ) {
         dead = true;
         break;
       }
@@ -321,8 +319,7 @@ bool Engine::run_good()
         got_bull = create_bull(message);
         if ( got_bull ) m_score += 1;
 
-        if( got_bull and
-            ((*m_bull).get_hitbox()).overlap((*m_sheep).get_hitbox()) ) {
+        if( got_bull and ((*m_bull).get_hitbox()).overlap((*m_sheep).get_hitbox()) ) {
           dead = true;
           break;
         }
@@ -372,8 +369,7 @@ bool Engine::run_evil()
   while ( m_recver == nullptr ) {
     m_my_ip_addr = m_artist.addr_input_screen("your own",
         _UDPMcastSender_h_DEFAULT_PORT,error_string);
-    m_recver =
-      new UDPSSMcastReceiver("",m_my_ip_addr,_UDPMcastSender_h_DEFAULT_PORT);
+    m_recver = new UDPSSMcastReceiver("",m_my_ip_addr,_UDPMcastSender_h_DEFAULT_PORT);
     if ( !m_recver->good() ) {
       error_string = m_recver->get_error();
       delete m_recver;
@@ -386,7 +382,7 @@ bool Engine::run_evil()
   m_artist.game_table();
   m_artist.creator_choice();
 
-  std::vector<char> message;
+  std::string message;
   bool got_sheep = false;
   // we receive the first sheep to set got_sheep=true
   while( !got_sheep and !exit_to_menu ){
@@ -410,11 +406,9 @@ bool Engine::run_evil()
   // TIME STUFF
   // WARNING: clocks goes on during execution, including screens
   // SOLUTION: reassign time_point before using it, if necessary.
-  std::chrono::system_clock::time_point t_track_bull =
-    std::chrono::system_clock::now();
+  std::chrono::system_clock::time_point t_track_bull = std::chrono::system_clock::now();
   std::chrono::duration<int,std::milli> dt_bull(m_dt_uint_bull);
-  std::chrono::system_clock::time_point t_track_wait =
-    std::chrono::system_clock::now();
+  std::chrono::system_clock::time_point t_track_wait = std::chrono::system_clock::now();
   std::chrono::duration<int,std::milli> dt_wait(_Engine_h_MAX_WAIT);
 
   bool got_bull = false;
@@ -450,8 +444,7 @@ bool Engine::run_evil()
             message[2], message[3], message[4]);
         m_bushes.push_back(tmp_bush);
       }
-      else if ( message[0] == 'd' and message[1] == 'e' and
-          message[2] == 'a' and message[3] == 'd') {
+      else if ( message == "dead" ) {
         victory = true;
       }
       t_track_wait = std::chrono::system_clock::now() + dt_wait;
@@ -515,8 +508,7 @@ void Engine :: add_obstacle_bushes ()
    */
 
   // Random stuff
-  unsigned int seed =
-    std::chrono::system_clock::now().time_since_epoch().count();
+  unsigned int seed = std::chrono::system_clock::now().time_since_epoch().count();
   std::default_random_engine generator(seed);
   std::uniform_int_distribution<unsigned int> distribution(0,
       m_artist.get_gameW()-1);
@@ -679,7 +671,7 @@ bool Engine :: bull_creator_choice()
 // pair opponents, both should be able to send and receive packages
 bool Engine::pair_with_good() const
 {
-  std::vector<char> message;
+  std::string message;
   bool paired = false;
   bool stop_pair = false;
   //send, check the opponent answers
@@ -689,8 +681,7 @@ bool Engine::pair_with_good() const
     if( m_recver->recv_msg() and !stop_pair ){
       message.assign(m_recver->get_msg(),
           m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
-      if( message[0] == 'p' and message[1] == 'o'
-          and	message[2] == 'n' and message[3] == 'g' ) {
+      if( message == "pong" ) {
         m_sender->send_msg("pong");
         paired = true;
       }
@@ -705,7 +696,7 @@ bool Engine::pair_with_good() const
 // pair opponents, both should be able to send and receive packages
 bool Engine::pair_with_evil() const
 {
-  std::vector<char> message;
+  std::string message;
   bool paired = false;
   bool stop_pair = false;
   //checks he can receive, answers, then checks the opponent answered
@@ -714,16 +705,14 @@ bool Engine::pair_with_evil() const
     if( m_recver->recv_msg() and !stop_pair ){
       message.assign(m_recver->get_msg(),
           m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
-      if( message[0] == 'p' and message[1] == 'i'
-          and	message[2] == 'n' and message[3] == 'g' ) {
+      if( message == "ping" ) {
         m_sender->send_msg("pong");
         for(int i=0; i<100 and !paired and !stop_pair; ++i) {
           stop_pair = m_artist.pair_screen();
           if( m_recver->recv_msg() and !stop_pair ){
             message.assign(m_recver->get_msg(),
                 m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
-            if( message[0] == 'p' and message[1] == 'o'
-                and	message[2] == 'n' and message[3] == 'g' ) {
+            if( message == "pong" ) {
               paired = true;
             }
           }
@@ -736,7 +725,7 @@ bool Engine::pair_with_evil() const
   return paired;
 }
 
-bool Engine::create_bull(std::vector<char>& message)
+bool Engine::create_bull(std::string& message)
 {
   // message[0] = identifier
   // message[1] = X position
