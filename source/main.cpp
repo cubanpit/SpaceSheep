@@ -6,8 +6,8 @@
  * A beautiful game with a SpaceSheep as main character.
  *
  * Authors:
- *  Martina Crippa 				<martina.crippa2@studenti.unimi.it>
- *  Pietro Francesco Fontana 	<pietrofrancesco.fontana@studenti.unimi.it>
+ *  Martina Crippa             <martina.crippa2@studenti.unimi.it>
+ *  Pietro Francesco Fontana   <pietrofrancesco.fontana@studenti.unimi.it>
  *
  *******************************************************************************
  *
@@ -33,26 +33,26 @@ int main (void)
 {
   initscr(); // start the terminal world [ncurses]
   try {
-  	if ( has_colors() ) {
-  		start_color(); // enable colors in this window [ncurses]
-  	}
-  	Engine game;
-  	game.start();
+    if ( has_colors() ) {
+      start_color(); // enable colors in this window [ncurses]
+    }
+    Engine game;
+    game.start();
   }
   catch ( const char* msg ) {
-  	endwin();
-  	std::cerr << msg << std::endl;
-  	exit (EXIT_FAILURE);
+    endwin();
+    std::cerr << msg << std::endl;
+    exit (EXIT_FAILURE);
   }
   catch ( std::string& msg ) {
-  	endwin();
-  	std::cerr << msg << std::endl;
-  	exit (EXIT_FAILURE);
+    endwin();
+    std::cerr << msg << std::endl;
+    exit (EXIT_FAILURE);
   }
   catch (std::bad_alloc& ba) {
-  	endwin();
-  	std::cerr << "main() bad_alloc caught: " << ba.what() << std::endl;
-  	exit (EXIT_FAILURE);
+    endwin();
+    std::cerr << "main() bad_alloc caught: " << ba.what() << std::endl;
+    exit (EXIT_FAILURE);
   }
   endwin(); // end terminal world [ncurses]
   return (EXIT_SUCCESS);

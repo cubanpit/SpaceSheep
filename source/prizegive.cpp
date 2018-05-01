@@ -6,8 +6,8 @@
  * This file contains implementation of functions in prizegive.h file.
  *
  * Authors:
- *  Martina Crippa 				<martina.crippa2@studenti.unimi.it>
- *  Pietro Francesco Fontana 	<pietrofrancesco.fontana@studenti.unimi.it>
+ *  Martina Crippa             <martina.crippa2@studenti.unimi.it>
+ *  Pietro Francesco Fontana   <pietrofrancesco.fontana@studenti.unimi.it>
  *
  *******************************************************************************
  *
@@ -33,14 +33,14 @@ bool add_score(const unsigned int new_score, const std::string& player_name)
 {
   // check player name doesn't contain dangerous characters
   if ( player_name.length() == 0
-  		or player_name.find("_") != std::string::npos
-  		or player_name.find("\\") != std::string::npos ) {
-  	return false;
+      or player_name.find("_") != std::string::npos
+      or player_name.find("\\") != std::string::npos ) {
+    return false;
   }
   std::fstream score_file;
   score_file.open(_prizigive_h_SCORE_FILE_,std::ios_base::app|std::fstream::out);
   if ( score_file.fail() ) {
-  	throw "ERROR: Impossible to open score file "+_prizigive_h_SCORE_FILE_;
+    throw "ERROR: Impossible to open score file "+_prizigive_h_SCORE_FILE_;
   }
   score_file << new_score << "_" << player_name << std::endl;
   score_file.close();
@@ -56,30 +56,30 @@ const std::vector<std::string> get_score(unsigned short int nscore)
 
   //if the file doesn't exist it's created
   if ( score_file.fail() ) {
-  	score_file.close();
-  	score_file.open(_prizigive_h_SCORE_FILE_,std::fstream::out);
-  	if ( score_file.fail() ) {
-  		throw "ERROR: Impossible to open score file "+
-  				_prizigive_h_SCORE_FILE_;
-  	}
-  	else empty_file = true;
+    score_file.close();
+    score_file.open(_prizigive_h_SCORE_FILE_,std::fstream::out);
+    if ( score_file.fail() ) {
+      throw "ERROR: Impossible to open score file "+
+        _prizigive_h_SCORE_FILE_;
+    }
+    else empty_file = true;
   }
 
   std::vector<std::string> score_list;
   std::string tmp_string;
   while ( !empty_file ) {
-  	std::getline(score_file,tmp_string);
-  	if ( score_file.eof() ) break;
-  	if ( score_file.fail() ) {
-  		throw "ERROR: Impossible to read from score file "+
-  				_prizigive_h_SCORE_FILE_;
-  	}
-  	score_list.push_back(tmp_string);
+    std::getline(score_file,tmp_string);
+    if ( score_file.eof() ) break;
+    if ( score_file.fail() ) {
+      throw "ERROR: Impossible to read from score file "+
+        _prizigive_h_SCORE_FILE_;
+    }
+    score_list.push_back(tmp_string);
   }
   if ( score_list.size() == 0 ) empty_file = true;
   else {
-  	//sort score list, we know that the file contains "###_NAME"
-  	std::sort(score_list.begin(),score_list.end(),compare_score);
+    //sort score list, we know that the file contains "###_NAME"
+    std::sort(score_list.begin(),score_list.end(),compare_score);
   }
   if ( score_list.size() > nscore ) score_list.resize(nscore);
 

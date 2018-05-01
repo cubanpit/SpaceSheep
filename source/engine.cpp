@@ -6,8 +6,8 @@
  * Implementation of classes and functions declared in engine.h
  *
  * Authors:
- *  Martina Crippa 				<martina.crippa2@studenti.unimi.it>
- *  Pietro Francesco Fontana 	<pietrofrancesco.fontana@studenti.unimi.it>
+ *  Martina Crippa             <martina.crippa2@studenti.unimi.it>
+ *  Pietro Francesco Fontana   <pietrofrancesco.fontana@studenti.unimi.it>
  *
  *******************************************************************************
  *
@@ -219,7 +219,7 @@ bool Engine::run_good()
   }
   while ( m_recver == nullptr ) {
     m_my_ip_addr = m_artist.addr_input_screen("your own",
-        _UDPMcastSender_h_DEFAULT_PORT,	error_string);
+        _UDPMcastSender_h_DEFAULT_PORT,  error_string);
     m_recver = new UDPSSMcastReceiver("",m_my_ip_addr,
         _UDPMcastSender_h_DEFAULT_PORT);
     if ( !m_recver->good() ) {
@@ -528,13 +528,13 @@ void Engine :: add_obstacle_bushes ()
         if ( ctrl ) {
           if ( (((int)x >= (((*(m_bushes.back())).get_v()).x
                     + (int)((*(m_bushes.back())).get_rec()).width))
-                and	((int)x - (((*(m_bushes.back())).get_v()).x +
+                and  ((int)x - (((*(m_bushes.back())).get_v()).x +
                     (int)((*(m_bushes.back())).get_rec()).width)) <
                 ((int)(*m_sheep).get_radius()*2+1+(int)m_bushes_w_d)) ) {
             ctrl = false;
           }
           if ( ((((int)x+(int)w) <= ((*(m_bushes.back())).get_v()).x)
-                and	(((*(m_bushes.back())).get_v()).x -
+                and  (((*(m_bushes.back())).get_v()).x -
                   ((int)x + (int)w)) <
                 ((int)(*m_sheep).get_radius()*2+1+
                  (int)m_bushes_w_d)) ) {

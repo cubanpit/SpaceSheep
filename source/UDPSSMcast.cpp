@@ -6,8 +6,8 @@
  * Implementation of classes and functions declared in UDPSSMcast.h
  *
  * Authors:
- *  Martina Crippa 				<martina.crippa2@studenti.unimi.it>
- *  Pietro Francesco Fontana 	<pietrofrancesco.fontana@studenti.unimi.it>
+ *  Martina Crippa             <martina.crippa2@studenti.unimi.it>
+ *  Pietro Francesco Fontana   <pietrofrancesco.fontana@studenti.unimi.it>
  *
  *******************************************************************************
  *
@@ -69,35 +69,35 @@ bool UDPSSMcastReceiver :: recv_msg()
 {
   int p_result = ::poll(m_psfd, (int)_UDPSSMcast_h_SOCK_N, m_stimeout);
   if( p_result == -1) {
-  	std::string err(::strerror(errno));
-  	throw  "UDPMcastReceiver::recv_data() ERROR: " + err;
-  	return false;
+    std::string err(::strerror(errno));
+    throw  "UDPMcastReceiver::recv_data() ERROR: " + err;
+    return false;
   }
   else if( p_result == 0 ) {
-  	//poll() reached timeout
-  	return false;
+    //poll() reached timeout
+    return false;
   }
   else {
-  	if( m_psfd->revents & POLLIN ) {
-  		if( ::recv(m_sfd, m_msg, (int)_UDPSSMcast_h_DEFAULT_MSG_LEN, 0) > 0)
-  			return true;
-  		else return false;
-  	}
-  	else {
-  		if( m_psfd->revents & POLLNVAL ) {
-  			throw "UDPMcastReceiver::recv_data() ERROR: poll() found fd "
-  					"not open";
-  		}
-  		if( m_psfd->revents & POLLHUP ) {
-  			throw "UDPMcastReceiver::recv_data() ERROR: poll() returned "
-  					"hang up";
-  		}
-  		if( m_psfd->revents & POLLERR ) {
-  			throw "UDPMcastReceiver::recv_data() ERROR: poll() returned "
-  					"an error condition";
-  		}
-  		return false;
-  	}
+    if( m_psfd->revents & POLLIN ) {
+      if( ::recv(m_sfd, m_msg, (int)_UDPSSMcast_h_DEFAULT_MSG_LEN, 0) > 0)
+        return true;
+      else return false;
+    }
+    else {
+      if( m_psfd->revents & POLLNVAL ) {
+        throw "UDPMcastReceiver::recv_data() ERROR: poll() found fd "
+          "not open";
+      }
+      if( m_psfd->revents & POLLHUP ) {
+        throw "UDPMcastReceiver::recv_data() ERROR: poll() returned "
+          "hang up";
+      }
+      if( m_psfd->revents & POLLERR ) {
+        throw "UDPMcastReceiver::recv_data() ERROR: poll() returned "
+          "an error condition";
+      }
+      return false;
+    }
   }
 }
 
@@ -113,8 +113,8 @@ std::string compose_msg(CircleObstacle* circle)
    * that positions, width and height are between -127 and 128.
    */
   std::string msg{'c', (char) (circle->get_ref()).x,
-  				(char) (circle->get_ref()).y,
-  				(char) circle->get_radius(), '0'};
+    (char) (circle->get_ref()).y,
+    (char) circle->get_radius(), '0'};
   return msg;
 }
 
@@ -125,9 +125,9 @@ std::string compose_msg(RectObstacle* rect)
    * that positions, width and height are between -127 and 128.
    */
   std::string msg{'r', (char) (rect->get_v()).x,
-  				(char) (rect->get_v()).y,
-  				(char) (rect->get_rec()).width,
-  				(char) (rect->get_rec()).height};
+    (char) (rect->get_v()).y,
+    (char) (rect->get_rec()).width,
+    (char) (rect->get_rec()).height};
   return msg;
 }
 

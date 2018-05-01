@@ -8,8 +8,8 @@
  * HitBox defines physic limits of objects and handle collision between them.
  *
  * Authors:
- *  Martina Crippa 				<martina.crippa2@studenti.unimi.it>
- *  Pietro Francesco Fontana 	<pietrofrancesco.fontana@studenti.unimi.it>
+ *  Martina Crippa             <martina.crippa2@studenti.unimi.it>
+ *  Pietro Francesco Fontana   <pietrofrancesco.fontana@studenti.unimi.it>
  *
  *******************************************************************************
  *
@@ -39,13 +39,13 @@ struct position
   int x;
   int y;
   position& operator= (const position& p) {
-  	x = p.x;
-  	y = p.y;
-  	return *this;
+    x = p.x;
+    y = p.y;
+    return *this;
   }
   bool operator== (const position& p) const {
-  	if ( x == p.x and y == p.y ) return true;
-  	else return false;
+    if ( x == p.x and y == p.y ) return true;
+    else return false;
   }
 };
 
@@ -54,9 +54,9 @@ struct rectangle
   unsigned int width;
   unsigned int height;
   rectangle& operator= (const rectangle& r){
-  	width = r.width;
-  	height = r.height;
-  	return *this;
+    width = r.width;
+    height = r.height;
+    return *this;
   }
 };
 
@@ -70,39 +70,39 @@ bool overlap_CircleCircle(HitBoxCircle& a, HitBoxCircle& b);
 class HitBoxRect
 {
   public:
-  	HitBoxRect(position v, rectangle rec);
-  	HitBoxRect (int x, int y, unsigned int width, unsigned int height);
-  	~HitBoxRect(){}
+    HitBoxRect(position v, rectangle rec);
+    HitBoxRect (int x, int y, unsigned int width, unsigned int height);
+    ~HitBoxRect(){}
 
-  	const position& get_v() const { return m_v; }
-  	void set_v(position& new_v){ m_v = new_v; }
-  	const rectangle& get_rec() const { return m_rec; }
+    const position& get_v() const { return m_v; }
+    void set_v(position& new_v){ m_v = new_v; }
+    const rectangle& get_rec() const { return m_rec; }
 
-  	bool overlap(HitBoxRect& b) { return overlap_RectRect(*this,b); }
-  	bool overlap(HitBoxCircle& b) { return overlap_RectCircle(*this,b); }
+    bool overlap(HitBoxRect& b) { return overlap_RectRect(*this,b); }
+    bool overlap(HitBoxCircle& b) { return overlap_RectCircle(*this,b); }
 
   private:
-  	position m_v;
-  	rectangle m_rec;
+    position m_v;
+    rectangle m_rec;
 };
 
 class HitBoxCircle
 {
   public:
-  	HitBoxCircle(position ref, unsigned int radius);
-  	HitBoxCircle(int x, int y, unsigned int radius);
-  	~HitBoxCircle() { }
+    HitBoxCircle(position ref, unsigned int radius);
+    HitBoxCircle(int x, int y, unsigned int radius);
+    ~HitBoxCircle() { }
 
-  	const position& get_ref() const { return m_ref; }
-  	void set_ref(position& new_ref){ m_ref = new_ref; }
-  	unsigned int get_radius() const { return m_radius; }
+    const position& get_ref() const { return m_ref; }
+    void set_ref(position& new_ref){ m_ref = new_ref; }
+    unsigned int get_radius() const { return m_radius; }
 
-  	bool overlap(HitBoxRect& b) { return overlap_RectCircle(b,*this); }
-  	bool overlap(HitBoxCircle& b) { return overlap_CircleCircle(*this,b); }
+    bool overlap(HitBoxRect& b) { return overlap_RectCircle(b,*this); }
+    bool overlap(HitBoxCircle& b) { return overlap_CircleCircle(*this,b); }
 
   private:
-  	position m_ref;
-  	unsigned int m_radius;
+    position m_ref;
+    unsigned int m_radius;
 };
 
 #endif // _HITBOX_H_

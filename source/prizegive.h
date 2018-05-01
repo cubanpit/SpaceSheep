@@ -7,8 +7,8 @@
  * The judge always says the truth.
  *
  * Authors:
- *  Martina Crippa 				<martina.crippa2@studenti.unimi.it>
- *  Pietro Francesco Fontana 	<pietrofrancesco.fontana@studenti.unimi.it>
+ *  Martina Crippa             <martina.crippa2@studenti.unimi.it>
+ *  Pietro Francesco Fontana   <pietrofrancesco.fontana@studenti.unimi.it>
  *
  *******************************************************************************
  *
@@ -52,7 +52,7 @@ bool compare_score (std::string strj,std::string strk);
 
 /*
  * SCORE FILE FORMAT:
- * 
+ *
  * 1234_MyName
  * 987_HarryFoster
  * 36789_SurName

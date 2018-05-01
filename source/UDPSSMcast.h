@@ -7,8 +7,8 @@
  *  UDP packets.
  *
  * Authors:
- *  Martina Crippa 				<martina.crippa2@studenti.unimi.it>
- *  Pietro Francesco Fontana 	<pietrofrancesco.fontana@studenti.unimi.it>
+ *  Martina Crippa             <martina.crippa2@studenti.unimi.it>
+ *  Pietro Francesco Fontana   <pietrofrancesco.fontana@studenti.unimi.it>
  *
  *******************************************************************************
  *
@@ -47,16 +47,16 @@ const unsigned short int _UDPSSMcast_h_SOCK_TMOUT = 5;
 class UDPSSMcastSender : public UDPMcastSender
 {
   public:
-  	UDPSSMcastSender(
+    UDPSSMcastSender(
         const std::string& source_if = "",
         unsigned char ttl = _UDPMcastSender_h_DEFAULT_TTL,
         const std::string& dest_address =
         std::string(_UDPMcastSender_h_DEFAULT_MCAST_ADDR),
         unsigned short dest_port = _UDPMcastSender_h_DEFAULT_PORT);
 
-  	~UDPSSMcastSender();
+    ~UDPSSMcastSender();
 
-  	bool send_msg(std::string msg) const;
+    bool send_msg(std::string msg) const;
 };
 
 class UDPSSMcastReceiver : public UDPMcastReceiver
@@ -69,16 +69,16 @@ class UDPSSMcastReceiver : public UDPMcastReceiver
         unsigned short listen_port = _UDPMcastReceiver_h_DEFAULT_PORT,
         unsigned short stimeout = _UDPSSMcast_h_SOCK_TMOUT);
 
-  	~UDPSSMcastReceiver();
+    ~UDPSSMcastReceiver();
 
-  	bool recv_msg();
-  	const char* get_msg() const { return m_msg; };
-  	void flush_socket();
+    bool recv_msg();
+    const char* get_msg() const { return m_msg; };
+    void flush_socket();
 
   private:
-  	unsigned short m_stimeout;
-  	pollfd m_psfd[_UDPSSMcast_h_SOCK_N];
-  	char m_msg[_UDPSSMcast_h_DEFAULT_MSG_LEN];
+    unsigned short m_stimeout;
+    pollfd m_psfd[_UDPSSMcast_h_SOCK_N];
+    char m_msg[_UDPSSMcast_h_DEFAULT_MSG_LEN];
 };
 
 //compose message for SpaceSheep obstacle types
