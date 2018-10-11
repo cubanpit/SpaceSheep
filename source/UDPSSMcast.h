@@ -51,7 +51,7 @@ class UDPSSMcastSender : public UDPMcastSender
         const std::string& source_if = "",
         unsigned char ttl = _UDPMcastSender_h_DEFAULT_TTL,
         const std::string& dest_address =
-        std::string(_UDPMcastSender_h_DEFAULT_MCAST_ADDR),
+          std::string(_UDPMcastSender_h_DEFAULT_MCAST_ADDR),
         unsigned short dest_port = _UDPMcastSender_h_DEFAULT_PORT);
 
     ~UDPSSMcastSender();
@@ -72,13 +72,13 @@ class UDPSSMcastReceiver : public UDPMcastReceiver
     ~UDPSSMcastReceiver();
 
     bool recv_msg();
-    const char* get_msg() const { return m_msg; };
+    const std::string& get_msg() const { return m_msg; };
     void flush_socket();
 
   private:
     unsigned short m_stimeout;
     pollfd m_psfd[_UDPSSMcast_h_SOCK_N];
-    char m_msg[_UDPSSMcast_h_DEFAULT_MSG_LEN];
+    std::string m_msg;
 };
 
 //compose message for SpaceSheep obstacle types

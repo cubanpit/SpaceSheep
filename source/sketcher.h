@@ -49,6 +49,8 @@
 // Under these values some screens are ugly
 const unsigned short int _Sketcher_h_MIN_HEIGHT_ = 28;
 const unsigned short int _Sketcher_h_MIN_WIDTH_ = 80;
+
+// Over this value some variables overflow
 const unsigned short int _Sketcher_h_MAX_HEIGHT_ = 127;
 const unsigned short int _Sketcher_h_MAX_WIDTH_ = 123;
 

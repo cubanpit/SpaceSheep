@@ -314,8 +314,7 @@ bool Engine::run_good()
       }
 
       if( m_recver->recv_msg() ) {
-        message.assign(m_recver->get_msg(),
-            m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
+        message = m_recver->get_msg();
         got_bull = create_bull(message);
         if ( got_bull ) m_score += 1;
 
@@ -387,8 +386,7 @@ bool Engine::run_evil()
   // we receive the first sheep to set got_sheep=true
   while( !got_sheep and !exit_to_menu ){
     if ( m_recver->recv_msg() ) {
-      message.assign(m_recver->get_msg(),
-          m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
+      message = m_recver->get_msg();
       if( message[0] == 'c' ) {
         position tmp_ref;
         tmp_ref.x = message[1];
@@ -417,8 +415,7 @@ bool Engine::run_evil()
   unsigned int count = 0;
   while ( !victory and !exit_to_menu ){
     if ( m_recver->recv_msg() ) {
-      message.assign(m_recver->get_msg(),
-          m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
+      message = m_recver->get_msg();
       if ( message[0] == 'c' ){
         //if it's the first sheep after a group of bushes (see below)
         if ( !got_sheep ){
@@ -679,8 +676,7 @@ bool Engine::pair_with_good() const
     stop_pair = m_artist.pair_screen();
     m_sender->send_msg("ping");
     if( m_recver->recv_msg() and !stop_pair ){
-      message.assign(m_recver->get_msg(),
-          m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
+      message = m_recver->get_msg();
       if( message == "pong" ) {
         m_sender->send_msg("pong");
         paired = true;
@@ -703,15 +699,13 @@ bool Engine::pair_with_evil() const
   while( !paired and !stop_pair ) {
     stop_pair = m_artist.pair_screen();
     if( m_recver->recv_msg() and !stop_pair ){
-      message.assign(m_recver->get_msg(),
-          m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
+      message = m_recver->get_msg();
       if( message == "ping" ) {
         m_sender->send_msg("pong");
         for(int i=0; i<100 and !paired and !stop_pair; ++i) {
           stop_pair = m_artist.pair_screen();
           if( m_recver->recv_msg() and !stop_pair ){
-            message.assign(m_recver->get_msg(),
-                m_recver->get_msg()+_UDPSSMcast_h_DEFAULT_MSG_LEN);
+            message = m_recver->get_msg();
             if( message == "pong" ) {
               paired = true;
             }

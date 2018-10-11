@@ -1,7 +1,5 @@
 TODO LIST:
 
--!UDPSSMcast/Engine: passare da 'char' ad 'unsigned char', altrimenti i valori
-			permessi sono [-127:128] e non [0:255]
 -!Engine: rispettare la 'regola dei tre' (o quattro) del C++, fornendo alla
 			classe un copy constructor ed un assignment operator, se il punto
 			successivo viene risolto, questo non dovrebbe più essere necessario

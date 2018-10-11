@@ -79,8 +79,11 @@ bool UDPSSMcastReceiver :: recv_msg()
   }
   else {
     if( m_psfd->revents & POLLIN ) {
-      if( ::recv(m_sfd, m_msg, (int)_UDPSSMcast_h_DEFAULT_MSG_LEN, 0) > 0)
+      char char_msg[_UDPSSMcast_h_DEFAULT_MSG_LEN];
+      if( ::recv(m_sfd, char_msg, (int)_UDPSSMcast_h_DEFAULT_MSG_LEN, 0) > 0) {
+        m_msg.assign(char_msg, char_msg + _UDPSSMcast_h_DEFAULT_MSG_LEN);
         return true;
+      }
       else return false;
     }
     else {
